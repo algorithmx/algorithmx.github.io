@@ -1,0 +1,845 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monotone Subsequence &#8212; My Jupyter Book</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet">
+  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-2 bd-sidebar site-navigation show single-page" id="site-navigation">
+    
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/monotone.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/executablebooks/jupyter-book/master?urlpath=tree/monotone.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Monotone Subsequence
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#problem">
+   Problem
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#solution-for-the-case-all">
+   Solution for the case
+   <strong>
+    “all”
+   </strong>
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#simplest-solution">
+     Simplest solution
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#online-algorithm">
+     Online algorithm
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#graph-equivalent">
+     Graph equivalent
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#conclusion-after-running-benchmark">
+     Conclusion (after running benchmark)
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#verification-and-benchmark">
+     Verification and benchmark
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#benchmark-group-1">
+       Benchmark group 1
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#benchmark-group-2">
+       Benchmark group 2
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#benchmark-group-3">
+       Benchmark group 3
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Monotone Subsequence</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Monotone Subsequence
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#problem">
+   Problem
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#solution-for-the-case-all">
+   Solution for the case
+   <strong>
+    “all”
+   </strong>
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#simplest-solution">
+     Simplest solution
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#online-algorithm">
+     Online algorithm
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#graph-equivalent">
+     Graph equivalent
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#conclusion-after-running-benchmark">
+     Conclusion (after running benchmark)
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#verification-and-benchmark">
+     Verification and benchmark
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#benchmark-group-1">
+       Benchmark group 1
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#benchmark-group-2">
+       Benchmark group 2
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#benchmark-group-3">
+       Benchmark group 3
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
+              <div>
+                
+  <div class="tex2jax_ignore mathjax_ignore section" id="monotone-subsequence">
+<h1>Monotone Subsequence<a class="headerlink" href="#monotone-subsequence" title="Permalink to this headline">¶</a></h1>
+<p>Author: yunlong(algorithmx)</p>
+<p><span class="xref myst">back to index</span></p>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="problem">
+<h1>Problem<a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><p>Find <strong>all / any / the length of</strong> the longest <strong>strictly increasing / non-decreasing</strong> subsequence of a sequence of integers of length <span class="math notranslate nohighlight">\(N\)</span>.</p>
+</div></blockquote>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="solution-for-the-case-all">
+<h1>Solution for the case <strong>“all”</strong><a class="headerlink" href="#solution-for-the-case-all" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="simplest-solution">
+<h2>Simplest solution<a class="headerlink" href="#simplest-solution" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>The simplest solution would be an enumeration algorithm of <span class="math notranslate nohighlight">\(O(2^N)\)</span> complexity. Sweeping through the list of integers, one can try either include or not include the element at position <code class="docutils literal notranslate"><span class="pre">i</span></code>, and test the monotonicity of all the <span class="math notranslate nohighlight">\(2^N\)</span> subsequences.</p>
+</div></blockquote>
+<blockquote>
+<div><p>A little bit thoughts lead to the following recursive implementation,
+where the indices for the longest monotonic subsequence of <code class="docutils literal notranslate"><span class="pre">L[1:i]</span></code>
+is constructed recursively by <code class="docutils literal notranslate"><span class="pre">mono(i,L)</span></code>. Notice that for <code class="docutils literal notranslate"><span class="pre">i=1</span></code>,
+we return both the empty index list and the full index list (which is <code class="docutils literal notranslate"><span class="pre">[1]</span></code>)
+to account for the cases where the longest subsequence excludes <code class="docutils literal notranslate"><span class="pre">L[1]</span></code>.
+At position <code class="docutils literal notranslate"><span class="pre">i</span></code>, <code class="docutils literal notranslate"><span class="pre">L[i]</span></code> can either be included or excluded,
+this leads to <code class="docutils literal notranslate"><span class="pre">vcat(A,B)</span></code> where <code class="docutils literal notranslate"><span class="pre">A</span></code> is the list of subsequence
+indices ended by <code class="docutils literal notranslate"><span class="pre">i</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code> is those without <code class="docutils literal notranslate"><span class="pre">i</span></code>.
+We also trim off the short subsequences by a length cutoff <code class="docutils literal notranslate"><span class="pre">minlen</span></code>
+before return.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">mono</span><span class="p">(</span><span class="n">i</span><span class="o">::</span><span class="kt">Int</span><span class="p">,</span> <span class="n">L</span><span class="o">::</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">Int</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="p">[</span><span class="kt">Int</span><span class="p">[],</span><span class="kt">Int</span><span class="p">[</span><span class="mi">1</span><span class="p">,]]</span>
+    <span class="k">else</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">mono</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">L</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">vcat</span><span class="p">([</span><span class="kt">Int</span><span class="p">[</span><span class="n">m</span><span class="o">...</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="k">in</span> <span class="n">M</span> <span class="k">if</span> <span class="n">length</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span> <span class="o">||</span> <span class="n">L</span><span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="k">end</span><span class="p">]]</span><span class="o">&lt;=</span><span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>  <span class="n">M</span><span class="p">)</span>
+        <span class="n">minlen</span> <span class="o">=</span> <span class="n">maximum</span><span class="p">(</span><span class="n">length</span><span class="o">.</span><span class="p">(</span><span class="n">M</span><span class="p">))</span> <span class="o">-</span> <span class="p">((</span><span class="n">length</span><span class="p">(</span><span class="n">L</span><span class="p">)</span><span class="o">-</span><span class="n">i</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">filter</span><span class="p">(</span><span class="n">x</span><span class="o">-&gt;</span><span class="n">length</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&gt;=</span><span class="n">minlen</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">longest_v1</span><span class="p">(</span><span class="n">L</span><span class="o">::</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">Int</span><span class="p">})</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">mono</span><span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">L</span><span class="p">),</span> <span class="n">L</span><span class="p">)</span>
+    <span class="n">len</span> <span class="o">=</span> <span class="n">length</span><span class="o">.</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">indices</span><span class="p">[</span><span class="n">len</span><span class="o">.==</span><span class="n">maximum</span><span class="p">(</span><span class="n">len</span><span class="p">)]</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>longest_v1 (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="online-algorithm">
+<h2>Online algorithm<a class="headerlink" href="#online-algorithm" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>The above implementation can be addapted to an online version,
+which keeps a list of monotonic subsequences of <code class="docutils literal notranslate"><span class="pre">L[1:i-1]</span></code> (not necessarily longest) and waits for the integer <code class="docutils literal notranslate"><span class="pre">L[i]</span></code> as the input.
+Since we need to perform a large number of search and insert  operations each time a new integer arrives, an effecient data structure is necessary.</p>
+</div></blockquote>
+<blockquote>
+<div><p>The recursive algorithm in the previous section hints a tree data structure for the online algorithm. Suppose that we have a tree to store all the monotonic subsequences. When a new integer arrives, we need to iterate through the entire tree to find suitable places for that integer.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># minimal tree data structure</span>
+<span class="k">mutable struct</span> <span class="kt">Tree</span><span class="p">{</span><span class="kt">T</span> <span class="o">&lt;:</span> <span class="kt">Any</span><span class="p">}</span>
+    <span class="n">D</span><span class="o">::</span><span class="kt">T</span>
+    <span class="n">C</span><span class="o">::</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">Tree</span><span class="p">{</span><span class="kt">T</span><span class="p">}}</span>
+    <span class="k">function</span> <span class="n">Tree</span><span class="p">(</span><span class="n">data</span><span class="o">::</span><span class="kt">S</span><span class="p">)</span> <span class="k">where</span> <span class="kt">S</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="kt">new</span><span class="p">{</span><span class="kt">S</span><span class="p">}()</span>
+        <span class="n">X</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">X</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="kt">Tree</span><span class="p">{</span><span class="kt">S</span><span class="p">}[]</span>
+        <span class="k">return</span> <span class="n">X</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">depth</span><span class="p">(</span><span class="n">T</span><span class="o">::</span><span class="kt">Tree</span><span class="p">)</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">C</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">maximum</span><span class="p">([</span><span class="n">depth</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="k">in</span> <span class="n">T</span><span class="o">.</span><span class="n">C</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="k">function</span> <span class="n">dfs_collect_n</span><span class="p">(</span><span class="n">i</span><span class="o">::</span><span class="kt">Int</span><span class="p">,</span> <span class="n">n</span><span class="o">::</span><span class="kt">Int</span><span class="p">,</span> <span class="n">T</span><span class="o">::</span><span class="kt">Tree</span><span class="p">{</span><span class="kt">Int</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">length</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">C</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span>
+        <span class="k">return</span> <span class="n">i</span><span class="o">==</span><span class="n">n</span> <span class="o">?</span> <span class="p">[[</span><span class="n">T</span><span class="o">.</span><span class="n">D</span><span class="p">,],]</span> <span class="o">:</span> <span class="p">[]</span>
+    <span class="k">else</span>
+        <span class="nd">@assert</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="n">T</span><span class="o">.</span><span class="n">D</span><span class="p">,</span><span class="n">x</span><span class="o">...</span><span class="p">]</span>  
+                    <span class="k">for</span> <span class="n">c</span> <span class="k">in</span> <span class="n">T</span><span class="o">.</span><span class="n">C</span> 
+                        <span class="k">for</span> <span class="n">x</span> <span class="k">in</span> <span class="n">dfs_collect_n</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span><span class="p">)]</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">entree!</span><span class="p">(</span><span class="n">TR</span><span class="o">::</span><span class="kt">Tree</span><span class="p">{</span><span class="kt">Int</span><span class="p">},</span> <span class="n">i</span><span class="o">::</span><span class="kt">Int</span><span class="p">,</span> <span class="n">L</span><span class="o">::</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">Int</span><span class="p">})</span>
+    <span class="n">Li</span> <span class="o">=</span> <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">TR</span><span class="o">.</span><span class="n">D</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">L</span><span class="p">[</span><span class="n">TR</span><span class="o">.</span><span class="n">D</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">Li</span>
+        <span class="k">return</span>
+    <span class="k">else</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">TR</span><span class="o">.</span><span class="n">C</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">Li</span> <span class="o">&gt;=</span> <span class="n">L</span><span class="p">[</span><span class="n">TR</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">D</span><span class="p">]</span>
+                <span class="n">entree!</span><span class="p">(</span><span class="n">TR</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">i</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
+                <span class="n">P</span> <span class="o">=</span> <span class="n">j</span>
+            <span class="k">else</span>
+                <span class="k">break</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+        <span class="n">TR</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">insert!</span><span class="p">(</span><span class="n">TR</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">P</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">Tree</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> 
+        <span class="c">#vcat(TR.C[1:P], Tree{Int}[,], TR.C[(P+1):length(TR.C)])</span>
+        <span class="k">return</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">longest_v2</span><span class="p">(</span><span class="n">L</span><span class="o">::</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">Int</span><span class="p">})</span>
+    <span class="c"># init</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>  <span class="n">entree!</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>  <span class="k">end</span>
+    <span class="c"># DFS to collect the longest non-descending subseq</span>
+    <span class="n">map</span><span class="p">(</span><span class="n">x</span><span class="o">-&gt;</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">],</span> <span class="n">dfs_collect_n</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">depth</span><span class="p">(</span><span class="n">T</span><span class="p">),</span><span class="n">T</span><span class="p">))</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>longest_v2 (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="graph-equivalent">
+<h2>Graph equivalent<a class="headerlink" href="#graph-equivalent" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Define the adjacent matrix<br />
+<code class="docutils literal notranslate"> <span class="pre">M[i,j]</span> <span class="pre">=</span> <span class="pre">L[i]&lt;=L[j]</span> <span class="pre">&amp;&amp;</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">j</span></code></p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">adj</span><span class="p">(</span><span class="n">L</span><span class="p">)</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="o">&lt;</span><span class="n">j</span> <span class="o">&amp;&amp;</span> <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">L</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">:</span><span class="n">length</span><span class="p">(</span><span class="n">L</span><span class="p">),</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">:</span><span class="n">length</span><span class="p">(</span><span class="n">L</span><span class="p">)]</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>of a graph with <span class="math notranslate nohighlight">\(N\)</span> nodes labelled by <span class="math notranslate nohighlight">\(V_i \; (i=1...N)\)</span>.
+Then we have a directed acyclic graph (DAG).
+A monotonic subsequence <code class="docutils literal notranslate"><span class="pre">L[i],</span> <span class="pre">L[j],</span> <span class="pre">L[k]</span></code> implies directed edges
+from <span class="math notranslate nohighlight">\(V_i\)</span> to <span class="math notranslate nohighlight">\(V_j\)</span> and then to <span class="math notranslate nohighlight">\(V_k\)</span>. The longest monotonic
+subsequence is equivalent to the longest path in the DAG.</p>
+</div></blockquote>
+<blockquote>
+<div><p>The adjacent matrix of a DAG must be nilpotent. [1] Therefore, we can generate all the monotonic subsequences by computing <span class="math notranslate nohighlight">\(M^k\)</span> for <span class="math notranslate nohighlight">\(k=1,2,...N\)</span> until all entries vanishes. This is an algorithm at worst case <span class="math notranslate nohighlight">\(O(N^4)\)</span>.</p>
+</div></blockquote>
+<blockquote>
+<div><p>Consider the following example.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">SparseArrays</span>
+
+<span class="nd">@inline</span> <span class="n">conn</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">)</span> <span class="o">=</span> <span class="n">findall</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="o">:</span><span class="p">]</span><span class="o">.*</span><span class="n">B</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">.!=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nd">@inline</span> <span class="n">adj</span><span class="p">(</span><span class="n">L</span><span class="p">)</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">[(</span><span class="n">i</span><span class="o">&lt;</span><span class="n">j</span> <span class="o">&amp;&amp;</span> <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">L</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>  
+                     <span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">L</span><span class="p">),</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">L</span><span class="p">)]</span>
+
+<span class="k">function</span> <span class="n">longest_v3</span><span class="p">(</span><span class="n">A</span><span class="o">::</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">Int</span><span class="p">})</span>
+    <span class="c"># case o A = [1]</span>
+    <span class="n">length</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span>  <span class="o">&amp;&amp;</span>  <span class="k">return</span> <span class="p">[</span><span class="kt">Int</span><span class="p">[</span><span class="mi">1</span><span class="p">,]]</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">sparse</span><span class="p">(</span><span class="n">adj</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+    <span class="n">Mn</span> <span class="o">=</span> <span class="kt">SparseMatrixCSC</span><span class="p">{</span><span class="kt">Int64</span><span class="p">,</span> <span class="kt">Int64</span><span class="p">}[</span><span class="n">M</span><span class="p">,]</span>
+    <span class="k">while</span> <span class="n">sum</span><span class="p">(</span><span class="n">Mn</span><span class="p">[</span><span class="k">end</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">0</span>
+        <span class="n">push!</span><span class="p">(</span><span class="n">Mn</span><span class="p">,</span> <span class="n">Mn</span><span class="p">[</span><span class="k">end</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="c"># case of A = [3,2,1]</span>
+    <span class="n">length</span><span class="p">(</span><span class="n">Mn</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span>  <span class="o">&amp;&amp;</span>  <span class="k">return</span> <span class="p">[</span><span class="kt">Int</span><span class="p">[</span><span class="n">k</span><span class="p">,]</span> <span class="k">for</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">A</span><span class="p">)]</span>
+    <span class="c"># case of longest length &gt; 1</span>
+    <span class="n">R</span><span class="p">,</span><span class="n">C</span><span class="p">,</span><span class="n">V</span> <span class="o">=</span> <span class="n">findnz</span><span class="p">(</span><span class="n">Mn</span><span class="p">[</span><span class="k">end</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">subseqs</span> <span class="o">=</span> <span class="kt">Vector</span><span class="p">{</span><span class="kt">Int</span><span class="p">}[</span><span class="kt">Int</span><span class="p">[</span><span class="n">r</span><span class="p">,</span><span class="n">c</span><span class="p">,]</span> <span class="k">for</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">c</span><span class="p">)</span> <span class="k">in</span> <span class="n">zip</span><span class="p">(</span><span class="n">R</span><span class="p">,</span><span class="n">C</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">Mn</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="o">:-</span><span class="mi">1</span><span class="o">:</span><span class="mi">1</span>
+        <span class="n">subseqs1</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">seq</span> <span class="k">in</span> <span class="n">subseqs</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="k">in</span> <span class="n">conn</span><span class="p">(</span><span class="n">seq</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">seq</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">Mn</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">M</span><span class="p">)</span>
+                <span class="n">push!</span><span class="p">(</span><span class="n">subseqs1</span><span class="p">,</span> <span class="kt">Int</span><span class="p">[</span><span class="n">seq</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">p</span><span class="p">,</span><span class="n">seq</span><span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">]</span><span class="o">...</span><span class="p">])</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+        <span class="n">subseqs</span> <span class="o">=</span> <span class="n">subseqs1</span>
+    <span class="k">end</span>
+    <span class="n">subseqs</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>longest_v3 (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="conclusion-after-running-benchmark">
+<h2>Conclusion (after running benchmark)<a class="headerlink" href="#conclusion-after-running-benchmark" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>The graph version <code class="docutils literal notranslate"><span class="pre">longest_v3</span></code> is by far the fastest implementation.</p></li>
+</ul>
+</div></blockquote>
+<blockquote>
+<div><ul class="simple">
+<li><p>The tree data structure in the online version <code class="docutils literal notranslate"><span class="pre">longest_v2</span></code> is optimizable.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="verification-and-benchmark">
+<h2>Verification and benchmark<a class="headerlink" href="#verification-and-benchmark" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># verification</span>
+<span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">200</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">2</span><span class="o">:</span><span class="mi">100</span><span class="p">))</span>
+    <span class="nd">@assert</span> <span class="n">sort</span><span class="p">(</span><span class="n">longest_v1</span><span class="p">(</span><span class="n">A</span><span class="p">))</span><span class="o">==</span><span class="n">sort</span><span class="p">(</span><span class="n">longest_v2</span><span class="p">(</span><span class="n">A</span><span class="p">))</span><span class="o">==</span><span class="n">sort</span><span class="p">(</span><span class="n">longest_v3</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">BenchmarkTools</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="benchmark-group-1">
+<h3>Benchmark group 1<a class="headerlink" href="#benchmark-group-1" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b1</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">longest_v1</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">A</span><span class="o">=</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">100</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="o">:</span><span class="mi">50</span><span class="p">)))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 888 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan"> 25.472 μs</span> … <span class=" -Color -Color-Magenta">127.256 ms</span>  ┊ GC (min … max): 0.00% … 8.62%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">975.744 μs               </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">  5.530 ms</span> ± <span class=" -Color -Color-Green"> 12.440 ms</span>  ┊ GC (mean ± σ):  7.26% ± 8.90%
+
+  █<span class=" -Color -Color-Blue">▄</span>▄▂▁<span class=" -Color -Color-Green">▁</span>▁ ▁                                                      
+  █<span class=" -Color -Color-Blue">█</span>███<span class=" -Color -Color-Green">█</span>████████▇▇▆▅▆▁▆▆▆▁▁▅▄▅▆▄▅▅▄▄▅▄▄▅▁▁▄▁▁▁▅▁▁▁▁▁▄▁▅▁▁▄▁▁▁▁▄ ▇
+  25.5 μs       Histogram: <span class=" -Color -Color-Bold">log(</span>frequency<span class=" -Color -Color-Bold">)</span> by time       66.3 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">10.64 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">191</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b2</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">longest_v2</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">A</span><span class="o">=</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">100</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="o">:</span><span class="mi">50</span><span class="p">)))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 544 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan">16.566 μs</span> … <span class=" -Color -Color-Magenta">239.413 ms</span>  ┊ GC (min … max):  0.00% … 36.21%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue"> 1.346 ms               </span>┊ GC (median):     0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green"> 9.224 ms</span> ± <span class=" -Color -Color-Green"> 22.723 ms</span>  ┊ GC (mean ± σ):  16.75% ± 11.15%
+
+  █<span class=" -Color -Color-Blue">▄</span>▂▁▁<span class=" -Color -Color-Green"> </span>                                                        
+  █<span class=" -Color -Color-Blue">█</span>███<span class=" -Color -Color-Green">█</span>▇▅▇▆▇▇▆▇▆▁▅▅▆▅▁▅▅▄▁▄▅▁▁▄▄▁▅▅▄▄▄▅▄▁▄▄▁▅▁▁▄▄▁▄▁▄▁▁▁▁▁▁▁▄ ▆
+  16.6 μs       Histogram: <span class=" -Color -Color-Bold">log(</span>frequency<span class=" -Color -Color-Bold">)</span> by time       113 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">11.52 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">259</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b3</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">longest_v3</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">A</span><span class="o">=</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">100</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="o">:</span><span class="mi">50</span><span class="p">)))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b3</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 6606 samples with 8 evaluations.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan"> 1.526 μs</span> … <span class=" -Color -Color-Magenta">  1.721 ms</span>  ┊ GC (min … max): 0.00% …  0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">58.361 μs               </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">94.253 μs</span> ± <span class=" -Color -Color-Green">118.153 μs</span>  ┊ GC (mean ± σ):  7.78% ± 10.95%
+
+  ▂█▆▃▃ <span class=" -Color -Color-Blue"> </span>   <span class=" -Color -Color-Green"> </span>                                                   
+  ██████<span class=" -Color -Color-Blue">█</span>█▇▆<span class=" -Color -Color-Green">▆</span>▅▄▃▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ ▂
+  1.53 μs         Histogram: frequency by time          579 μs <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">3.00 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">22</span>.
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="benchmark-group-2">
+<h3>Benchmark group 2<a class="headerlink" href="#benchmark-group-2" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b1</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">longest_v1</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">A</span><span class="o">=</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">1000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="o">:</span><span class="mi">50</span><span class="p">)))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 1056 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan"> 21.813 μs</span> … <span class=" -Color -Color-Magenta">137.290 ms</span>  ┊ GC (min … max): 0.00% … 9.14%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">941.388 μs               </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">  4.732 ms</span> ± <span class=" -Color -Color-Green"> 10.378 ms</span>  ┊ GC (mean ± σ):  5.31% ± 8.05%
+
+  █<span class=" -Color -Color-Blue">▄</span>▃▃▂▁<span class=" -Color -Color-Green">▁</span>▂▁▁                                                     
+  █<span class=" -Color -Color-Blue">█</span>████<span class=" -Color -Color-Green">█</span>████▇▇█▄▇▇▆▆▆▇▆▄▅▅▆▆▄▅▄▁▄▆▅▅▄▅▄▁▁▄▄▄▄▄▄▁▄▁▄▁▄▁▁▄▁▄▄▁▁▄ ▇
+  21.8 μs       Histogram: <span class=" -Color -Color-Bold">log(</span>frequency<span class=" -Color -Color-Bold">)</span> by time       48.3 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">10.97 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">206</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b2</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">longest_v2</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">A</span><span class="o">=</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">1000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="o">:</span><span class="mi">50</span><span class="p">)))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 548 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan">16.341 μs</span> … <span class=" -Color -Color-Magenta">223.511 ms</span>  ┊ GC (min … max):  0.00% … 21.99%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue"> 1.745 ms               </span>┊ GC (median):     0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green"> 9.160 ms</span> ± <span class=" -Color -Color-Green"> 20.696 ms</span>  ┊ GC (mean ± σ):  16.39% ± 11.66%
+
+  █<span class=" -Color -Color-Blue">▄</span>▃▂▂▂<span class=" -Color -Color-Green">▁</span>                                                       
+  █<span class=" -Color -Color-Blue">█</span>████<span class=" -Color -Color-Green">█</span>████▅▇▇▆▇▅▇▅▁▇▁▅▅▅▅▅▁▅▁▄▁▁▁▁▄▄▅▄▁▄▄▁▁▁▄▁▄▄▄▁▄▄▅▄▄▄▄▁▅ ▇
+  16.3 μs       Histogram: <span class=" -Color -Color-Bold">log(</span>frequency<span class=" -Color -Color-Bold">)</span> by time      84.9 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">10.89 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">245</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b3</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">longest_v3</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">A</span><span class="o">=</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">1000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="o">:</span><span class="mi">50</span><span class="p">)))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b3</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 8677 samples with 6 evaluations.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan"> 3.104 μs</span> … <span class=" -Color -Color-Magenta">  3.148 ms</span>  ┊ GC (min … max): 0.00% …  9.37%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">58.573 μs               </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">95.559 μs</span> ± <span class=" -Color -Color-Green">126.781 μs</span>  ┊ GC (mean ± σ):  7.64% ± 10.26%
+
+  ▄█▅▄▂▁<span class=" -Color -Color-Blue"> </span>  <span class=" -Color -Color-Green"> </span>                                                    
+  ██████<span class=" -Color -Color-Blue">█</span>▇▆<span class=" -Color -Color-Green">▆</span>▅▅▄▃▃▃▃▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ ▂
+  3.1 μs          Histogram: frequency by time          600 μs <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">4.72 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">46</span>.
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="benchmark-group-3">
+<h3>Benchmark group 3<a class="headerlink" href="#benchmark-group-3" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b1</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">longest_v1</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">A</span><span class="o">=</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">1000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">50</span><span class="o">:</span><span class="mi">100</span><span class="p">)))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="ne">InterruptException</span>:
+
+<span class="ne">Stacktrace</span>:
+  <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="n">Array</span>
+    <span class="o">@</span> <span class="o">./</span><span class="n">boot</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">457</span> <span class="p">[</span><span class="n">inlined</span><span class="p">]</span>
+  <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="n">getindex</span><span class="p">(::</span><span class="n">Type</span><span class="p">{</span><span class="n">Int64</span><span class="p">},</span> <span class="p">::</span><span class="n">Int64</span><span class="p">,</span> <span class="p">::</span><span class="n">Int64</span><span class="p">,</span> <span class="p">::</span><span class="n">Int64</span><span class="p">,</span> <span class="p">::</span><span class="n">Int64</span><span class="p">,</span> <span class="p">::</span><span class="n">Vararg</span><span class="p">{</span><span class="n">Int64</span><span class="p">})</span>
+    <span class="o">@</span> <span class="n">Base</span> <span class="o">./</span><span class="n">array</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">404</span>
+  <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="c1">#1</span>
+    <span class="o">@</span> <span class="o">./</span><span class="n">none</span><span class="p">:</span><span class="mi">0</span> <span class="p">[</span><span class="n">inlined</span><span class="p">]</span>
+  <span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="n">iterate</span>
+    <span class="o">@</span> <span class="o">./</span><span class="n">generator</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">47</span> <span class="p">[</span><span class="n">inlined</span><span class="p">]</span>
+  <span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="n">grow_to</span><span class="o">!(</span>dest::Vector<span class="o">{</span>Vector<span class="o">{</span>Int64<span class="o">}}</span>, itr::Base.Generator<span class="o">{</span>Base.Iterators.Filter<span class="o">{</span>var<span class="s2">&quot;#2#5&quot;</span><span class="o">{</span>Int64, Vector<span class="o">{</span>Int64<span class="o">}}</span>, Vector<span class="o">{</span>Vector<span class="o">{</span>Int64<span class="o">}}}</span>, var<span class="s2">&quot;#1#4&quot;</span><span class="o">{</span>Int64<span class="o">}}</span>, st::Int64<span class="o">)</span>
+    <span class="o">@</span> <span class="n">Base</span> <span class="o">./</span><span class="n">array</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">828</span>
+  <span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="n">grow_to</span><span class="o">!(</span>dest::Vector<span class="o">{</span>Any<span class="o">}</span>, itr::Base.Generator<span class="o">{</span>Base.Iterators.Filter<span class="o">{</span>var<span class="s2">&quot;#2#5&quot;</span><span class="o">{</span>Int64, Vector<span class="o">{</span>Int64<span class="o">}}</span>, Vector<span class="o">{</span>Vector<span class="o">{</span>Int64<span class="o">}}}</span>, var<span class="s2">&quot;#1#4&quot;</span><span class="o">{</span>Int64<span class="o">}})</span>
+    <span class="o">@</span> <span class="n">Base</span> <span class="o">./</span><span class="n">array</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">801</span>
+  <span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="n">collect</span><span class="p">(</span><span class="n">itr</span><span class="p">::</span><span class="n">Base</span><span class="o">.</span><span class="n">Generator</span><span class="p">{</span><span class="n">Base</span><span class="o">.</span><span class="n">Iterators</span><span class="o">.</span><span class="n">Filter</span><span class="p">{</span><span class="n">var</span><span class="s2">&quot;#2#5&quot;</span><span class="p">{</span><span class="n">Int64</span><span class="p">,</span> <span class="n">Vector</span><span class="p">{</span><span class="n">Int64</span><span class="p">}},</span> <span class="n">Vector</span><span class="p">{</span><span class="n">Vector</span><span class="p">{</span><span class="n">Int64</span><span class="p">}}},</span> <span class="n">var</span><span class="s2">&quot;#1#4&quot;</span><span class="p">{</span><span class="n">Int64</span><span class="p">}})</span>
+    <span class="o">@</span> <span class="n">Base</span> <span class="o">./</span><span class="n">array</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">721</span>
+  <span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="n">mono</span><span class="p">(</span><span class="n">i</span><span class="p">::</span><span class="n">Int64</span><span class="p">,</span> <span class="n">L</span><span class="p">::</span><span class="n">Vector</span><span class="p">{</span><span class="n">Int64</span><span class="p">})</span>
+    <span class="o">@</span> <span class="n">Main</span> <span class="o">./</span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="mi">6</span>
+  <span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="n">mono</span><span class="p">(</span><span class="n">i</span><span class="p">::</span><span class="n">Int64</span><span class="p">,</span> <span class="n">L</span><span class="p">::</span><span class="n">Vector</span><span class="p">{</span><span class="n">Int64</span><span class="p">})</span> <span class="p">(</span><span class="n">repeats</span> <span class="mi">29</span> <span class="n">times</span><span class="p">)</span>
+    <span class="o">@</span> <span class="n">Main</span> <span class="o">./</span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="mi">5</span>
+ <span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="n">longest_v1</span><span class="p">(</span><span class="n">L</span><span class="p">::</span><span class="n">Vector</span><span class="p">{</span><span class="n">Int64</span><span class="p">})</span>
+    <span class="o">@</span> <span class="n">Main</span> <span class="o">./</span><span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="mi">13</span>
+ <span class="p">[</span><span class="mi">11</span><span class="p">]</span> <span class="n">var</span><span class="s2">&quot;##core#309&quot;</span><span class="p">(</span><span class="n">A</span><span class="p">::</span><span class="n">Vector</span><span class="p">{</span><span class="n">Int64</span><span class="p">})</span>
+    <span class="o">@</span> <span class="n">Main</span> <span class="o">~/.</span><span class="n">julia</span><span class="o">/</span><span class="n">packages</span><span class="o">/</span><span class="n">BenchmarkTools</span><span class="o">/</span><span class="mi">7</span><span class="n">xSXH</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">execution</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">489</span>
+ <span class="p">[</span><span class="mi">12</span><span class="p">]</span> <span class="n">var</span><span class="s2">&quot;##sample#310&quot;</span><span class="p">(::</span><span class="n">Tuple</span><span class="p">{},</span> <span class="n">__params</span><span class="p">::</span><span class="n">BenchmarkTools</span><span class="o">.</span><span class="n">Parameters</span><span class="p">)</span>
+    <span class="o">@</span> <span class="n">Main</span> <span class="o">~/.</span><span class="n">julia</span><span class="o">/</span><span class="n">packages</span><span class="o">/</span><span class="n">BenchmarkTools</span><span class="o">/</span><span class="mi">7</span><span class="n">xSXH</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">execution</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">495</span>
+ <span class="p">[</span><span class="mi">13</span><span class="p">]</span> <span class="n">_lineartrial</span><span class="p">(</span><span class="n">b</span><span class="p">::</span><span class="n">BenchmarkTools</span><span class="o">.</span><span class="n">Benchmark</span><span class="p">,</span> <span class="n">p</span><span class="p">::</span><span class="n">BenchmarkTools</span><span class="o">.</span><span class="n">Parameters</span><span class="p">;</span> <span class="n">maxevals</span><span class="p">::</span><span class="n">Int64</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">::</span><span class="n">Base</span><span class="o">.</span><span class="n">Pairs</span><span class="p">{</span><span class="n">Symbol</span><span class="p">,</span> <span class="n">Union</span><span class="p">{},</span> <span class="n">Tuple</span><span class="p">{},</span> <span class="n">NamedTuple</span><span class="p">{(),</span> <span class="n">Tuple</span><span class="p">{}}})</span>
+    <span class="o">@</span> <span class="n">BenchmarkTools</span> <span class="o">~/.</span><span class="n">julia</span><span class="o">/</span><span class="n">packages</span><span class="o">/</span><span class="n">BenchmarkTools</span><span class="o">/</span><span class="mi">7</span><span class="n">xSXH</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">execution</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">161</span>
+ <span class="p">[</span><span class="mi">14</span><span class="p">]</span> <span class="n">_lineartrial</span><span class="p">(</span><span class="n">b</span><span class="p">::</span><span class="n">BenchmarkTools</span><span class="o">.</span><span class="n">Benchmark</span><span class="p">,</span> <span class="n">p</span><span class="p">::</span><span class="n">BenchmarkTools</span><span class="o">.</span><span class="n">Parameters</span><span class="p">)</span>
+    <span class="o">@</span> <span class="n">BenchmarkTools</span> <span class="o">~/.</span><span class="n">julia</span><span class="o">/</span><span class="n">packages</span><span class="o">/</span><span class="n">BenchmarkTools</span><span class="o">/</span><span class="mi">7</span><span class="n">xSXH</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">execution</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">153</span>
+ <span class="p">[</span><span class="mi">15</span><span class="p">]</span> <span class="c1">#invokelatest#2</span>
+    <span class="o">@</span> <span class="o">./</span><span class="n">essentials</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">716</span> <span class="p">[</span><span class="n">inlined</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">invokelatest</span>
+    <span class="o">@</span> <span class="o">./</span><span class="n">essentials</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">714</span> <span class="p">[</span><span class="n">inlined</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">17</span><span class="p">]</span> <span class="c1">#lineartrial#46</span>
+    <span class="o">@</span> <span class="o">~/.</span><span class="n">julia</span><span class="o">/</span><span class="n">packages</span><span class="o">/</span><span class="n">BenchmarkTools</span><span class="o">/</span><span class="mi">7</span><span class="n">xSXH</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">execution</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">35</span> <span class="p">[</span><span class="n">inlined</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">18</span><span class="p">]</span> <span class="n">lineartrial</span>
+    <span class="o">@</span> <span class="o">~/.</span><span class="n">julia</span><span class="o">/</span><span class="n">packages</span><span class="o">/</span><span class="n">BenchmarkTools</span><span class="o">/</span><span class="mi">7</span><span class="n">xSXH</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">execution</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">35</span> <span class="p">[</span><span class="n">inlined</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">19</span><span class="p">]</span> <span class="n">tune</span><span class="o">!(</span>b::BenchmarkTools.Benchmark, p::BenchmarkTools.Parameters<span class="p">;</span> progressid::Nothing, nleaves::Float64, ndone::Float64, verbose::Bool, pad::String, kwargs::Base.Pairs<span class="o">{</span>Symbol, Union<span class="o">{}</span>, Tuple<span class="o">{}</span>, NamedTuple<span class="o">{()</span>, Tuple<span class="o">{}}})</span>
+    <span class="o">@</span> <span class="n">BenchmarkTools</span> <span class="o">~/.</span><span class="n">julia</span><span class="o">/</span><span class="n">packages</span><span class="o">/</span><span class="n">BenchmarkTools</span><span class="o">/</span><span class="mi">7</span><span class="n">xSXH</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">execution</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">251</span>
+ <span class="p">[</span><span class="mi">20</span><span class="p">]</span> <span class="n">tune</span><span class="o">!</span> <span class="o">(</span>repeats <span class="m">2</span> <span class="nb">times</span><span class="o">)</span>
+    <span class="o">@</span> <span class="o">~/.</span><span class="n">julia</span><span class="o">/</span><span class="n">packages</span><span class="o">/</span><span class="n">BenchmarkTools</span><span class="o">/</span><span class="mi">7</span><span class="n">xSXH</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">execution</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">250</span> <span class="p">[</span><span class="n">inlined</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">21</span><span class="p">]</span> <span class="n">top</span><span class="o">-</span><span class="n">level</span> <span class="n">scope</span>
+    <span class="o">@</span> <span class="n">In</span><span class="p">[</span><span class="mi">12</span><span class="p">]:</span><span class="mi">3</span>
+ <span class="p">[</span><span class="mi">22</span><span class="p">]</span> <span class="nb">eval</span>
+    <span class="o">@</span> <span class="o">./</span><span class="n">boot</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">373</span> <span class="p">[</span><span class="n">inlined</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">23</span><span class="p">]</span> <span class="n">include_string</span><span class="p">(</span><span class="n">mapexpr</span><span class="p">::</span><span class="n">typeof</span><span class="p">(</span><span class="n">REPL</span><span class="o">.</span><span class="n">softscope</span><span class="p">),</span> <span class="n">mod</span><span class="p">::</span><span class="n">Module</span><span class="p">,</span> <span class="n">code</span><span class="p">::</span><span class="n">String</span><span class="p">,</span> <span class="n">filename</span><span class="p">::</span><span class="n">String</span><span class="p">)</span>
+    <span class="o">@</span> <span class="n">Base</span> <span class="o">./</span><span class="n">loading</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">1196</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b2</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">longest_v2</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">A</span><span class="o">=</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">1000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">50</span><span class="o">:</span><span class="mi">100</span><span class="p">)))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 10 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan"> 12.149 ms</span> … <span class=" -Color -Color-Magenta">3.860 s</span>  ┊ GC (min … max):  0.00% … 33.41%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">581.151 ms            </span>┊ GC (median):    27.80%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">854.749 ms</span> ± <span class=" -Color -Color-Green">1.139 s</span>  ┊ GC (mean ± σ):  34.64% ± 13.47%
+
+  █ █   <span class=" -Color -Color-Blue">▁</span>    ▁▁<span class=" -Color -Color-Green">▁</span>     ▁                                     ▁  
+  █▁█▁▁▁<span class=" -Color -Color-Blue">█</span>▁▁▁▁██<span class=" -Color -Color-Green">█</span>▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  12.1 ms        Histogram: frequency by time         3.86 s <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">9.94 MiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">235853</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b3</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">longest_v3</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">A</span><span class="o">=</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">1000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">50</span><span class="o">:</span><span class="mi">100</span><span class="p">)))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b3</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 5609 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan"> 89.073 μs</span> … <span class=" -Color -Color-Magenta">74.682 ms</span>  ┊ GC (min … max): 0.00% …  4.81%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">514.150 μs              </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">886.637 μs</span> ± <span class=" -Color -Color-Green"> 1.852 ms</span>  ┊ GC (mean ± σ):  6.99% ± 11.27%
+
+  ▂██▅<span class=" -Color -Color-Blue">▄</span>▂  <span class=" -Color -Color-Green"> </span>                                                     
+  ████<span class=" -Color -Color-Blue">█</span>█▇▆<span class=" -Color -Color-Green">▅</span>▅▄▄▃▃▃▃▃▃▃▃▃▂▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▂▂▁▂▂▁▂▂▂ ▃
+  89.1 μs         Histogram: frequency by time         6.31 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">222.64 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">279</span>.
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "julia-1.7"
+        },
+        kernelOptions: {
+            kernelName: "julia-1.7",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'julia-1.7'</script>
+
+              </div>
+              
+            
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            
+        </div>
+    </div>
+    <footer class="footer">
+  <p>
+    
+      By The Jupyter Book community<br/>
+    
+        &copy; Copyright 2021.<br/>
+  </p>
+</footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+
+  </body>
+</html>
