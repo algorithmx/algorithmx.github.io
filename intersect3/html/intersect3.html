@@ -1,0 +1,937 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The intersect3 problem &#8212; My Jupyter Book</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet">
+  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-2 bd-sidebar site-navigation show single-page" id="site-navigation">
+    
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/intersect3.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/executablebooks/jupyter-book/master?urlpath=tree/intersect3.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#statement">
+   Statement
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#background">
+   Background
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#convenient-implementation">
+   Convenient implementation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#counting-when-maximum-of-a-b-c-is-known">
+   Counting, when maximum of A,B,C is known
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#exploit-the-orderedness-of-integer-set">
+   Exploit the orderedness of integer set
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conclusion">
+   Conclusion
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>The intersect3 problem</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#statement">
+   Statement
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#background">
+   Background
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#convenient-implementation">
+   Convenient implementation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#counting-when-maximum-of-a-b-c-is-known">
+   Counting, when maximum of A,B,C is known
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#exploit-the-orderedness-of-integer-set">
+   Exploit the orderedness of integer set
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conclusion">
+   Conclusion
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
+              <div>
+                
+  <div class="tex2jax_ignore mathjax_ignore section" id="the-intersect3-problem">
+<h1>The intersect3 problem<a class="headerlink" href="#the-intersect3-problem" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="statement">
+<h2>Statement<a class="headerlink" href="#statement" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Compute the intersection of <strong>three</strong> sets of (distinguished) positive integers.</p>
+</div></blockquote>
+<blockquote>
+<div><p>For a typical problem, each of the three sets contains less than 1000 integers. All the integers are less than <span class="math notranslate nohighlight">\(10^8\)</span>.</p>
+</div></blockquote>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>The problem comes from the implementation of k-nearest-neighbor algorithm for a set of three-dimensional mesh points of size N. Such algorithm is a key component in the 3D mesh generation algorithm for finite element analysis. Naive implementations are usually very slow, because to find the k-nearest neighbors for a mesh point, the  Euclidean distances to all the N-1 neighbors are calculated.</p>
+</div></blockquote>
+<blockquote>
+<div><p>The simplest improvement is to draw a cube at one mesh point and select all the mesh points within the cube. If the density of mesh points are uniform, then the number of points inside the cube would be enough for the k-nearest neighbors. The Euclidean distance computation and sorting can be limited within this cube to speed up the k-nearest neighbor search. For a 3D mesh of <span class="math notranslate nohighlight">\(N\)</span> points,  drawing a cube would reduce the number of distance calculations by a factor of <span class="math notranslate nohighlight">\(O(N/m)\)</span> where <span class="math notranslate nohighlight">\(m\)</span> is the number of mesh point inside the cube. That is a great improvement because the cube typically contains no more than 1000 mesh points.</p>
+</div></blockquote>
+</div>
+<hr class="docutils" />
+<div class="section" id="convenient-implementation">
+<h2>Convenient implementation<a class="headerlink" href="#convenient-implementation" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Use the build-in Julia funcition <code class="docutils literal notranslate"><span class="pre">intersect</span></code>. This function is actually <a class="reference external" href="https://github.com/JuliaLang/julia/issues/13675">not trivial at all</a>. A quick look at the implementation of this function in the file <code class="docutils literal notranslate"><span class="pre">array.jl:2625</span></code> and <code class="docutils literal notranslate"><span class="pre">abstractset.jl:128</span></code> (Julia Version 1.7.2 (2022-02-06)), I found that this function rely on the <code class="docutils literal notranslate"><span class="pre">Set</span></code> data structure.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">intersect3_v1</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">)</span> <span class="o">=</span> <span class="n">intersect</span><span class="p">(</span><span class="n">intersect</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">),</span><span class="n">C</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>intersect3_v1 (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+</div>
+<blockquote>
+<div><p>There are discussions
+<a class="reference external" href="https://discourse.julialang.org/t/intersect-is-slow-for-large-arrays/442/3">here</a>
+and
+<a class="reference external" href="https://github.com/JuliaLang/julia/issues/13675">here</a>
+pointing out the performance bug of this build-in function.
+Based on the discussions there, and the source code mentioned earlier,
+I sort the length of three sets and put the smallest set to the first argument.
+Benchmark results show that it indeed improves the performance.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">intersect3_v2</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>
+    <span class="n">lenA</span><span class="p">,</span><span class="n">lenB</span><span class="p">,</span><span class="n">lenC</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">A</span><span class="p">),</span><span class="n">length</span><span class="p">(</span><span class="n">B</span><span class="p">),</span><span class="n">length</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lenA</span> <span class="o">&lt;=</span> <span class="n">lenB</span>
+        <span class="k">if</span> <span class="n">lenB</span> <span class="o">&lt;=</span> <span class="n">lenC</span>
+            <span class="k">return</span> <span class="n">intersect</span><span class="p">(</span><span class="n">intersect</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">),</span><span class="n">C</span><span class="p">)</span>
+        <span class="k">else</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">lenA</span> <span class="o">&lt;=</span> <span class="n">lenC</span> <span class="o">?</span> <span class="n">intersect</span><span class="p">(</span><span class="n">intersect</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">C</span><span class="p">),</span><span class="n">B</span><span class="p">)</span> 
+                                 <span class="o">:</span> <span class="n">intersect</span><span class="p">(</span><span class="n">intersect</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="n">A</span><span class="p">),</span><span class="n">B</span><span class="p">))</span>
+        <span class="k">end</span>
+    <span class="k">else</span> <span class="c"># lenB &lt; lenA</span>
+        <span class="k">if</span> <span class="n">lenA</span> <span class="o">&lt;=</span> <span class="n">lenC</span>
+            <span class="k">return</span> <span class="n">intersect</span><span class="p">(</span><span class="n">intersect</span><span class="p">(</span><span class="n">B</span><span class="p">,</span><span class="n">A</span><span class="p">),</span><span class="n">C</span><span class="p">)</span>
+        <span class="k">else</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">lenB</span> <span class="o">&lt;=</span> <span class="n">lenC</span> <span class="o">?</span> <span class="n">intersect</span><span class="p">(</span><span class="n">intersect</span><span class="p">(</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">),</span><span class="n">A</span><span class="p">)</span>
+                                 <span class="o">:</span> <span class="n">intersect</span><span class="p">(</span><span class="n">intersect</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="n">B</span><span class="p">),</span><span class="n">A</span><span class="p">))</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>intersect3_v2 (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">BenchmarkTools</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b1</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v1</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)));</span> 
+    <span class="n">B</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)));</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 495 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan">384.902 μs</span> … <span class=" -Color -Color-Magenta">9.377 ms</span>  ┊ GC (min … max): 0.00% … 3.67%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">  4.605 ms             </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">  4.588 ms</span> ± <span class=" -Color -Color-Green">2.028 ms</span>  ┊ GC (mean ± σ):  0.59% ± 2.48%
+
+         ▁▁▂ ▂▄▂▁▁▁▅   ▂  ▁▁▄▄▃<span class=" -Color -Color-Green">█</span><span class=" -Color -Color-Blue">▄</span>▄▅▁▁▂  ▁▅▁ ▁▃  ▁ ▃▁▁          
+  ▃▁▃▆▇▄▃███▄████████▇▆████████<span class=" -Color -Color-Green">█</span><span class=" -Color -Color-Blue">█</span>█████▆▇███▇██▇██▆████▄▅▃▃▃▅▃ ▅
+  385 μs          Histogram: frequency by time        8.79 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">389.82 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">35</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b2</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v2</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)));</span> 
+    <span class="n">B</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)));</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 574 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan">121.046 μs</span> … <span class=" -Color -Color-Magenta">8.649 ms</span>  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">  3.001 ms             </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">  3.238 ms</span> ± <span class=" -Color -Color-Green">1.652 ms</span>  ┊ GC (mean ± σ):  0.82% ± 3.52%
+
+           ▂▄█▃ ▆▆▃▆▁▇▃▅<span class=" -Color -Color-Blue">▃</span>▂<span class=" -Color -Color-Green">▂</span>▆▂▆▃▄▂   ▁ ▂ ▁                      
+  ▃▃▃▄▆▇█▇██████████████<span class=" -Color -Color-Blue">█</span>█<span class=" -Color -Color-Green">█</span>███████▇▇█▇███▇▆▆▅▄▃▃▃▄▄▄▆▆▄▁▃▁▃▃▄ ▅
+  121 μs          Histogram: frequency by time        7.69 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">188.30 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">33</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<blockquote>
+<div><p>Later in this note, the benchmark results tell us that this is the fastest implementation.</p>
+</div></blockquote>
+</div>
+<hr class="docutils" />
+<div class="section" id="counting-when-maximum-of-a-b-c-is-known">
+<h2>Counting, when maximum of A,B,C is known<a class="headerlink" href="#counting-when-maximum-of-a-b-c-is-known" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>When we are guaranteed that <code class="docutils literal notranslate"><span class="pre">A,B,C</span></code> contain integers no greater than <code class="docutils literal notranslate"><span class="pre">N</span></code>, we may simply count the number of occurances of each element in these sets and select the elements that occur exactly three times. For small values of <code class="docutils literal notranslate"><span class="pre">N</span></code>, the following simple counting method may be faster.
+The following implementation <code class="docutils literal notranslate"><span class="pre">intersect3_v3</span></code> is simple enough but the complexity is <span class="math notranslate nohighlight">\(O(N)\)</span>.
+When the three sets <code class="docutils literal notranslate"><span class="pre">A,B,C</span></code> is small and sparse in the range <code class="docutils literal notranslate"><span class="pre">1:N</span></code>,
+the perfornamce is far from optimal.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">intersect3_v3</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">;</span> <span class="n">N</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">)</span>
+    <span class="n">cnt</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">cnt</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">.+=</span> <span class="mi">1</span>
+    <span class="n">cnt</span><span class="p">[</span><span class="n">B</span><span class="p">]</span> <span class="o">.+=</span> <span class="mi">1</span>
+    <span class="n">cnt</span><span class="p">[</span><span class="n">C</span><span class="p">]</span> <span class="o">.+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">findall</span><span class="p">(</span><span class="n">cnt</span><span class="o">.==</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>intersect3_v3 (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+</div>
+<blockquote>
+<div><p>The benchmark is done for large and small values of <code class="docutils literal notranslate"><span class="pre">N</span></code>. For large value <code class="docutils literal notranslate"><span class="pre">N=3000000</span></code>, I find</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b3</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v3</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">;</span><span class="n">N</span><span class="o">=</span><span class="mi">3000000</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)));</span> 
+    <span class="n">B</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)));</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b3</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 299 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan"> 3.623 ms</span> … <span class=" -Color -Color-Magenta">58.241 ms</span>  ┊ GC (min … max): 0.00% … 93.65%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">10.721 ms              </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">10.247 ms</span> ± <span class=" -Color -Color-Green"> 3.558 ms</span>  ┊ GC (mean ± σ):  4.67% ±  8.57%
+
+                                     ▂<span class=" -Color -Color-Green">▆</span>▃<span class=" -Color -Color-Blue">▄</span>█▄█▄                  
+  ▂▁▃▁▁▂▄▆▄▄▆▅▄▃▁▃▂▂▁▂▃▃▃▃▁▁▁▁▁▁▁▂▄███<span class=" -Color -Color-Green">█</span>█<span class=" -Color -Color-Blue">█</span>██████▅▄▃▁▁▁▁▂▁▁▁▂▁▂ ▃
+  3.62 ms         Histogram: frequency by time        14.6 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">23.39 MiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">12</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<blockquote>
+<div><p>For small value <code class="docutils literal notranslate"><span class="pre">N=10000</span></code>, the result for <code class="docutils literal notranslate"><span class="pre">intersect3_v3</span></code> is much better:</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b2</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v2</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">)));</span> 
+    <span class="n">B</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">)));</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 6243 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan"> 27.564 μs</span> … <span class=" -Color -Color-Magenta">  1.444 ms</span>  ┊ GC (min … max): 0.00% … 49.48%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">283.142 μs               </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">311.868 μs</span> ± <span class=" -Color -Color-Green">165.407 μs</span>  ┊ GC (mean ± σ):  1.22% ±  4.71%
+
+        ▁▃▆▆█▇▆▅▇█▇▄▄▅▆▄<span class=" -Color -Color-Blue">▄</span>▅▂<span class=" -Color -Color-Green">▂</span>▂▂▃▃▁▁▂ ▂▁▂                          
+  ▁▂▃▄▆▇████████████████<span class=" -Color -Color-Blue">█</span>██<span class=" -Color -Color-Green">█</span>█████████████▆▆▇▅▆▄▄▅▃▄▃▄▃▃▃▃▃▂▂▃▂▂ ▅
+  27.6 μs          Histogram: frequency by time          730 μs <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">21.68 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">33</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b3</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v3</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">;</span><span class="n">N</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">)));</span> 
+    <span class="n">B</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">)));</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b3</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 9363 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan">14.100 μs</span> … <span class=" -Color -Color-Magenta">811.811 μs</span>  ┊ GC (min … max): 0.00% … 87.50%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">40.759 μs               </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">44.257 μs</span> ± <span class=" -Color -Color-Green"> 50.822 μs</span>  ┊ GC (mean ± σ):  7.51% ±  6.25%
+
+                  ▂▂▄▄▅▆▆▇▆<span class=" -Color -Color-Blue">█</span>▇█▆<span class=" -Color -Color-Green">▇</span>▆▄▃▂▁                           
+  ▁▁▁▂▂▂▂▂▃▃▃▅▆▇███████████<span class=" -Color -Color-Blue">█</span>███<span class=" -Color -Color-Green">█</span>██████▆▅▄▃▃▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ ▄
+  14.1 μs         Histogram: frequency by time         77.4 μs <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">93.41 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">9</span>.
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="exploit-the-orderedness-of-integer-set">
+<h2>Exploit the orderedness of integer set<a class="headerlink" href="#exploit-the-orderedness-of-integer-set" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>The integer sets can be sorted. With sorted lists <span class="math notranslate nohighlight">\(A,B,C\)</span>,
+the intersection algorithm can be faster because,
+when we build the set <span class="math notranslate nohighlight">\(I = A\cap B\cap C\)</span>,
+each time we reject an element, say <span class="math notranslate nohighlight">\(a \in A\)</span>, from being added into <span class="math notranslate nohighlight">\(I\)</span>,
+we can jump in the the other two sorted lists to skip the elements
+which are smaller than <span class="math notranslate nohighlight">\(a\)</span>.</p>
+</div></blockquote>
+<blockquote>
+<div><p>The following version is a fakakta implementation based on this idea.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">bisec</span><span class="p">(</span><span class="n">a</span><span class="o">::</span><span class="kt">Int</span><span class="p">,</span> <span class="n">b</span><span class="o">::</span><span class="kt">Int</span><span class="p">,</span> <span class="n">x</span><span class="o">::</span><span class="kt">Int</span><span class="p">,</span> <span class="n">Lref</span><span class="o">::</span><span class="kt">Base</span><span class="o">.</span><span class="kt">RefValue</span><span class="p">{</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">Int64</span><span class="p">}})</span><span class="o">::</span><span class="kt">Int</span>
+    <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span>  <span class="n">Lref</span><span class="p">[][</span><span class="n">a</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="k">return</span> <span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">Lref</span><span class="p">[][</span><span class="n">b</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="k">return</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">b</span> <span class="o">-</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="mi">1</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">÷</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">Lref</span><span class="p">[][</span><span class="n">c</span><span class="p">]</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="k">else</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">x</span> <span class="o">&lt;</span> <span class="n">Lref</span><span class="p">[][</span><span class="n">b</span><span class="p">]</span> <span class="o">?</span> <span class="n">a</span> <span class="o">:</span> <span class="n">b</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>bisec (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">function</span> <span class="n">ord3!</span><span class="p">(</span><span class="n">ord</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> 
+                    <span class="o">?</span> <span class="p">(</span><span class="n">ord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">ord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span> <span class="n">ord</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mi">3</span><span class="p">;)</span>
+                    <span class="o">:</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> 
+                            <span class="o">?</span> <span class="p">(</span><span class="n">ord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">ord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span><span class="n">ord</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mi">2</span><span class="p">;)</span> 
+                            <span class="o">:</span> <span class="p">(</span><span class="n">ord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span><span class="n">ord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">ord</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mi">2</span><span class="p">;)))</span>
+    <span class="k">else</span> <span class="c"># s[2] &lt; s[1]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> 
+                    <span class="o">?</span> <span class="p">(</span><span class="n">ord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span><span class="n">ord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">ord</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mi">3</span><span class="p">;)</span>
+                    <span class="o">:</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> 
+                            <span class="o">?</span> <span class="p">(</span><span class="n">ord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span><span class="n">ord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span><span class="n">ord</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="p">;)</span> 
+                            <span class="o">:</span> <span class="p">(</span><span class="n">ord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span><span class="n">ord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span><span class="n">ord</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="p">;)))</span>
+    <span class="k">end</span>    
+<span class="k">end</span>
+
+<span class="n">allposv</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">v</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span>
+
+<span class="k">function</span> <span class="n">intersect3_v4</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>
+    <span class="c"># profiling shows that the major efforts are sorting</span>
+    <span class="n">As</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="n">Bs</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+    <span class="n">Cs</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+    <span class="c"># use reference to avoid allocations</span>
+    <span class="n">Lref</span> <span class="o">=</span> <span class="p">[</span><span class="kt">Ref</span><span class="p">(</span><span class="n">As</span><span class="p">),</span><span class="kt">Ref</span><span class="p">(</span><span class="n">Bs</span><span class="p">),</span><span class="kt">Ref</span><span class="p">(</span><span class="n">Cs</span><span class="p">)]</span> <span class="p">;</span>
+    <span class="c"># preparations</span>
+    <span class="n">maxt</span> <span class="o">=</span> <span class="n">maximum</span><span class="p">(</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">(</span><span class="n">r</span><span class="p">[]),</span> <span class="n">Lref</span><span class="p">)</span>
+    <span class="n">mint</span> <span class="o">=</span> <span class="n">minimum</span><span class="p">(</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">last</span><span class="p">(</span><span class="n">r</span><span class="p">[]),</span> <span class="n">Lref</span><span class="p">)</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="p">[</span><span class="n">bisec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">length</span><span class="p">(</span><span class="n">r</span><span class="p">[]),</span><span class="n">maxt</span><span class="p">,</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="k">in</span> <span class="n">Lref</span><span class="p">]</span>
+    <span class="n">tail</span> <span class="o">=</span> <span class="p">[</span><span class="n">bisec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">length</span><span class="p">(</span><span class="n">r</span><span class="p">[]),</span><span class="n">mint</span><span class="p">,</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="k">in</span> <span class="n">Lref</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c">#+ reduce alloc</span>
+    <span class="n">ord3!</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">tail</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span>  <span class="c">#+ reduce alloc</span>
+    <span class="k">if</span> <span class="o">!</span><span class="p">(</span><span class="n">allposv</span><span class="p">(</span><span class="n">head</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">&lt;=</span><span class="n">tail</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">end</span>
+    <span class="n">intsct</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="n">minimum</span><span class="p">(</span><span class="n">tail</span><span class="o">.-</span><span class="n">head</span><span class="p">))</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">allposv</span><span class="p">(</span><span class="n">head</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">&lt;=</span><span class="n">tail</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">ord3!</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">tail</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span>  <span class="c">#+ reduce alloc</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">Lref</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]][][</span><span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]]</span>
+        <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">+</span><span class="mi">1</span>
+        <span class="c"># search in L[head:tail]</span>
+        <span class="n">i2</span> <span class="o">=</span> <span class="n">bisec</span><span class="p">(</span><span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">tail</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">a</span><span class="p">,</span> <span class="n">Lref</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+        <span class="k">if</span> <span class="n">i2</span> <span class="o">&lt;</span> <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+            <span class="c"># outside range head:tail</span>
+            <span class="k">continue</span>
+        <span class="k">elseif</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">Lref</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]][][</span><span class="n">i2</span><span class="p">]</span>
+            <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i2</span><span class="o">+</span><span class="mi">1</span>
+            <span class="k">continue</span>
+        <span class="k">else</span> <span class="c"># a == Lref[s[2]][][i2]</span>
+            <span class="n">i3</span> <span class="o">=</span> <span class="n">bisec</span><span class="p">(</span><span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]],</span> <span class="n">tail</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]],</span> <span class="n">a</span><span class="p">,</span> <span class="n">Lref</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]])</span>
+            <span class="k">if</span> <span class="n">i3</span> <span class="o">&lt;</span> <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span>
+                <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i2</span><span class="o">+</span><span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="k">else</span>
+                <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">Lref</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]][][</span><span class="n">i3</span><span class="p">]</span>
+                    <span class="n">intsct</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+                    <span class="n">p</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">end</span>
+                <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i2</span><span class="o">+</span><span class="mi">1</span>
+                <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i3</span><span class="o">+</span><span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">intsct</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="p">(</span><span class="n">p</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>intersect3_v4 (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+</div>
+<blockquote>
+<div><p>Of course, fakakta does not imply broken. This implementation is at least correct:</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">300</span><span class="o">:</span><span class="mi">5000</span><span class="p">)))</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">1000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">300</span><span class="o">:</span><span class="mi">5000</span><span class="p">)))</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">6000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">300</span><span class="o">:</span><span class="mi">5000</span><span class="p">)))</span>
+    <span class="nd">@assert</span> <span class="n">sort</span><span class="p">(</span><span class="n">intersect3_v2</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">))</span><span class="o">==</span><span class="n">intersect3_v4</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">)</span> 
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+</div>
+<blockquote>
+<div><p>Now we do benchmark to compare <code class="docutils literal notranslate"><span class="pre">intersect3_v4</span></code> against <code class="docutils literal notranslate"><span class="pre">intersect3_v2</span></code>:</p>
+</div></blockquote>
+<blockquote>
+<div><p>Small size:</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b2</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v2</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">)));</span> 
+    <span class="n">B</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">)));</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 6273 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan"> 27.600 μs</span> … <span class=" -Color -Color-Magenta">  1.501 ms</span>  ┊ GC (min … max): 0.00% … 49.73%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">279.286 μs               </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">310.452 μs</span> ± <span class=" -Color -Color-Green">169.007 μs</span>  ┊ GC (mean ± σ):  1.56% ±  5.45%
+
+        ▁▃▆███▅▆█▆▅▅▃▃▃<span class=" -Color -Color-Blue">▄</span>▁▃<span class=" -Color -Color-Green">▁</span>▃▃▂▁▁▁▂▁▂▃▁                           
+  ▁▂▃▄▅████████████████<span class=" -Color -Color-Blue">█</span>██<span class=" -Color -Color-Green">█</span>████████████▇▅▆▆▅▅▄▄▄▄▃▄▃▃▃▃▃▃▂▂▂▂▂▂ ▅
+  27.6 μs          Histogram: frequency by time          748 μs <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">28.02 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">33</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b4</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v4</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">)));</span> 
+    <span class="n">B</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">)));</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">10000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">9000</span><span class="p">))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b4</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 4997 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan"> 51.621 μs</span> … <span class=" -Color -Color-Magenta">  1.848 ms</span>  ┊ GC (min … max): 0.00% … 40.60%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">496.460 μs               </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">509.845 μs</span> ± <span class=" -Color -Color-Green">189.231 μs</span>  ┊ GC (mean ± σ):  0.47% ±  3.16%
+
+                 ▁▂▃▃█▅█▇▅▇▇▇▇▇▇▆<span class=" -Color -Color-Blue">█</span><span class=" -Color -Color-Green">▆</span>▆▅▄▆▆▇▃▁▃▃▂▂▂                 
+  ▁▂▂▂▂▂▃▄▄▄▄▅▅██████████████████<span class=" -Color -Color-Blue">█</span><span class=" -Color -Color-Green">█</span>████████████████▇▆▇▆▆▅▄▃▄▃▃▃ ▆
+  51.6 μs          Histogram: frequency by time          935 μs <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">14.08 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">13</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<blockquote>
+<div><p>Large size:</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b2</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v2</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)));</span> 
+    <span class="n">B</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)));</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 559 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan">222.843 μs</span> … <span class=" -Color -Color-Magenta">8.840 ms</span>  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">  3.093 ms             </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">  3.391 ms</span> ± <span class=" -Color -Color-Green">1.700 ms</span>  ┊ GC (mean ± σ):  0.82% ± 3.00%
+
+           ▅▁▄▃▃▆▁█▇▆▆█▄<span class=" -Color -Color-Blue">▆</span>▃<span class=" -Color -Color-Green">▄</span>▅ ▂ ▁   ▃ ▄▂                        
+  ▄▅▄▆▄▇█▅▇█████████████<span class=" -Color -Color-Blue">█</span>█<span class=" -Color -Color-Green">█</span>███▇█▇▆▇█▆██▅▆█▆▅█▆▄▇▃▄▅▃▃▃▄▃▄▃▁▁▃ ▅
+  223 μs          Histogram: frequency by time        7.93 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">205.87 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">33</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b4</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v4</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)));</span> 
+    <span class="n">B</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)));</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b4</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 395 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan">764.488 μs</span> … <span class=" -Color -Color-Magenta">14.880 ms</span>  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">  7.295 ms              </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">  7.332 ms</span> ± <span class=" -Color -Color-Green"> 2.651 ms</span>  ┊ GC (mean ± σ):  0.20% ± 1.07%
+
+                 ▁    ▁  ▁▅▁ ▂▁▅▁<span class=" -Color -Color-Blue">▅</span> █ ▃▁   ▁                     
+  ▂▂▂▂▃▃▂▂▂▄▃▄▂▅▃█▄▄▆▆█▆▇███▆████<span class=" -Color -Color-Blue">█</span>██▆███▇██▅▂▅▄▄▄▄▄▄▄▂▃▃▂▃▂▂▂▂ ▃
+  764 μs          Histogram: frequency by time         13.6 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">155.88 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">15</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<blockquote>
+<div><p>The following implementation `` assumes that the input lists are sorted:</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="c"># for sorted integer lists</span>
+<span class="k">function</span> <span class="n">intersect3_v4s</span><span class="p">(</span><span class="n">As</span><span class="p">,</span><span class="n">Bs</span><span class="p">,</span><span class="n">Cs</span><span class="p">)</span>
+    <span class="c"># use reference to avoid allocations</span>
+    <span class="n">Lref</span> <span class="o">=</span> <span class="p">[</span><span class="kt">Ref</span><span class="p">(</span><span class="n">As</span><span class="p">),</span><span class="kt">Ref</span><span class="p">(</span><span class="n">Bs</span><span class="p">),</span><span class="kt">Ref</span><span class="p">(</span><span class="n">Cs</span><span class="p">)]</span> <span class="p">;</span>
+    <span class="c"># preparations</span>
+    <span class="n">maxt</span> <span class="o">=</span> <span class="n">maximum</span><span class="p">(</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">(</span><span class="n">r</span><span class="p">[]),</span> <span class="n">Lref</span><span class="p">)</span>
+    <span class="n">mint</span> <span class="o">=</span> <span class="n">minimum</span><span class="p">(</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">last</span><span class="p">(</span><span class="n">r</span><span class="p">[]),</span> <span class="n">Lref</span><span class="p">)</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="p">[</span><span class="n">bisec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">length</span><span class="p">(</span><span class="n">r</span><span class="p">[]),</span><span class="n">maxt</span><span class="p">,</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="k">in</span> <span class="n">Lref</span><span class="p">]</span>
+    <span class="n">tail</span> <span class="o">=</span> <span class="p">[</span><span class="n">bisec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">length</span><span class="p">(</span><span class="n">r</span><span class="p">[]),</span><span class="n">mint</span><span class="p">,</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="k">in</span> <span class="n">Lref</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c">#+ reduce alloc</span>
+    <span class="n">ord3!</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">tail</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span>  <span class="c">#+ reduce alloc</span>
+    <span class="k">if</span> <span class="o">!</span><span class="p">(</span><span class="n">allposv</span><span class="p">(</span><span class="n">head</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">&lt;=</span><span class="n">tail</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">end</span>
+    <span class="n">intsct</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="n">minimum</span><span class="p">(</span><span class="n">tail</span><span class="o">.-</span><span class="n">head</span><span class="p">))</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">allposv</span><span class="p">(</span><span class="n">head</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">&lt;=</span><span class="n">tail</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">ord3!</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">tail</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span>  <span class="c">#+ reduce alloc</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">Lref</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]][][</span><span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]]</span>
+        <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">+</span><span class="mi">1</span>
+        <span class="c"># search in L[head:tail]</span>
+        <span class="n">i2</span> <span class="o">=</span> <span class="n">bisec</span><span class="p">(</span><span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">tail</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">a</span><span class="p">,</span> <span class="n">Lref</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+        <span class="k">if</span> <span class="n">i2</span> <span class="o">&lt;</span> <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+            <span class="c"># outside range head:tail</span>
+            <span class="k">continue</span>
+        <span class="k">elseif</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">Lref</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]][][</span><span class="n">i2</span><span class="p">]</span>
+            <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i2</span><span class="o">+</span><span class="mi">1</span>
+            <span class="k">continue</span>
+        <span class="k">else</span> <span class="c"># a == Lref[s[2]][][i2]</span>
+            <span class="n">i3</span> <span class="o">=</span> <span class="n">bisec</span><span class="p">(</span><span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]],</span> <span class="n">tail</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]],</span> <span class="n">a</span><span class="p">,</span> <span class="n">Lref</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]])</span>
+            <span class="k">if</span> <span class="n">i3</span> <span class="o">&lt;</span> <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span>
+                <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i2</span><span class="o">+</span><span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="k">else</span>
+                <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">Lref</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]][][</span><span class="n">i3</span><span class="p">]</span>
+                    <span class="n">intsct</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+                    <span class="n">p</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">end</span>
+                <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i2</span><span class="o">+</span><span class="mi">1</span>
+                <span class="n">head</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i3</span><span class="o">+</span><span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">intsct</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="p">(</span><span class="n">p</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>intersect3_v4s (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+</div>
+<blockquote>
+<div><p>You can try out the benchmark yourself to see the performance improvement of <code class="docutils literal notranslate"><span class="pre">intersect3_v4s</span></code>.
+To be fair, we use the sorted lists for all benchmark cases.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b4s</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v4s</span><span class="p">(</span><span class="n">As</span><span class="p">,</span><span class="n">Bs</span><span class="p">,</span><span class="n">Cs</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">As</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">))));</span> 
+    <span class="n">Bs</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">))));</span>
+    <span class="n">Cs</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b4s</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b4s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 378 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan"> 13.701 μs</span> … <span class=" -Color -Color-Magenta">  2.900 ms</span>  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">896.652 μs               </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">966.388 μs</span> ± <span class=" -Color -Color-Green">613.482 μs</span>  ┊ GC (mean ± σ):  0.13% ± 1.04%
+
+     ▃▇▄▅▇▃▄▄ ▃▃▇▃▃▄ █▄▆<span class=" -Color -Color-Blue">▂</span>▇<span class=" -Color -Color-Green">▄</span>▃▄█▂   ▅▅ ▂     ▂                     
+  █▇█████████▅██████▅███<span class=" -Color -Color-Blue">█</span>█<span class=" -Color -Color-Green">█</span>████▄█▇██▆██▆█▆▇█▁▅▇▄▇▅▅▅▄▃▅▃▄▃█▁▅▄▄ ▅
+  13.7 μs          Histogram: frequency by time         2.42 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">1.83 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">10</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b4</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v4</span><span class="p">(</span><span class="n">As</span><span class="p">,</span><span class="n">Bs</span><span class="p">,</span><span class="n">Cs</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">As</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">))));</span> 
+    <span class="n">Bs</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">))));</span>
+    <span class="n">Cs</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b4</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 361 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan">209.007 μs</span> … <span class=" -Color -Color-Magenta">  4.375 ms</span>  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">  1.540 ms               </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">  1.733 ms</span> ± <span class=" -Color -Color-Green">910.550 μs</span>  ┊ GC (mean ± σ):  0.48% ± 2.37%
+
+       ▂▂▄▅ ▆█▄ ▅▃▇▂▂▃▃▅<span class=" -Color -Color-Blue">▆</span>▃▂▅<span class=" -Color -Color-Green">▁</span>  ▂▁            ▃                   
+  ▃▁▇█▄████▅███▆████████<span class=" -Color -Color-Blue">█</span>███<span class=" -Color -Color-Green">█</span>▇▅██▅▇▅▇███▇██▇▆█▆▄█▄▅▃▇▃▃▅▆▃▄▇▃▃▆ ▅
+  209 μs           Histogram: frequency by time         3.82 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">160.44 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">15</span>.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">b2</span> <span class="o">=</span> <span class="nd">@benchmarkable</span> <span class="n">intersect3_v2</span><span class="p">(</span><span class="n">As</span><span class="p">,</span><span class="n">Bs</span><span class="p">,</span><span class="n">Cs</span><span class="p">)</span>  <span class="n">setup</span><span class="o">=</span><span class="p">(</span>
+    <span class="n">As</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">))));</span> 
+    <span class="n">Bs</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">))));</span>
+    <span class="n">Cs</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="mi">3000000</span><span class="p">,</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="o">:</span><span class="mi">90000</span><span class="p">)))))</span>
+<span class="n">tune!</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BenchmarkTools.Trial: 323 samples with 1 evaluation.
+ Range (<span class=" -Color -Color-Bold -Color-Bold-Cyan">min</span> … <span class=" -Color -Color-Magenta">max</span>):  <span class=" -Color -Color-Bold -Color-Bold-Cyan">324.405 μs</span> … <span class=" -Color -Color-Magenta">8.656 ms</span>  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Blue">median</span>):     <span class=" -Color -Color-Bold -Color-Bold-Blue">  2.973 ms             </span>┊ GC (median):    0.00%
+ Time  (<span class=" -Color -Color-Bold -Color-Bold-Green">mean</span> ± <span class=" -Color -Color-Green">σ</span>):   <span class=" -Color -Color-Bold -Color-Bold-Green">  3.287 ms</span> ± <span class=" -Color -Color-Green">1.592 ms</span>  ┊ GC (mean ± σ):  0.75% ± 2.97%
+
+             █▆▇  ▇▁▆▃▄▇<span class=" -Color -Color-Blue"> </span>▅▁<span class=" -Color -Color-Green"> </span>  ▂▁   ▁▁ ▁ ▁ ▂                    
+  ▆▄▁▃▆▇▄▆▅█▇████▆██████<span class=" -Color -Color-Blue">█</span>██<span class=" -Color -Color-Green">█</span>▇███▆█▇██▄█▅█▆█▄▅▅▅▃▇▅▄▅▄▄▃▁▅▃▃▃▄ ▅
+  324 μs          Histogram: frequency by time        7.26 ms <span class=" -Color -Color-Bold">&lt;</span>
+
+ Memory estimate: <span class=" -Color -Color-Yellow">312.52 KiB</span>, allocs estimate: <span class=" -Color -Color-Yellow">33</span>.
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>The best algorithm for intersect3 problem depends on the scales:</p>
+<ol class="simple">
+<li><p>for sets with elements less than <span class="math notranslate nohighlight">\(N \sim 10^4\)</span>, a direct counting is simple and fast;</p></li>
+<li><p>for sets with elements less than <span class="math notranslate nohighlight">\(N \sim 10^8\)</span>, the Julia implementation wins;</p></li>
+<li><p>if the sets are given as sorted lists, the fakakta implementation <code class="docutils literal notranslate"><span class="pre">intersect3_v4s</span></code> is the best.</p></li>
+</ol>
+</div></blockquote>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "julia-1.7"
+        },
+        kernelOptions: {
+            kernelName: "julia-1.7",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'julia-1.7'</script>
+
+              </div>
+              
+            
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            
+        </div>
+    </div>
+    <footer class="footer">
+  <p>
+    
+      By The Jupyter Book community<br/>
+    
+        &copy; Copyright 2021.<br/>
+  </p>
+</footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+
+  </body>
+</html>
