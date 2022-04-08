@@ -1,0 +1,15 @@
+List of articles
+===
+
+[The intersect3 problem](https://algorithmx.github.io/intersect3/)
+
+[Monotone subsequence](https://algorithmx.github.io/monotone/)
+
+
+About me
+===
+
+I am a blogger, programmer with a PhD in condensed matter physics. 
+The topics of this blog include physics, math, finance, programming and music. 
+The quality of the blog posts is guaranteed to be satisfactory for course assignments. 
+Challenges to my posts are welcome, especially on faster algorithms.  
