@@ -72,17 +72,20 @@ p <-  ggplot() +
             axis.title.y = element_text(size=10))
 p
 ```
+
 我们看到，红线代表的 stooq 数据始终在蓝色的 Nasdaq Data Link 数据下面。这是由于 stooq 数据已经进行过复权处理，将分红信息 (dividend) 计入了股价。对于HK.00019，[这里](https://cn.investing.com/equities/swire-pacific-a-dividends)和[这里](http://aastocks.com/en/stocks/analysis/company-fundamental/dividend-history?symbol=00019)查到的分红信息支持此处的分析。为求快速进入CAPM核心讨论，我们跳过“除权”这个非常重要的步骤，将单另讨论。
 
 ## stooq 数据基本信息
 
 来看一下从 stooq 下载到的港交所股票数据的基本情况。总共有2234支股票信息：
+
 ```{r stooq-summary}
 all_files   <- list.files(path="./hk/hkex_stocks/")
 length(all_files)
 ```
 
 为了之后方便，我们来做一个加载函数：
+
 ```{r definition-load_hk_stooq}
 # 加载stooq文件
 load_hk_stooq <- function(fn){
@@ -96,6 +99,7 @@ load_hk_stooq <- function(fn){
 ```
 
 现在加载所有数据：
+
 ```{r load-all}
 stocks_all <- list()
 for (f in all_files){
@@ -105,6 +109,7 @@ for (f in all_files){
 ```
 
 我们看看 stooq 交易日股价数据最早、最晚分别到什么日期：
+
 ```{r earliest-date}
 min(to_vec(for (st in stocks_all) as.character(min(st$date))))
 ```
@@ -213,11 +218,13 @@ p
 ### 最高月股价排序
 
 我们将所有股票按最高月股价排序，找出前1%的股票进行展示。
+
 ```{r}
 max_price <- to_vec(for (df in stocks_all) max(df$close,na.rm=TRUE))
 head_1pct_max_price <- which(max_price > quantile(max_price, probs=c(0.99), na.rm=TRUE))
 all_symbols[head_1pct_max_price]
 ```
+
 ```{r plot-highest-price, out.width="80%", fig.asp = .3, fig.align = 'center'}
 # 画图
 p <-  ggplot()
@@ -228,11 +235,14 @@ p <- p + labs(x="Date", y="Price, log scale")
 p
 ```
 
+
 按最高月股价排序，末5%的股票：
+
 ```{r}
 tail_5pct_max_price <- which(max_price < quantile(max_price, probs=c(0.05), na.rm=TRUE))
 all_symbols[tail_5pct_max_price]
 ```
+
 ```{r plot-highest-price-2, out.width="80%", fig.asp = .3, fig.align = 'center'}
 # 画图
 p <-  ggplot()
@@ -243,14 +253,17 @@ p <- p + labs(x="Date", y="Price")
 p
 ```
 
+
 ### 最低月股价排序
 
 我们将所有股票按月最低股价排序，找出末1%的股票进行展示。
+
 ```{r}
 min_price <- to_vec(for (df in stocks_all) min(df$close,na.rm=TRUE))
 tail_1pct_min_price <- which(min_price < quantile(min_price, probs=c(0.01), na.rm=TRUE))
 all_symbols[tail_1pct_min_price]
 ```
+
 ```{r plot-lowest-price, out.width="80%", fig.asp = .3, fig.align = 'center'}
 # 画图
 p <-  ggplot()
@@ -265,11 +278,13 @@ p
 ### 最高最低价比值排序
 
 我们将所有股票按最高最低价比值排序，找出前1%的股票进行展示。
+
 ```{r}
 maxmin_ratio_price <- to_vec(for (df in stocks_all) max(df$close,na.rm=TRUE)/min(df$close,na.rm=TRUE))
 head_1pct_maxmin_ratio_price <- which(maxmin_ratio_price > quantile(maxmin_ratio_price, probs=c(0.99), na.rm=TRUE))
 all_symbols[head_1pct_maxmin_ratio_price]
 ```
+
 ```{r plot-largest-price-difference, out.width="80%", fig.asp = .3, fig.align = 'center'}
 # 画图
 p <-  ggplot()
@@ -285,7 +300,9 @@ p
 ## 日回报
 
 将前面提到的股价异常的股票（平均月交易量排序末5%，平均月股价排序末5%，最高月股价排序末5%）排除后，我们对剩下每一支股票的日回报$r_t$的分布进行统计分析。
+
 $$r_t \equiv {\rm log}(P_t/P_{t-1}) = {\rm diff}({\rm log}(P))_t$$
+
 ```{r}
 # 计算日回报
 difflog <- function(x){return(diff(log(x)))}
@@ -294,32 +311,43 @@ difflog <- function(x){return(diff(log(x)))}
 ### 例
 
 例如，HK.00005的日回报分布为
+
 ```{r}
 P   <- na.omit(stocks_all[all_symbols=="00005.HK"][[1]]$close)
 r_t <- difflog(P)
 hist(r_t,breaks=200)
 ```
+
 这个$r_t$分布的平均值看上去接近零，但分布似乎不对称，而且不太像正态分布。做一下 Shapiro-Wilk normality test 发现 p-value 几乎是零：
+
 ```{r}
 shapiro.test(r_t)
 ```
+
 再算一下 skew 和 kurtosis，发现离正态分布的值差很远：
+
 ```{r}
 c(timeDate::skewness(r_t,method="moment",na.rm=T),
   timeDate::kurtosis(r_t,method="moment",na.rm=T))
 ```
+
 我们并没有理由认为$r_t$是正态分布。这一点我会在别处讨论。纯粹出于好奇，我想再`diff`一下...
+
 ```{r}
 hist(diff(r_t),breaks=200)
 ```
+
 ```{r}
 c(timeDate::skewness(diff(r_t),method="moment",na.rm=T),
   timeDate::kurtosis(diff(r_t),method="moment",na.rm=T))
 ```
+
 可以看到，skewness没了，但是kurtosis还在而且不小。
 
 
+
 关于kurtosis需要澄清。它实际上是分布的四阶矩，但有不同的定义。查看`timeDate`库对应代码，我知道这个库计算kurtosis是用的下面的定义：
+
 ```{r,eval=FALSE}
 
     # Kurtosis:
@@ -340,17 +368,22 @@ c(timeDate::skewness(diff(r_t),method="moment",na.rm=T),
 
 $$ {\rm kurtosis}(x)=\frac{\overline{(x-\overline{x})^{4}}}{(\overline{x^2}-{\overline x}^2)^2} $$
 它实际上是用二阶矩归一化后的四阶矩。另外啰嗦一句，
+
 ```{r, eval=FALSE}
 kurtosis = sum((x-mean(x))^4/as.numeric(var(x))^2)/length(x)
 ```
+
 写成
+
 ```{r, eval=FALSE}
 kurtosis = sum((x-mean(x))^4)/(as.numeric(var(x))^2)/length(x)
 ```
+
 run的更快^_^
 
 
 `timeDate::skewness`函数对应代码、公式如下：
+
 ```{r,eval=FALSE}
 
     # Skewness:
@@ -374,15 +407,18 @@ $$ {\rm skewness}(x)=\frac{\overline{(x-\overline{x})^{3}}}{(\overline{x^2}-{\ov
 
 
 ### Kurtosis分布
+
 将平均月交易量排序末5%，平均月股价排序末5%，最高月股价排序末5%排除后，我们对剩下每一支股票的日回报$r_t$的Kurtosis进行统计，代码和结果如下：
+
 ```{r}
-h_95pct_mean_p <- which(mean_price  > quantile(mean_price,  probs=c(0.95), na.rm=TRUE))
-h_95pct_mean_v <- which(mean_volume > quantile(mean_volume, probs=c(0.95), na.rm=TRUE))
-h_95pct_max_p  <- which(max_price   > quantile(max_price,   probs=c(0.95), na.rm=TRUE))
+h_95pct_mean_p <- which(mean_price  > quantile(mean_price,  probs=c(0.05), na.rm=TRUE))
+h_95pct_mean_v <- which(mean_volume > quantile(mean_volume, probs=c(0.05), na.rm=TRUE))
+h_95pct_max_p  <- which(max_price   > quantile(max_price,   probs=c(0.05), na.rm=TRUE))
 K <- to_vec(for (st in stocks_all[(h_95pct_mean_p & h_95pct_mean_v) & h_95pct_max_p]) 
             timeDate::kurtosis(difflog(st$close),method="moment",na.rm=T))
 hist(K,breaks=800,xlim=c(0,300))
 ```
+
 
 ```{r}
 hist(K,breaks=40,xlim=c(200,1500),ylim=c(0,40))
@@ -390,26 +426,32 @@ hist(K,breaks=40,xlim=c(200,1500),ylim=c(0,40))
 
 
 ### Skewness分布
+
 将平均月交易量排序末5%，平均月股价排序末5%，最高月股价排序末5%排除后，我们对剩下每一支股票的日回报$r_t$的skewness进行统计，代码和结果如下：
+
 ```{r}
-h_95pct_mean_p <- which(mean_price  > quantile(mean_price,  probs=c(0.95), na.rm=TRUE))
-h_95pct_mean_v <- which(mean_volume > quantile(mean_volume, probs=c(0.95), na.rm=TRUE))
-h_95pct_max_p  <- which(max_price   > quantile(max_price,   probs=c(0.95), na.rm=TRUE))
+h_95pct_mean_p <- which(mean_price  > quantile(mean_price,  probs=c(0.05), na.rm=TRUE))
+h_95pct_mean_v <- which(mean_volume > quantile(mean_volume, probs=c(0.05), na.rm=TRUE))
+h_95pct_max_p  <- which(max_price   > quantile(max_price,   probs=c(0.05), na.rm=TRUE))
 S <- to_vec(for (st in stocks_all[(h_95pct_mean_p & h_95pct_mean_v) & h_95pct_max_p]) 
             timeDate::skewness(difflog(st$close),method="moment",na.rm=T))
 hist(S,breaks=100)
 ```
+
 可以看到，skewness整体偏向一个正数，也就是说，很多支股票价格的 log daily return $r_t$ 是偏向大于均值一侧的。
 我们来试着理解这个现象。首先，log daily return 与通常的 daily return 并不相同。试比较：
 
 $$r_t \equiv {\rm log}(P_t/P_{t-1}) = {\rm diff}({\rm log}(P))_t$$
+
 $$q_t \equiv (P_t/P_{t-1} - 1)$$
 考虑连续三个价格 $P_{t+1}=a$, $P_{t}=b$, $P_{t-1}=a$ 且 $b<a$。以$q_t$来衡量日收益：
 
 $$q_{t+1}=a/b-1,\;q_t=b/a-1.$$
+
 对于$b<a$，我们总有$(a/b-1)>(1-b/a)$，也就是说，在股票下跌一定比例之后，如果接下来涨回原价格，那么涨幅一定大于跌幅。然而，以$r_t$来衡量日收益，并不会有这种现象：
 
 $$r_{t+1}={\rm log}(a/b),\;r_t={\rm log}(b/a)\equiv-r_{t+1}.$$
+
 那么，我们观察到$r_t$系统地偏向均值之上，就说明这只股票的价格整体上处于上升状态。
 
 
