@@ -5,11 +5,13 @@ List of articles
 
 [Monotone subsequence](https://algorithmx.github.io/monotone/)
 
+[港.股.迷.惑.行.为.大.赏](https://algorithmx.github.io/capm/hkstooq1/)
+
 
 About me
 ===
 
 I am a blogger, programmer with a PhD in condensed matter physics. 
 The topics of this blog include physics, math, finance, programming and music. 
-The quality of the blog posts is guaranteed to be satisfactory for course assignments. 
+The blog posts are guaranteed to be scientifically correct. 
 Challenges to my posts are welcome, especially on faster algorithms.  

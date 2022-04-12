@@ -1,0 +1,620 @@
+---
+title: "港.股.迷.惑.行.为.大.赏"
+author: Yunlong(@algorithmx)
+output:
+  html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(Quandl)
+library(fBasics)
+library(timeSeries)
+library(tidyr)
+library(lubridate)
+library(dplyr)
+library(goft)
+library(readxl)
+library(comprehenr)
+library(stringr)
+library(fitdistrplus)
+```
+
+
+这篇笔记主要讨论港交所列出的当前可交易股票，是一系列探讨资产定价模型CAPM文章的第一篇。这是一篇严肃的笔记，部分内容曾作为相关课程作业。
+
+# 数据
+
+## 数据源
+
+有几个地方可以获得免费数据：
+
+1. Akshare [https://www.akshare.xyz/index.html](https://www.akshare.xyz/index.html)
+
+2. [Nasdaq Data Link](https://data.nasdaq.com/data/HKEX-hong-kong-exchange) 配合 R library `Quandl`
+
+3. 网站 stooq.com [https://stooq.com/db/h/](https://stooq.com/db/h/)
+
+这篇笔记使用数据源3。如果你想运行程序，需要先从stooq.com下载所有港交所数据。
+
+## 抽查
+
+首先我们抽查一下stooq的数据，确认它的数据质量大致合格。做法是用`Quandl`来下载 Nasdaq Data Link 的数据，然后与 stooq 数据画图比对。
+
+```{r compare-stooq-nasdaq}
+# 下载和加载数据
+df1 <- Quandl("HKEX/00019")
+hk00005_nasdata <- data.frame(
+  date=as.Date(df1$Date,format="%Y-%m-%d"),
+  close=df1$`Nominal Price`)
+df2 <- read.csv('hk/hkex_stocks/19.hk.txt')
+hk00005_stooqdata <- data.frame(
+  date=as.Date(as.character(df2$X.DATE.),format=("%Y%m%d")),
+  close=df2$X.CLOSE.)
+```
+
+```{r compare-stooq-nasdaq-plot, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+p <-  ggplot() + 
+      geom_line(data=hk00005_nasdata,aes(x=date,y=close,color='00019.HK, dasnaq data')) +
+      geom_line(data=hk00005_stooqdata,aes(x=date,y=close,color='00019.HK, stooq data')) + 
+      labs(x="Date", y="Price") +  
+      scale_color_manual(name='',
+                         breaks=c('00019.HK, dasnaq data', 
+                                  '00019.HK, stooq data'),
+                         values=c('00019.HK, dasnaq data'='blue',
+                                  '00019.HK, stooq data'='red')) + 
+      theme(legend.title=element_text(size=10),
+            legend.text=element_text(size=10),
+            legend.position = "right",
+            axis.title.x = element_text(size=10),
+            axis.title.y = element_text(size=10))
+p
+```
+我们看到，红线代表的 stooq 数据始终在蓝色的 Nasdaq Data Link 数据下面。这是由于 stooq 数据已经进行过复权处理，将分红信息 (dividend) 计入了股价。对于HK.00019，[这里](https://cn.investing.com/equities/swire-pacific-a-dividends)和[这里](http://aastocks.com/en/stocks/analysis/company-fundamental/dividend-history?symbol=00019)查到的分红信息支持此处的分析。为求快速进入CAPM核心讨论，我们跳过“除权”这个非常重要的步骤，将单另讨论。
+
+## stooq 数据基本信息
+
+来看一下从 stooq 下载到的港交所股票数据的基本情况。总共有2234支股票信息：
+```{r stooq-summary}
+all_files   <- list.files(path="./hk/hkex_stocks/")
+length(all_files)
+```
+
+为了之后方便，我们来做一个加载函数：
+```{r definition-load_hk_stooq}
+# 加载stooq文件
+load_hk_stooq <- function(fn){
+  df <- read.csv(fn)
+  df <- data.frame(
+    date=as.Date(as.character(df$X.DATE.),format=("%Y%m%d")),
+    close=as.numeric(df$X.CLOSE.),
+    volume=as.numeric(df$X.VOL.))
+  return(df)
+}
+```
+
+现在加载所有数据：
+```{r load-all}
+stocks_all <- list()
+for (f in all_files){
+  df <- load_hk_stooq(paste0("./hk/hkex_stocks/",f))
+  stocks_all <- append(stocks_all, list(df))
+}
+```
+
+我们看看 stooq 交易日股价数据最早、最晚分别到什么日期：
+```{r earliest-date}
+min(to_vec(for (st in stocks_all) as.character(min(st$date))))
+```
+```{r latest-date}
+max(to_vec(for (st in stocks_all) as.character(max(st$date))))
+```
+由于下载日期不同，你看到的图线、日期可能略有不同。
+
+
+# 统计
+
+下面我们对股价历史数据的各项指标进行统计。对于各种例外，我们将展示其“迷惑行为”。
+为了与之后的CAPM模型检验的工作衔接，我们首先将股价按月平均，并将时间起止设定为
+2006年02月01日（或上市日期）至2021年12月31日，然后再对月度数据进行统计。
+
+```{r convert-to-monthly}
+# 日期限定
+start_date <- as.Date("2006-02-01")
+end_date <- as.Date("2021-12-31")
+# 转化成月度数据
+convert_to_monthly <- function(df){
+  # add column "month"
+  df1 <- data.frame(
+    date=as.Date(df$date),
+    close=as.numeric(df$close),
+    volume=as.numeric(df$volume),
+    month=floor_date(df$date,"month"))
+  # monthly average/min/max price and total volume
+  df2 <- df1 %>%
+    group_by(month) %>%
+    summarize(close=mean(close,na.rm=TRUE),
+              closemin=min(close,na.rm=TRUE),
+              closemax=max(close,na.rm=TRUE),
+              volume=sum(volume,na.rm=TRUE)) %>%
+    as.data.frame
+  # select date within range
+  df3 <- df2[start_date<=df2$month & end_date>=df2$month,]
+  # fill missing data
+  if (nrow(df3)==0){
+    # end date is earlier than the date of list
+    return(df3)
+  }
+  else{
+    # enforce consecutive monthly data 
+    conseq_date <- data.frame(
+      month=seq.Date(min(df3$month), max(df3$month), by="month"))
+    # fill the missing data
+    df4 <- merge(conseq_date, df3, by="month", all.x = TRUE) %>% 
+      fill(c(close,closemin,closemax,volume))
+    return(df4)
+  }
+}
+```
+
+为了展示方便，我们将股票代码列出：
+```{r}
+all_symbols <- to_vec(for (f in all_files) 
+                 str_pad(str_replace(str_replace(f,".txt",""),".hk",".HK"),
+                         8, pad="0"))
+```
+
+
+## 量价数据
+
+### 平均月交易量排序
+
+价格和交易量极低的股票容易受到操纵，在建仓时不应考虑，也应当排除在CAPM检验之外。这是这一节和下一节将量、价排序的动机。
+
+我们将所有股票按平均月交易量排序，找出排末位5%的股票进行展示。
+```{r}
+mean_volume <- to_vec(for (df in stocks_all) mean(df$volume,na.rm=TRUE))
+tail_5pct_mean_volume <- which(mean_volume < quantile(mean_volume, probs=c(0.05), na.rm=TRUE))
+all_symbols[tail_5pct_mean_volume]
+```
+
+```{r plot-least-volume, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+p <-  ggplot() 
+for (i in tail_5pct_mean_volume){
+  p <- p + geom_line(data=stocks_all[[i]],aes(x=date,y=volume))
+}
+p <- p + labs(x="Date", y="Volume")
+p
+```
+
+### 平均月股价排序
+
+我们将所有股票按月平均股价排序，找出排末位5%的股票进行展示。
+```{r}
+mean_price <- to_vec(for (df in stocks_all) mean(df$close,na.rm=TRUE))
+tail_5pct_mean_price <- which(mean_price < quantile(mean_price, probs=c(0.05), na.rm=TRUE))
+all_symbols[tail_5pct_mean_price]
+```
+从下图可以看出，这些股票的价格极少超过3HKD。通常它们被谑称为“仙股”。
+```{r plot-least-price, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+p <-  ggplot()
+for (i in tail_5pct_mean_price){
+  p <- p + geom_line(data=stocks_all[[i]],aes(x=date,y=close))
+}
+p <- p + labs(x="Date", y="Price")
+p
+```
+
+
+### 最高月股价排序
+
+我们将所有股票按最高月股价排序，找出前1%的股票进行展示。
+```{r}
+max_price <- to_vec(for (df in stocks_all) max(df$close,na.rm=TRUE))
+head_1pct_max_price <- which(max_price > quantile(max_price, probs=c(0.99), na.rm=TRUE))
+all_symbols[head_1pct_max_price]
+```
+```{r plot-highest-price, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+p <-  ggplot()
+for (i in head_1pct_max_price){
+  p <- p + geom_line(data=stocks_all[[i]],aes(x=date,y=log(close)))
+}
+p <- p + labs(x="Date", y="Price, log scale")
+p
+```
+
+按最高月股价排序，末5%的股票：
+```{r}
+tail_5pct_max_price <- which(max_price < quantile(max_price, probs=c(0.05), na.rm=TRUE))
+all_symbols[tail_5pct_max_price]
+```
+```{r plot-highest-price-2, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+p <-  ggplot()
+for (i in tail_5pct_max_price){
+  p <- p + geom_line(data=stocks_all[[i]],aes(x=date,y=close))
+}
+p <- p + labs(x="Date", y="Price")
+p
+```
+
+### 最低月股价排序
+
+我们将所有股票按月最低股价排序，找出末1%的股票进行展示。
+```{r}
+min_price <- to_vec(for (df in stocks_all) min(df$close,na.rm=TRUE))
+tail_1pct_min_price <- which(min_price < quantile(min_price, probs=c(0.01), na.rm=TRUE))
+all_symbols[tail_1pct_min_price]
+```
+```{r plot-lowest-price, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+p <-  ggplot()
+for (i in tail_1pct_min_price){
+  p <- p + geom_line(data=stocks_all[[i]],aes(x=date,y=log(close)))
+}
+p <- p + labs(x="Date", y="Price, log scale")
+p
+```
+
+
+### 最高最低价比值排序
+
+我们将所有股票按最高最低价比值排序，找出前1%的股票进行展示。
+```{r}
+maxmin_ratio_price <- to_vec(for (df in stocks_all) max(df$close,na.rm=TRUE)/min(df$close,na.rm=TRUE))
+head_1pct_maxmin_ratio_price <- which(maxmin_ratio_price > quantile(maxmin_ratio_price, probs=c(0.99), na.rm=TRUE))
+all_symbols[head_1pct_maxmin_ratio_price]
+```
+```{r plot-largest-price-difference, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+p <-  ggplot()
+for (i in head_1pct_maxmin_ratio_price){
+  p <- p + geom_line(data=stocks_all[[i]],aes(x=date,y=log(close)))
+}
+p <- p + labs(x="Date", y="Price, log scale")
+p
+```
+
+
+
+## 日回报
+
+将前面提到的股价异常的股票（平均月交易量排序末5%，平均月股价排序末5%，最高月股价排序末5%）排除后，我们对剩下每一支股票的日回报$r_t$的分布进行统计分析。
+$$r_t \equiv {\rm log}(P_t/P_{t-1}) = {\rm diff}({\rm log}(P))_t$$
+```{r}
+# 计算日回报
+difflog <- function(x){return(diff(log(x)))}
+```
+
+### 例
+
+例如，HK.00005的日回报分布为
+```{r}
+P   <- na.omit(stocks_all[all_symbols=="00005.HK"][[1]]$close)
+r_t <- difflog(P)
+hist(r_t,breaks=200)
+```
+这个$r_t$分布的平均值看上去接近零，但分布似乎不对称，而且不太像正态分布。做一下 Shapiro-Wilk normality test 发现 p-value 几乎是零：
+```{r}
+shapiro.test(r_t)
+```
+再算一下 skew 和 kurtosis，发现离正态分布的值差很远：
+```{r}
+c(timeDate::skewness(r_t,method="moment",na.rm=T),
+  timeDate::kurtosis(r_t,method="moment",na.rm=T))
+```
+我们并没有理由认为$r_t$是正态分布。这一点我会在别处讨论。纯粹出于好奇，我想再`diff`一下...
+```{r}
+hist(diff(r_t),breaks=200)
+```
+```{r}
+c(timeDate::skewness(diff(r_t),method="moment",na.rm=T),
+  timeDate::kurtosis(diff(r_t),method="moment",na.rm=T))
+```
+可以看到，skewness没了，但是kurtosis还在而且不小。
+
+
+关于kurtosis需要澄清。它实际上是分布的四阶矩，但有不同的定义。查看`timeDate`库对应代码，我知道这个库计算kurtosis是用的下面的定义：
+```{r,eval=FALSE}
+
+    # Kurtosis:
+    n = length(x)
+    if (is.integer(x)) x = as.numeric(x)
+    if (method == "excess") {
+        kurtosis = sum((x-mean(x))^4/as.numeric(var(x))^2)/length(x) - 3
+    }
+    if (method == "moment") {
+        kurtosis = sum((x-mean(x))^4/as.numeric(var(x))^2)/length(x)
+    }
+    if (method == "fisher") {
+        kurtosis = ((n+1)*(n-1)*((sum(x^4)/n)/(sum(x^2)/n)^2 -
+            (3*(n-1))/(n+1)))/((n-2)*(n-3))
+    }
+
+```
+
+$$ {\rm kurtosis}(x)=\frac{\overline{(x-\overline{x})^{4}}}{(\overline{x^2}-{\overline x}^2)^2} $$
+它实际上是用二阶矩归一化后的四阶矩。另外啰嗦一句，
+```{r, eval=FALSE}
+kurtosis = sum((x-mean(x))^4/as.numeric(var(x))^2)/length(x)
+```
+写成
+```{r, eval=FALSE}
+kurtosis = sum((x-mean(x))^4)/(as.numeric(var(x))^2)/length(x)
+```
+run的更快^_^
+
+
+`timeDate::skewness`函数对应代码、公式如下：
+```{r,eval=FALSE}
+
+    # Skewness:
+    n = length(x)
+    if (is.integer(x)) x = as.numeric(x)
+
+    # Selected Method:
+    if (method == "moment") {
+        skewness = sum((x-mean(x))^3/sqrt(as.numeric(var(x)))^3)/length(x)
+    }
+    if (method == "fisher") {
+        if (n < 3)
+            skewness = NA
+        else
+            skewness = ((sqrt(n*(n-1))/(n-2))*(sum(x^3)/n))/((sum(x^2)/n)^(3/2))
+    }
+
+```
+
+$$ {\rm skewness}(x)=\frac{\overline{(x-\overline{x})^{3}}}{(\overline{x^2}-{\overline x}^2)^{3/2}} $$
+
+
+### Kurtosis分布
+将平均月交易量排序末5%，平均月股价排序末5%，最高月股价排序末5%排除后，我们对剩下每一支股票的日回报$r_t$的Kurtosis进行统计，代码和结果如下：
+```{r}
+h_95pct_mean_p <- which(mean_price  > quantile(mean_price,  probs=c(0.95), na.rm=TRUE))
+h_95pct_mean_v <- which(mean_volume > quantile(mean_volume, probs=c(0.95), na.rm=TRUE))
+h_95pct_max_p  <- which(max_price   > quantile(max_price,   probs=c(0.95), na.rm=TRUE))
+K <- to_vec(for (st in stocks_all[(h_95pct_mean_p & h_95pct_mean_v) & h_95pct_max_p]) 
+            timeDate::kurtosis(difflog(st$close),method="moment",na.rm=T))
+hist(K,breaks=800,xlim=c(0,300))
+```
+
+```{r}
+hist(K,breaks=40,xlim=c(200,1500),ylim=c(0,40))
+```
+
+
+### Skewness分布
+将平均月交易量排序末5%，平均月股价排序末5%，最高月股价排序末5%排除后，我们对剩下每一支股票的日回报$r_t$的skewness进行统计，代码和结果如下：
+```{r}
+h_95pct_mean_p <- which(mean_price  > quantile(mean_price,  probs=c(0.95), na.rm=TRUE))
+h_95pct_mean_v <- which(mean_volume > quantile(mean_volume, probs=c(0.95), na.rm=TRUE))
+h_95pct_max_p  <- which(max_price   > quantile(max_price,   probs=c(0.95), na.rm=TRUE))
+S <- to_vec(for (st in stocks_all[(h_95pct_mean_p & h_95pct_mean_v) & h_95pct_max_p]) 
+            timeDate::skewness(difflog(st$close),method="moment",na.rm=T))
+hist(S,breaks=100)
+```
+可以看到，skewness整体偏向一个正数，也就是说，很多支股票价格的 log daily return $r_t$ 是偏向大于均值一侧的。
+我们来试着理解这个现象。首先，log daily return 与通常的 daily return 并不相同。试比较：
+
+$$r_t \equiv {\rm log}(P_t/P_{t-1}) = {\rm diff}({\rm log}(P))_t$$
+$$q_t \equiv (P_t/P_{t-1} - 1)$$
+考虑连续三个价格 $P_{t+1}=a$, $P_{t}=b$, $P_{t-1}=a$ 且 $b<a$。以$q_t$来衡量日收益：
+
+$$q_{t+1}=a/b-1,\;q_t=b/a-1.$$
+对于$b<a$，我们总有$(a/b-1)>(1-b/a)$，也就是说，在股票下跌一定比例之后，如果接下来涨回原价格，那么涨幅一定大于跌幅。然而，以$r_t$来衡量日收益，并不会有这种现象：
+
+$$r_{t+1}={\rm log}(a/b),\;r_t={\rm log}(b/a)\equiv-r_{t+1}.$$
+那么，我们观察到$r_t$系统地偏向均值之上，就说明这只股票的价格整体上处于上升状态。
+
+
+
+# 财富密码？港股的迷惑行为
+
+最后让我们来观赏一下股价异常的港股的迷惑行为。我们把行为相似的股票合并在一起展示。
+
+## 扑街组：股价一直很低
+
+按最高月股价排序垫底的10支股票及最高股价：
+```{r}
+bottom10_max_price <- order(max_price)[1:10]
+data.frame(
+  symbol=all_symbols[bottom10_max_price],
+  max.price=max_price[bottom10_max_price])
+```
+
+```{r, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+col10 <- c("black","red","blue","pink","lightblue",
+           "green","darkgreen","orange","brown","violet")
+c <- 1
+for (i in bottom10_max_price){
+  p <- ggplot() + 
+       geom_line(data=stocks_all[[i]],aes(x=date,y=close),color=col10[[c]]) +
+       labs(x="Date", y="Price (HKD)") + 
+       ggtitle(all_symbols[[i]])
+  print(p)
+  c <- c+1
+}
+```
+
+## 暴富组：暴涨后暴跌然后静止
+
+按最高月股价/最低月股价比值排序最前的10支股票及比值：
+```{r}
+extreme10_maxmin_ratio <- order(-maxmin_ratio_price)[1:10]
+data.frame(
+  symbol=all_symbols[extreme10_maxmin_ratio],
+  ratio=maxmin_ratio_price[extreme10_maxmin_ratio])
+```
+
+```{r, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+col10 <- c("black","red","blue","pink","lightblue",
+           "green","darkgreen","orange","brown","violet")
+c <- 1
+for (i in extreme10_maxmin_ratio){
+  p <- ggplot() + 
+       geom_line(data=stocks_all[[i]],aes(x=date,y=close),color=col10[[c]]) +
+       labs(x="Date", y="Price (HKD)") + 
+       ggtitle(all_symbols[[i]])
+  print(p)
+  c <- c+1
+}
+```
+
+## 原地静止组：交易量垫底
+
+按平均月交易量排序垫底的10支股票及月交易量：
+```{r}
+bottom10_vol <- order(mean_volume)[1:10]
+data.frame(
+  symbol=all_symbols[bottom10_vol],
+  mean.vol=mean_volume[bottom10_vol])
+```
+
+```{r, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+col10 <- c("black","red","blue","pink","lightblue",
+           "green","darkgreen","orange","brown","violet")
+c <- 1
+for (i in bottom10_vol){
+  maxvol <- max(stocks_all[[i]]$volume)
+  if (maxvol<1e-10) { maxvol <- 1 }
+  amp <- 0.5*max(stocks_all[[i]]$close)/maxvol
+  p <- ggplot() + 
+       geom_line(data=stocks_all[[i]],aes(x=date,y=close),color=col10[[c]]) +
+       geom_line(data=stocks_all[[i]],aes(x=date,y=amp*volume),color=col10[[c]]) +
+       labs(x="Date", y="Price (HKD)") + 
+       ggtitle(all_symbols[[i]])
+  print(p)
+  c <- c+1
+}
+```
+
+按平均月交易量排序垫底的11-20名：
+```{r}
+bottom11_20_vol <- order(mean_volume)[11:20]
+data.frame(
+  symbol=all_symbols[bottom11_20_vol],
+  mean.vol=mean_volume[bottom11_20_vol])
+```
+
+```{r, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+col10 <- c("black","red","blue","pink","lightblue",
+           "green","darkgreen","orange","brown","violet")
+c <- 1
+for (i in bottom11_20_vol){
+  maxvol <- max(stocks_all[[i]]$volume)
+  if (maxvol<1e-10) { maxvol <- 1 }
+  amp <- 0.5*max(stocks_all[[i]]$close)/maxvol
+  p <- ggplot() + 
+       geom_line(data=stocks_all[[i]],aes(x=date,y=close),color=col10[[c]]) +
+       geom_line(data=stocks_all[[i]],aes(x=date,y=amp*volume),color=col10[[c]]) +
+       labs(x="Date", y="Price (HKD)") + 
+       ggtitle(all_symbols[[i]])
+  print(p)
+  c <- c+1
+}
+```
+
+
+按平均月交易量排序垫底的21-30名：
+```{r}
+bottom21_30_vol <- order(mean_volume)[21:30]
+data.frame(
+  symbol=all_symbols[bottom21_30_vol],
+  mean.vol=mean_volume[bottom21_30_vol])
+```
+
+```{r, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+col10 <- c("black","red","blue","pink","lightblue",
+           "green","darkgreen","orange","brown","violet")
+c <- 1
+for (i in bottom21_30_vol){
+  maxvol <- max(stocks_all[[i]]$volume)
+  if (maxvol<1e-10) { maxvol <- 1 }
+  amp <- 0.5*max(stocks_all[[i]]$close)/maxvol
+  p <- ggplot() + 
+       geom_line(data=stocks_all[[i]],aes(x=date,y=close),color=col10[[c]]) +
+       geom_line(data=stocks_all[[i]],aes(x=date,y=amp*volume),color=col10[[c]]) +
+       labs(x="Date", y="Price (HKD)") + 
+       ggtitle(all_symbols[[i]])
+  print(p)
+  c <- c+1
+}
+```
+
+
+## 一直出溜组：自上市以来跌多涨少
+
+
+按涨跌日期数比值排序垫底的10支股票：
+```{r}
+calc_inc_dec_ratio <- function(st){
+  d1 <- diff(st$close)
+  return(sum(d1>=0)/length(d1))
+}
+inc_dec_ratio <- to_vec(for (st in stocks_all) calc_inc_dec_ratio(st))
+bottom10_inc_dec_ratio <- order(inc_dec_ratio)[1:10]
+data.frame(
+  symbol=all_symbols[bottom10_inc_dec_ratio],
+  ratio=inc_dec_ratio[bottom10_inc_dec_ratio])
+```
+```{r, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+col10 <- c("black","red","blue","pink","lightblue",
+           "green","darkgreen","orange","brown","violet")
+c <- 1
+for (i in bottom10_inc_dec_ratio){
+  p <- ggplot() + 
+       geom_line(data=stocks_all[[i]],aes(x=date,y=close),color=col10[[c]]) +
+       labs(x="Date", y="Price (HKD)") + 
+       ggtitle(all_symbols[[i]])
+  print(p)
+  c <- c+1
+}
+```
+
+
+
+按涨跌日期数比值排序垫底的第11-20支股票：
+```{r}
+calc_inc_dec_ratio <- function(st){
+  d1 <- diff(st$close)
+  return(sum(d1>=0)/length(d1))
+}
+inc_dec_ratio <- to_vec(for (st in stocks_all) calc_inc_dec_ratio(st))
+bottom11_20_inc_dec_ratio <- order(inc_dec_ratio)[11:20]
+data.frame(
+  symbol=all_symbols[bottom11_20_inc_dec_ratio],
+  ratio=inc_dec_ratio[bottom11_20_inc_dec_ratio])
+```
+
+```{r, out.width="80%", fig.asp = .3, fig.align = 'center'}
+# 画图
+col10 <- c("black","red","blue","pink","lightblue",
+           "green","darkgreen","orange","brown","violet")
+c <- 1
+for (i in bottom11_20_inc_dec_ratio){
+  p <- ggplot() + 
+       geom_line(data=stocks_all[[i]],aes(x=date,y=close),color=col10[[c]]) +
+       labs(x="Date", y="Price (HKD)") + 
+       ggtitle(all_symbols[[i]])
+  print(p)
+  c <- c+1
+}
+```
+
+---
+
+# 总结
+
+在这篇笔记里，我们初步了解了港股股价历史数据的一些特征，以及港交所列出的全部可交易股票中的例外情况。在对资产定价模型进行统计检验时，这些例外情况必须小心地剔除。
