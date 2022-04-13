@@ -5,7 +5,7 @@ output:
   html_document
 ---
 
-```{r setup}
+```{r setup, wangings=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(Quandl)
@@ -80,7 +80,7 @@ p
 来看一下从 stooq 下载到的港交所股票数据的基本情况。总共有2234支股票信息：
 
 ```{r stooq-summary}
-all_files   <- list.files(path="./hk/hkex_stocks/")
+all_files <- list.files(path="./hk/hkex_stocks/")
 length(all_files)
 ```
 

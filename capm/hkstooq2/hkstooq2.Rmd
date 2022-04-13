@@ -1,0 +1,506 @@
+---
+title: "资产定价模型(CAPM)港股实证研究"
+author: Yunlong(@algorithmx)
+output:
+  html_document
+---
+
+# [回主页](https://algorithmx.github.io)
+
+```{r setup, wangings=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(Quandl)
+library(fBasics)
+library(timeSeries)
+library(tidyr)
+library(lubridate)
+library(dplyr)
+library(goft)
+library(readxl)
+library(comprehenr)
+library(stringr)
+library(fitdistrplus)
+```
+
+
+这篇笔记主要讨论港交所列出的当前可交易股票，是一系列探讨资产定价模型CAPM文章的第二篇。这是一篇严肃的笔记，部分内容曾作为相关课程作业。
+
+# 数据
+
+这篇笔记使用[stooq.com](https://stooq.com/db/h/)数据。如果你想运行程序，需要先从[这个链接](https://stooq.com/db/h/)下载所有港交所数据，并解压到这个笔记本所在的目录。之后我们将用路径`'./hk/hkex_stocks'`来访问股票数据文件。（我把子文件夹名字空格改成了下划线）
+
+[上一篇笔记](https://algorithmx.github.io/capm/hkstooq1/)介绍了港股价格历史数据的基本情况，特别是一些股价历史数据奇异的股票。我们需要把平均交易量排名末5%，平均价格排名末5%，最高价格排名末5%的股票剔除，因为大多数portfolio不会考虑这样的股票。
+
+```{r definition-load_hk_stooq, wangings=FALSE, message=FALSE}
+# 加载stooq文件
+load_hk_stooq <- function(fn){
+  df <- read.csv(fn)
+  df <- data.frame(
+    date=as.Date(as.character(df$X.DATE.),format=("%Y%m%d")),
+    close=as.numeric(df$X.CLOSE.),
+    volume=as.numeric(df$X.VOL.))
+  return(df)
+}
+all_files <- list.files(path="./hk/hkex_stocks/")
+stocks_all <- list()
+for (f in all_files){
+  df <- load_hk_stooq(paste0("./hk/hkex_stocks/",f))
+  stocks_all <- append(stocks_all, list(df))
+}
+all_symbols <- to_vec(
+  for (f in all_files) 
+    str_pad(str_replace(str_replace(f,".txt",""),".hk",".HK"),8,pad="0"))
+# 排除平均交易量末5%，平均价格末5%，最高价格末5%，上市日期晚于2021-07-01
+mean_price     <- to_vec(for (df in stocks_all) mean(df$close))  %>% as.numeric
+mean_volume    <- to_vec(for (df in stocks_all) mean(df$volume)) %>% as.numeric
+max_price      <- to_vec(for (df in stocks_all) max(df$close))   %>% as.numeric
+earliest_date  <- to_vec(for (df in stocks_all) min(df$date))    %>% as.Date
+h_95pct_mean_p <- (mean_price  > quantile(mean_price,  probs=c(0.05), na.rm=TRUE))
+h_95pct_mean_v <- (mean_volume > quantile(mean_volume, probs=c(0.05), na.rm=TRUE))
+h_95pct_max_p  <- (max_price   > quantile(max_price,   probs=c(0.05), na.rm=TRUE))
+date_lt_07_01  <- (earliest_date < as.Date("2021-07-01"))
+# 剩下的id
+selected_id    <- which(((h_95pct_mean_p & h_95pct_mean_v) & h_95pct_max_p) & date_lt_07_01)
+```
+
+
+下面的代码将日线交易信息转化成月线交易信息。转化是按照日历日期进行的，并未按照交易日历。
+
+```{r convert-to-monthly}
+# 日期限定
+start_date <- as.Date("2006-02-01")
+end_date   <- as.Date("2021-12-31")
+# 转化成月度数据
+convert_to_monthly <- function(df){
+  # add column "month"
+  df1 <- data.frame(
+    date=as.Date(df$date),
+    close=as.numeric(df$close),
+    month=floor_date(df$date,"month"))
+  if ("volume" %in% colnames(df)){
+    df1$volume = as.numeric(df$volume)
+    # monthly average/min/max price and total volume
+    df2 <- df1 %>%
+      group_by(month) %>%
+      summarize(close.avg=mean(close,na.rm=TRUE),
+                close.var=var(close,na.rm=TRUE),
+                close.min=min(close,na.rm=TRUE),
+                close.max=max(close,na.rm=TRUE),
+                volume=sum(volume,na.rm=TRUE)) %>%
+      as.data.frame
+  }
+  else{
+    # monthly average/min/max price and total volume
+    df2 <- df1 %>%
+      group_by(month) %>%
+      summarize(close.avg=mean(close,na.rm=TRUE),
+                close.var=var(close,na.rm=TRUE),
+                close.min=min(close,na.rm=TRUE),
+                close.max=max(close,na.rm=TRUE)) %>%
+      as.data.frame
+  }
+  # select date within range
+  df3 <- df2[start_date<=df2$month & end_date>=df2$month,]
+  # fill missing data
+  if (nrow(df3)==0){
+    # end date is earlier than the date of list
+    return(df3)
+  }
+  else{
+    # enforce consecutive monthly data 
+    conseq_date <- data.frame(
+      month=seq.Date(min(df3$month), max(df3$month), by="month"))
+    # fill the missing data
+    if ("volume" %in% colnames(df)){
+      df4 <- merge(conseq_date, df3, by="month", all.x = TRUE) %>% 
+        fill(c(close.avg,close.var,close.min,close.max,volume))
+    }
+    else{
+      df4 <- merge(conseq_date, df3, by="month", all.x = TRUE) %>% 
+        fill(c(close.avg,close.var,close.min,close.max))
+    }
+    return(df4)
+  }
+}
+stocks_all_monthly <- list()
+for (i in 1:length(stocks_all)){
+  df <- convert_to_monthly(stocks_all[[i]])
+  stocks_all_monthly <- append(stocks_all_monthly, list(df))
+}
+```
+
+
+为了今后方便，我们把转化后的数据存到几张表格里。
+
+```{r, wangings=FALSE, message=FALSE}
+# 191 months
+dates00 <- data.frame(month=seq.Date(start_date, end_date, by="month"))
+# fill NA to monthly data before the date of listing
+fill_na <- function(st,x){
+  df <- merge(dates00, st[,c("month",x)], by="month", all.x = TRUE) %>% 
+              fill(c(x))
+  return(df[,c(x)])
+}
+# save field x to file 'all_stocks_<x>.csv'
+save_x <- function(x){
+  M <- matrix(nrow=length(stocks_all_monthly),ncol=nrow(dates00))
+  for (i in 1:length(stocks_all_monthly)){
+    M[i,] <- fill_na(stocks_all_monthly[[i]],x)
+  }
+  dfall <- as.data.frame(M)
+  names(dfall) <- dates00$month
+  dfall$symbols <- all_symbols
+  write.csv(dfall,paste0(paste0("all_stocks_",x),".csv"))
+  return()
+}
+```
+
+```{r, wangings=FALSE, message=FALSE}
+save_x("close.avg")
+save_x("close.var")
+save_x("volume")
+```
+
+
+---
+
+# 资产定价模型(CAPM)
+
+## 模型
+
+资产定价模型 (Capital Asset Pricing Model) 是1960年代由X提出的关于市场中可交易的资产的收益的模型。该模型基于一些假设（详见附录1），
+指出市场中可交易的资产的超额回报与市场超额回报线性相关：
+
+$$[R_{i,t}-R_{f,t}]=\beta_{i}[R_{M,t}-R_{f,t}]+e_{i,t}, \; t=0,1,2,...,T, \; i=1,2,...,N,$$
+其中$R_i-R_f$是资产$i$的超额回报，即该资产的回报$R_i$与无风险回报$R_f$之差；
+市场超额回报$R_M-R_f$是全市场回报$R_M$与无风险回报$R_f$之差。
+无风险回报$R_f$取决于投资者，对于个人通常可以认为是银行存款利率，
+对于机构则是银行间拆借利率。通常后者比前者低得多。
+系数$\beta_i$通常为正数，它反映资产$i$相对于市场获得超额收益的能力。
+$e_{i,t}$是正态分布的随机同分布变量，它与市场回报无关联：
+
+$$cov(R_M,e_i) = 0.$$ 
+
+这些$e_{i,t}$的统计学性质是CAPM的核心内容，需要在市场数据上进行统计检验。
+
+
+
+## 对数回报
+
+对数回报$r_t$定义为：
+
+$$r_t \equiv {\rm log}(P_t/P_{t-1}) = {\rm diff}({\rm log}(P))_t$$
+
+```{r difflog}
+# 计算对数回报
+difflog <- function(x){return(diff(log(x)))}
+```
+
+我们采用月度时间序列计算$R_i$、$R_M$和$R_f$。
+
+
+## 无风险回报率
+
+我们采用季度 [Hong Kong dollar interest settlement rate](https://www.censtatd.gov.hk/en/web_table.html?id=123) 作为无风险回报率。严格说这只是一个上限。
+[可以从此处下载](https://algorithmx.github.io/capm/ISR.csv)
+
+```{r load-settlement, wangings=FALSE, message=FALSE}
+load_ISR <- function(fn){
+  df <- read.csv(fn)
+  df1 <- df[rep(seq_len(nrow(df)), each = 3), ]
+  df2 <- data.frame(
+    close=as.numeric(df1$X1.month)[2:length(df1$X1.month)],
+    month=seq(as.Date("2006/2/1"), by = "month", length.out = length(df1$Year)-1))
+  return(df2[start_date<=df2$month & end_date>=df2$month,])
+}
+ISR_monthly <- load_ISR("./hk/ISR.csv")
+```
+
+
+## 市场回报率
+
+我们采用 [恒生指数](https://www.hsi.com.hk/) 作为市场回报率。
+[可以从此处下载](https://algorithmx.github.io/capm/HSI.csv)
+
+```{r load-HSI}
+load_HSI <- function(fn){
+  df <- read.csv(fn)
+  date <- as.Date(as.character(df$Date),format=("%m/%d/%y"))
+  close <- as.numeric(df$Close)
+  df1 <- data.frame(date=date, close=close)
+  return(df1)
+}
+HSI_monthly <- convert_to_monthly(load_HSI("./hk/HSI.csv"))
+```
+
+## 一个例子：HK.00005（汇丰银行）
+
+我们用一个例子来说明如何检验CAPM。首先我们把 HK.00005 历史股价和恒生指数、HKD interest settlement rate画在一起展示：
+
+```{r plot-stock-examples, out.width="80%", fig.asp = .3, fig.align = 'center', wangings=FALSE, message=FALSE}
+df1 <- stocks_all_monthly[[which(all_symbols=="00005.HK")]]
+p <-  ggplot() + 
+      geom_line(
+          data=df1,
+          aes(x=month,y=close.avg/close.avg[1],color='00005.HK, normalized')) +
+      geom_line(
+          data=HSI_monthly,
+          aes(x=month,y=close.avg/close.avg[1],color='Hang Sheng Index, normalized')) + 
+      geom_line(
+          data=ISR_monthly,
+          aes(x=month,y=close,color='HKD interest settlement rate (%)')) + 
+      labs(x="Month", y="Price or rate") +  
+      scale_color_manual(name='',
+                         breaks=c('00005.HK, normalized', 
+                                  'Hang Sheng Index, normalized',
+                                  'HKD interest settlement rate (%)'),
+                         values=c('00005.HK, normalized'='blue',
+                                  'Hang Sheng Index, normalized'='darkgreen', 
+                                  'HKD interest settlement rate (%)'='red')) + 
+      theme(legend.title=element_text(size=10),
+            legend.text=element_text(size=10),
+            legend.position = "right",
+            axis.title.x = element_text(size=10),
+            axis.title.y = element_text(size=10))
+p
+```
+
+从上图我们可以观察到：
+
+1. HKD interest settlement rate 有两次明显的下降，一次是2008年金融危机，一次是2020年的Covid-19疫情。
+
+2. 00005.HK 基本上没有“跑赢大盘”，也就是说，假设我们有两份等额的始于2016年的投资，一份投恒生指数基金，一份投00005.HK股票，那么在之后几乎任何时候，恒生指数基金（也就是大盘）的表现都会优于00005.HK。
+
+3. 00005.HK股价和恒生指数的走势是很接近的。
+
+我们进一步画出$A=[R_i-R_f]$和$X=[R_M-R_f]$的关系图，就会看到它们的线性关系非常明显：
+
+```{r plot-A-X, out.width="40%", fig.asp = .7, fig.align = 'center', wangings=FALSE, message=FALSE}
+R_i <- difflog(stocks_all_monthly[[which(all_symbols=="00005.HK")]]$close.avg)
+R_f <- difflog(ISR_monthly$close)
+R_M <- difflog(HSI_monthly$close.avg)
+df <- data.frame(A = R_i - R_f, X = R_M - R_f)
+p <-  ggplot() + 
+      geom_point(data=df,aes(x=X,y=A)) +
+      geom_line(data=df,aes(x=X,y=A))
+p
+```
+
+我们马上可以作一个线性拟合得到$\beta_i$：
+```{r}
+A = R_i - R_f
+X = R_M - R_f
+fit_hk00005 <- lm(A~X)
+summary(fit_hk00005)
+```
+从拟合结果看到，$\beta_i=$ `r fit_hk00005$coefficients["X"]`，结果显著；但截距是否为零，不能确定。[附录2]
+
+再将余项$e_{i,t}$算出并画出分布：
+
+```{r}
+e_t <- A - fit_hk00005$coefficients["X"]*X
+hist(e_t,breaks=100)
+```
+
+很明显，这个分布不是正态分布。
+
+```{r}
+shapiro.test(e_t)
+```
+
+**至此我们说：CAPM被00005.HK这支股票拒绝了！**
+
+
+## 全部检验一遍！
+
+我们把之前的过程运用到每一支股票上，统计一下结果。
+如果每一支股票的历史价格都拒绝CAPM，那这算是重大发现呢:-)
+
+首先我们来做一个函数，把上一节所有流程都放进去。
+
+```{r, wangings=FALSE, message=FALSE}
+# 对一支股票的历史价格数据，拟合CAPM
+fit_CAPM <- function(asset_monthly){
+  msk_R_i <- end_date>=asset_monthly$month & start_date<=asset_monthly$month
+  msk_R_f <- ((min(asset_monthly$month)<=ISR_monthly$month & start_date<=ISR_monthly$month) 
+              & end_date>=ISR_monthly$month)
+  msk_R_M <- ((min(asset_monthly$month)<=HSI_monthly$month & start_date<=HSI_monthly$month) 
+              & end_date>=HSI_monthly$month)
+  R_f <- ISR_monthly[msk_R_f, "close"]
+  R_f <- R_f[2:length(R_f)]
+  R_M <- diff(log( HSI_monthly[msk_R_M, "close.avg"] ))
+  R_i <- diff(log( asset_monthly[msk_R_i,"close.avg"] ))
+  A <- R_i - R_f
+  X <- R_M - R_f
+  fit <- lm(A~X)
+  return(fit)
+}
+```
+
+还有几个方便后面使用的函数：
+
+```{r, wangings=FALSE, message=FALSE}
+# 调用方便
+fit_CAPM_symbol <- function(sb){
+  return(fit_CAPM(stocks_all_monthly[[which(all_symbols==sb)]]))
+}
+# 计算余项 e_t
+calc_res <- function(ft){
+  r <- ft$model$A - ft$coefficients["X"] * ft$model$X
+  return(r)
+}
+```
+
+然后把所有选定的股票都做一遍CAPM的拟合：
+
+```{r fit, wangings=FALSE, message=FALSE}
+stocks_selected_monthly <- stocks_all_monthly[selected_id]
+symbol_selected <- all_symbols[selected_id]
+fit_selected <- list()
+for (st in stocks_selected_monthly){
+  fit_selected <- append(fit_selected, list(fit_CAPM(st)))
+}
+```
+
+最后统计结果：
+
+```{r, wangings=FALSE, message=FALSE}
+# regression result: coeff on X, or, beta
+Xcoeff <- c() 
+# regression result: intercept, or alpha
+Intcpt <- c() 
+vIntcpt <- c() 
+# 
+SMB <- c()
+PVX <- c()
+PVR <- c()
+for (i in 1:length(fit_selected)){
+  ft <- fit_selected[[i]]
+  s <- summary(ft)
+  r <- calc_res(ft)
+  t <- shapiro.test(r)
+  fd <- fitdistr(r,"normal")
+  Xcoeff <- c(Xcoeff,  as.numeric(ft$coefficients["X"]))
+  Intcpt <- c(Intcpt,  as.numeric(fd$estimate["mean"]))
+  vIntcpt<- c(vIntcpt, as.numeric(fd$estimate["sd"]))
+  SMB    <- c(SMB, symbol_selected[[i]])
+  PVX    <- c(PVX, as.numeric(s$coefficients["X","Pr(>|t|)"]))
+  PVR    <- c(PVR, as.numeric(t$p.value))
+}
+fit_results <- data.frame(
+    symbol=SMB, 
+    X=Xcoeff, 
+    et.avg=Intcpt, et.sd=vIntcpt, 
+    pval.x=PVX, pval.t=PVR)
+fit_results_accX <- fit_results[fit_results$pval.x<0.005,]
+fit_results_accR <- fit_results[fit_results$pval.t>0.05,]
+fit_results_acc  <- fit_results[fit_results$pval.t>0.05 & fit_results$pval.x<0.005,]
+```
+
+将结果保存下来：
+
+```{r, wangings=FALSE, message=FALSE}
+write.csv(fit_results,"CAPM_fit_results_on_selected_HK_stocks.csv")
+```
+
+如果你想直接从结果出发做一些自己感兴趣的观察，你可以下载并加载[这个文件](https://algorithmx.github.io/capm/CAPM_fit_results_on_selected_HK_stocks.csv)。文件里的列名字和上面代码中的一致，它们的意义如下：
++ X: the beta coefficient
++ et.avg : estimated mean of the normal distribution $e_{i,t}$, only valid when pval.t>0.05
++ et.sd :  estimated std  of the normal distribution $e_{i,t}$, only valid when pval.t>0.05
++ pval.x : p-value of the estimate of coefficient on X in the linear regression result, better to be less than 0.005
++ pval.t : p-value of the Shapiro-Wilk normality test, has to be greater than 0.05
+
+## 结果展示
+
+对于支持CAPM的股票，$\beta$系数的拟合结果有如下分布：
+
+```{r, echo=FALSE, out.width="80%", fig.asp = .4, fig.align = 'center'}
+p<- ggplot(fit_results_acc, aes(x=X)) + 
+    geom_histogram(color="blue", fill="blue", binwidth=0.01) +
+    labs(x="beta") + ggtitle("beta values from successful linear regression") + 
+    theme(axis.title.x = element_text(size=12),
+          axis.title.y = element_text(size=12))
+p
+```
+
+
+对于支持CAPM的股票，$\big<e_i\big>$的估计结果有如下分布：
+
+```{r, echo=FALSE, out.width="80%", fig.asp = .4, fig.align = 'center'}
+p<- ggplot(fit_results_acc, aes(x=et.avg)) + 
+    geom_histogram(color="red", fill="red", binwidth=0.002) +
+    labs(x="mean(e_t)") + ggtitle("mean of e_t from successful normality tests") + 
+    theme(axis.title.x = element_text(size=12),
+          axis.title.y = element_text(size=12))
+p
+```
+
+我们总共挑选了 `r length(fit_selected)` 支股票进行CAPM检验，
+结果有 `r nrow(fit_results_acc)` 支股票的月历史数据支持CAPM，
+仅占四分之一。
+
+**结果的分析请见下集～** 
+
+
+---
+
+# 附录1：CAPM基本假设
+
+参考书：CFA Curriculum 2018, Level I, Reading 42.
+
+CAPM基本假设是：
+
++ Investors are risk-averse, utility-maximizing, rational individuals
+
++ Markets are frictionless, including no transaction costs and no taxes
+
++ Investors plan for the same single hodling period.
+
++ Investors have homogeneous expectations or beliefs. 
+
++ All investments are infinitely divisible. 
+
++ Investors are price takers.
+
+---
+
+# 附录2：00005.HK拟合结果的解释
+
+正文中我们做了下面的线性拟合：
+
+```{r}
+fit_hk00005 <- lm(A~X)
+summary.lm(fit_hk00005)
+```
+
+下面对此做详细解释。参考书：C. Dougherty, Introduction to Econometrics, 3rd Edition. 
+
++ Residuals 一栏，通过 quantiles 给出了余项(residuals)的大致分布
+
++ 余项的定义是 ${\rm residuals} = Y_{data} - Y_{model}=Y_{data} - c X_{data} - x_0$，其中$c,x_0$是拟合结果
+
++ Coefficients 一栏给出了截距 (Intercept) 和斜率 X 的拟合结果，包括估计值(estimate)，标准误(std. error)，t值(t value)，和Pr(>|t|)。
+
++ 在`summary.lm`代码里，t值(t value)的定义是`tval=est/se`，其中`est`是拟合结果，`se`是经过一系列计算的标准误。这个值是要带入Student-t分布`pt(abs(tval), rdf, lower.tail = FALSE)`来计算p-value。
+
++ Pr(>|t|)就是p-value，它的值是`pval = 2*pt(abs(tval), rdf, lower.tail = FALSE)`，其中`rdf`是residual degrees of freedom.
+
+Based on the above information, we analyze the regression report as follows. We have degrees of freedom `fit_hk00005$df.residual` = `r fit_hk00005$df.residual`. This corresponds to a Student-t distribution:
+
+```{r, out.width="75%", fig.asp = .4, fig.align = 'center'}
+x <- seq(from=-4,to=4,by=0.05)
+y <- dt(x,fit_hk00005$df.residual)
+plot(x,y)
+title("student-t pdf of 188 DoF")
+```
+
+
+```{r, out.width="75%", fig.asp = .4, fig.align = 'center'}
+x <- seq(from=-4,to=4,by=0.05)
+y <- pt(x,fit_hk00005$df.residual)
+plot(x,y)
+title("student-t cdf of 188 DoF")
+```
+
+The reject/accept conclusion is based on the t-value. The proof of t-distribution can be found [here](https://stats.stackexchange.com/questions/286179/why-is-a-t-distribution-used-for-hypothesis-testing-a-linear-regression-coeffici), or in any standard textbook on statistics. First, we choose a confidence level, say 5%. It means that we restrict ourselves to the possibility less than 5% of making an Type-I mistake. Thus the confidence interval is [ `r qt(0.025,188)` , `r qt(1-0.025,188)` ]. The null hypothesis H0 is "the regression result vanishes." We have a very large t-value for the coefficient on X to reject H0 at confidence level 95%. In fact, such a large t-value means that it is almost certain that H0 is false, or equivalently, "the coefficient on X does not vanish". Both of the chances of type-I (reject a true hypothesis) and type-II (do not reject a false hypothesis) mistake are low. In contrast, the t-value for the intercept falls into the interval, dictating that we **do not reject** (or, accept?) H0. But this conclusion is less reliable and the chance of type-II mistake could be high. The failure of "rejecting the interception being zero by confidence level of 95%" does not imply an acceptance of "interception not being zero" at any confidence level. The situation is complicated.
