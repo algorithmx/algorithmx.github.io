@@ -215,6 +215,7 @@ load_ISR <- function(fn){
   return(df2[start_date<=df2$month & end_date>=df2$month,])
 }
 ISR_monthly <- load_ISR("./hk/ISR.csv")
+write.csv(ISR_monthly,"ISR_monthly.csv")
 ```
 
 
@@ -232,6 +233,7 @@ load_HSI <- function(fn){
   return(df1)
 }
 HSI_monthly <- convert_to_monthly(load_HSI("./hk/HSI.csv"))
+write.csv(HSI_monthly,"HSI_monthly.csv")
 ```
 
 ## 一个例子：HK.00005（汇丰银行）
@@ -278,7 +280,7 @@ p
 
 ```{r plot-A-X, out.width="40%", fig.asp = .7, fig.align = 'center', wangings=FALSE, message=FALSE}
 R_i <- difflog(stocks_all_monthly[[which(all_symbols=="00005.HK")]]$close.avg)
-R_f <- difflog(ISR_monthly$close)
+R_f <- ISR_monthly$close[2:191]
 R_M <- difflog(HSI_monthly$close.avg)
 df <- data.frame(A = R_i - R_f, X = R_M - R_f)
 p <-  ggplot() + 
@@ -375,6 +377,7 @@ vIntcpt <- c()
 SMB <- c()
 PVX <- c()
 PVR <- c()
+MON1<- c()
 for (i in 1:length(fit_selected)){
   ft <- fit_selected[[i]]
   s <- summary(ft)
@@ -387,12 +390,15 @@ for (i in 1:length(fit_selected)){
   SMB    <- c(SMB, symbol_selected[[i]])
   PVX    <- c(PVX, as.numeric(s$coefficients["X","Pr(>|t|)"]))
   PVR    <- c(PVR, as.numeric(t$p.value))
+  MON1   <- c(MON1, as.Date(first(stocks_selected_monthly[[i]]$month)))
 }
 fit_results <- data.frame(
     symbol=SMB, 
     X=Xcoeff, 
     et.avg=Intcpt, et.sd=vIntcpt, 
-    pval.x=PVX, pval.t=PVR)
+    pval.x=PVX, 
+    pval.t=PVR,
+    first.data.month=MON1)
 fit_results_accX <- fit_results[fit_results$pval.x<0.005,]
 fit_results_accR <- fit_results[fit_results$pval.t>0.05,]
 fit_results_acc  <- fit_results[fit_results$pval.t>0.05 & fit_results$pval.x<0.005,]
@@ -405,10 +411,15 @@ write.csv(fit_results,"CAPM_fit_results_on_selected_HK_stocks.csv")
 ```
 
 如果你想直接从结果出发做一些自己感兴趣的观察，你可以下载并加载[这个文件](https://algorithmx.github.io/capm/CAPM_fit_results_on_selected_HK_stocks.csv)。文件里的列名字和上面代码中的一致，它们的意义如下：
+
 + X: the beta coefficient
+
 + et.avg : estimated mean of the normal distribution $e_{i,t}$, only valid when pval.t>0.05
+
 + et.sd :  estimated std  of the normal distribution $e_{i,t}$, only valid when pval.t>0.05
+
 + pval.x : p-value of the estimate of coefficient on X in the linear regression result, better to be less than 0.005
+
 + pval.t : p-value of the Shapiro-Wilk normality test, has to be greater than 0.05
 
 ## 结果展示
@@ -451,9 +462,9 @@ p
 
 CAPM基本假设是：
 
-+ Investors are risk-averse, utility-maximizing, rational individuals
++ Investors are risk-averse, utility-maximizing, rational individuals.
 
-+ Markets are frictionless, including no transaction costs and no taxes
++ Markets are frictionless, including no transaction costs and no taxes.
 
 + Investors plan for the same single hodling period.
 
