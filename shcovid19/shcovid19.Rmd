@@ -9,6 +9,7 @@ date: '2022-04-17'
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(deSolve)
 ```
 
 ## 数据来源
@@ -18,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 df <- read.csv("SH_COVID19.csv")
 df$date <- as.Date(df$date)
-df[(nrow(df)-5):nrow(df),]
+tail(df)
 ```
 
 ## 数据呈现
@@ -38,37 +39,9 @@ plot(df$date, df$new.cases/(df$new.asympt.cases+df$new.cases), col="black",
 title("上海发布公布的新冠感染日新增情况")
 ```
 
-## S-I-R 模型拟合
+## 累计感染人数增长Logistic模型
 
-S-I-R 模型指出，健康者比例 $S$，感染者比例 $I$，恢复者比例 $R$ 存在如下关系：
-
-\begin{align}
-\frac{{\rm d}S}{{\rm d}t} & =-\beta S I\\
-\frac{{\rm d}I}{{\rm d}t} & =\beta SI-\gamma I\\
-\frac{{\rm d}R}{{\rm d}t} & =\gamma I\\
-1 & = S + I + R 
-\end{align}
-
-上面的模型有离散版本：
-
-\begin{align}
-S_{n+1} & =-\beta S_{n}I_{n}+S_{n}\\
-I_{n+1} & =\beta S_{n}I_{n}+(1-\gamma)I_{n}\\
-R_{n+1} & =\gamma I_{n}+R_{n}
-\end{align}
-
-其中下标 $n$ 代表日期。根据实际情况，我们可以做出近似 $S_n\approx1$. 于是得
-
-\begin{align}
-I_{n+1} & = a I_{n}\\
-R_{n+1} & = b I_{n} + R_{n}
-\end{align}
-
-至此，可以认为时间序列 $V_n=(I_n,R_n)$ 满足 VAR(1), 随机性源于模型的不完备，以及统计误差。
-
-## 人口增长Logistic模型
-
-由于缺乏恢复患者数量信息，我们**只能**单独对 $I_n$ 进行分析。之前我们展示的是日新增数字，这是 marginal data，而 $I_n$ 是 cumulative data，形状如下：
+由于缺乏恢复患者数量信息，我们**只能**对累计感染人数(记为$T_n$)进行分析。之前我们展示的是日新增数字，是marginal data，而$T_n$根据定义是 cumulative data，形状如下：
 
 
 ```{r, out.width="85%", fig.asp = .6, fig.align = 'center'}
@@ -120,9 +93,9 @@ t1 <- seq(from=0,to=60,by=1)
 plot(In ~ t, data=infection, col="black", xlim=c(0,60), ylim=c(0,0.02),
      xlab="自3月17日起(天)", ylab="累计感染总人数")
 lines(t1, as.numeric(predict(fit, newdata=data.frame(t=t1))), col="blue")
-legend(0, 0.018, c("数据","拟合+预测"), col=c("black","blue"), 
+legend(0, 0.018, c("[上海发布公众号]数据","Logistic模型,拟合+预测"), col=c("black","blue"), 
        pch=c(1,1), lty=c(0,1), y.intersp=1.5)
-title("基于上海发布公布的新冠感染情况的预测，日累计")
+title("基于[上海发布公众号]的新冠感染情况的预测，日累计")
 ```
 
 
@@ -133,18 +106,276 @@ newdate <- seq.Date(from=df$date[1],to=as.Date(df$date[1]+60),by="day")
 plot(df$date, df$new.asympt.cases+df$new.cases, col="black", xlim=c(newdate[1],newdate[61]),
      xlab="日期", ylab="单日新增人数")
 lines(newdate, population * d, col="blue")
-legend(newdate[1], 25000, c("数据","拟合+预测"), col=c("black","blue"), 
+legend(newdate[36], 25000, c("[上海发布公众号]数据","Logistic模型,拟合+预测"), col=c("black","blue"), 
        pch=c(1,1), lty=c(0,1), y.intersp=1.5)
-title("基于上海发布公布的新冠感染情况的预测，日新增")
+title("基于[上海发布公众号]的新冠感染情况的预测，日新增")
 ```
 
 **哈哈，模型预测，到五月中旬差不多就清零啦！**
 
-由于我们使用了人口增长Logistic模型，引进容量参数 $K$ (对应`Asym`)，它估计为 $0.01875$，也就是说，到解封的时候，每千名上海居民会有大约 $19$ 人曾感染过新冠。我们也可以看到，模型预测，日新增感染数的拐点已经过了～
+由于我们使用了人口增长Logistic模型，引进容量参数 $K$ (对应`Asym`)，它估计为 $0.01972$，也就是说，到解封的时候，每千名上海居民会有大约 $20$ 人曾感染过新冠。我们也可以看到，模型预测，日新增感染数的拐点已经过了～
+
+
+
+## S-I-R 模型
+
+S-I-R 模型指出，有机会感染者(susceptible)比例 $S$，已感染者(infected)比例 $I$，恢复者(recovered)比例 $R$ 存在如下关系：
+
+\begin{align}
+\frac{{\rm d}S}{{\rm d}t} & =-\beta S I\\
+\frac{{\rm d}I}{{\rm d}t} & =\beta SI-\gamma I\\
+\frac{{\rm d}R}{{\rm d}t} & =\gamma I\\
+1 & = S + I + R 
+\end{align}
+
+模型参数说明：
+
++ $\beta$ rate of infection
+
++ $\gamma$ rate of recovery
+
+这个模型是非线性的，但是它对所有的参数的依赖却是线性。对于这种问题，已有很多研究，例如。[上海发布公众号]给出了确诊感染者和无症状感染者的数据，总共有不超过一百个正整数，把它们分别相加再 `cumsum` 后对应模型 $I$. 基于对有机会感染人群总数 $S$ 和参数 $\gamma$ 的合理假设，我们可以在 $R$ 缺失的情况下对参数 $\beta,\gamma$ 做出估计。
+
+首先需要一个模拟器，准确说是常微分方程的integrator，求出SIR常微分方程给定参数和初始条件后的数值解。
+
+```{r integrator-SIR}
+
+SIR_model <- function(t, state, parameters) {
+  with(as.list(c(state, parameters)),{
+    dS <- -beta*I*S
+    dI <-  beta*I*S - gamma*I
+    dR <-  gamma*I
+    list(c(dS,dI,dR))
+  }) # end with(as.list ...
+}
+
+SIR <- function(t, beta, gamma, I0, R0){
+  params <- c(beta=beta,gamma=gamma)
+  state  <- c(S=1.0-I0-R0,I=I0,R=R0)
+  out <- ode(y = state, times = t, 
+             func = SIR_model, 
+             parms = params, 
+             method="rk4")
+  return(out)
+}
+```
+
+来看几个例子。假设在一个完全健康的群体中出世感染者只有极少的比例：
+
+$$I(0)=10^{-7},\;R(0)=0,\;S(0)=1-I(0)-R(0).$$
+让我们来对比一下 $\beta,\gamma$ 取不同数值时候 $I(t)$ 的发展情况。设定 $\beta=4$，我们得到SIR方程的的解如下：
+
+```{r compare-SIR}
+t <- seq(from=0, to=100, by=0.02)
+simul1 <- as.data.frame(SIR(t, 4, 0.1, 1e-7,0))
+simul2 <- as.data.frame(SIR(t, 4, 0.8, 1e-7,0))
+simul3 <- as.data.frame(SIR(t, 2, 0.1, 1e-7,0))
+plot( simul1$time, simul1$I, lty=1, col="red", type="l", lwd=2,
+      xlim=c(0,80),ylim=c(0,1),
+      xlab="时间(天)", ylab="累计总人数" )
+lines(simul1$time, simul1$R, lty=1, col="green",lwd=2)
+lines(simul2$time, simul2$I, lty=2, col="red",  lwd=2)
+lines(simul2$time, simul2$R, lty=2, col="green",lwd=2)
+lines(simul3$time, simul3$I, lty=3, col="red",  lwd=2)
+lines(simul3$time, simul3$R, lty=3, col="green",lwd=2)
+legend(50, 1.0, c("I(t), b=4, g=0.1","E(t)",
+                  "I(t), b=4, g=0.8","E(t)",
+                  "I(t), b=2, g=0.1","E(t)"), 
+       col=c("red","green","red","green","red","green"), 
+       lty=c(1,1,2,2,3,3), y.intersp=1.5)
+title("SIR模型")
+```
+
+从上图可以看出，$\beta$小，累计感染比率峰值出现得较晚；$\gamma$大，累计感染比率峰值较低。
+
+
+作为拟合[上海发布]数据的准备，我们来用3月22日--3月26日的数据估算$\beta$值。方法如下。根据SIR模型的第一行，我们可以把$I(t)$的平均值带入方程，得到$S(t)$的一个指数衰减解：
+
+$$S(t) = S(0) \exp\left( -\tilde{\beta} \left<I\right> t \right).$$
+而得到 $c=-\tilde{\beta} \left<I\right>$ 的值、进而得到 $\beta$ 的一个估计 $\tilde{\beta}$ 很容易。下面是代码：
+
+```{r estimate-beta-SIR}
+i0 <- 6 # df[6,1] = "2022-03-22"
+population <- 2.5e7 
+In <- cumsum(df$new.cases + df$new.asympt.cases) / population
+Sn <- (1-In)
+t  <- seq(from=0,to=nrow(df)-1,by=1)
+t5 <- t[i0:(i0+4)]
+log_S0_a <- log(Sn[i0:(i0+4)])
+fit_for_beta <- lm(log_S0_a ~ t5)
+c <- as.numeric(fit_for_beta$coefficients["t5"])
+beta_estim <- -c/(In[i0]) # tends to overestimate
+beta_estim
+```
+
+由于 $R(t)$ 数据缺失，$\gamma$ 无法用 SIR 公式最后一行来估算。但我们可以变形中间一行：
+
+$$\frac{{\rm d}\,{\rm ln} I}{{\rm d}t} =\beta S-\gamma,$$
+
+做出近似 $S(t)\approx 1$，我们可以通过 ${\rm d}\,{\rm ln} I\sim t$ 的斜率大概算一下：
+
+
+```{r estimate-gamma-SIR}
+i0 <- 6
+log_In <- log(In[i0:(i0+4)])
+t5 <- t[i0:(i0+4)]
+fit_for_gamma <- lm(log_In ~ t5)
+gamma_estim <- beta_estim - as.numeric(fit_for_gamma$coefficients["t5"])
+gamma_estim
+```
+
+估算的结果 $\tilde{\gamma} > 0$，比较合理。
+
+于是我们可以用刚写好的simulator结合这几个估算数字，画个图：
+
+```{r estimate-plot-SIR}
+i0 <- 6 # df[6,1] = "2022-03-22"
+t <- seq(from=0, to=70, by=0.02)
+tdata <- seq(from=0, to=nrow(df)-1, by=1)
+simul_estim <- as.data.frame(SIR(t, beta_estim, gamma_estim, 
+                                 In[i0], 0))
+plot( simul_estim$time+i0-1, simul_estim$I, lty=1, col="red", type="l", lwd=2,
+      xlim=c(0,80),ylim=c(0,0.1),
+      xlab="时间(天)", ylab="累计人数占总人口比例" )
+lines(simul_estim$time+i0-1, simul_estim$R, lty=1, col="green",lwd=2)
+points(tdata, In, col="black")
+legend(50, 0.4, 
+       c("I(t)","R(t)","data"), 
+       col=c("red","green","black"), 
+       lty=c(1,1,0), pch=c(1,1,1), y.intersp=1.5)
+title("SIR模型, 代入估算值")
+```
+
+从上图可以看出，仅用估算值代入SIR模型给出预测，在第20天后偏差很多，因为 $\beta$ 可能被高估。所以还是需要拟合。
+
+```{r}
+N <- nrow(df)
+i0 <- 6 # skip the first 5 days  
+population <- 2.5e7
+In <- cumsum(df$new.cases + df$new.asympt.cases) / population
+In_partial <- In[i0:N]
+t_0_02 <- seq(from=0,to=N-i0,by=0.02)
+msk <- seq(from=1,to=length(t_0_02),by=50)
+wght<- exp(0.1 * seq(from=0, to=N-i0, by=1))
+wght<- wght/sum(wght)
+cost <- function(In0, beta, gamma, Rn0){
+  pred <- SIR(t_0_02, beta, gamma, In0, Rn0)
+  r <- sum((pred[msk,3]-In_partial)*(pred[msk,3]-In_partial)*wght)
+  return(1e4*r)
+}
+```
+
+
+```{r}
+# fit
+L <- function(p){ return(cost(In[i0], p[1],p[2],p[3])) }
+opt <- optim(c(beta_estim, gamma_estim, 1e-8), L, 
+             method="BFGS", control=c(maxit=20000))
+opt$par
+```
+
+可以看到，拟合结果完全错误，正在设法改进。
+
+---
+
+## S-E-I-R 模型
+
+S-E-I-R 在 S-I-R 模型基础上考虑了传染力不同的感染者，增加了无症状感染者 (Exposed)。这部分感染者对传播的贡献不同于确诊感染者。模型扩展成下面的样子：
+
+\begin{aligned}
+\frac{{\rm d}S}{{\rm d}t}&=-\beta IS\\
+\frac{{\rm d}E}{{\rm d}t}&=\beta IS-\alpha E\\
+\frac{{\rm d}I}{{\rm d}t}&=\alpha E-\gamma I\\
+\frac{{\rm d}R}{{\rm d}t}&=\gamma I\\
+1&=S+E+I+R
+\end{aligned}
+
+模型参数说明：
+
++ $\beta$ rate of infection
+
++ $\gamma$ rate of recovery
+
++ $\alpha$ Exposed to Infected turning rate
+
+[上海发布公众号]给出了确诊感染者和无症状感染者的数据，总共有不超过一百个正整数，它们 `cumsum` 后分别对应模型 $I$ 和 $E$。基于对有机会感染人群总数 $S$ 和参数 $\gamma$ 的合理假设，我们可以在 $R$ 缺失的情况下对参数 $\beta,\gamma,\alpha$ 做出估计。
+
+与 SIR 模型的讨论类似，首先写一个模拟器，求出SEIR常微分方程给定参数和初始条件后的数值解。
+
+```{r integrator-SEIR}
+SEIR_model <- function(t, state, parameters) {
+  with(as.list(c(state, parameters)),{
+    dS <- -beta*I*S
+    dE <-  beta*I*S - alpha*E
+    dI <-  alpha*E - gamma*I
+    dR <-  gamma*I
+    list(c(dS,dE,dI,dR))
+  }) # end with(as.list ...
+}
+
+SEIR <- function(t, alpha, beta, gamma, E0, I0, R0){
+  params <- c(beta=beta,gamma=gamma,alpha=alpha)
+  state  <- c(S=1.0-E0-I0-R0,E=E0,I=I0,R=R0)
+  out <- ode(y = state, times = t, 
+             func = SEIR_model, 
+             parms = params, 
+             method="rk4")
+  return(out)
+}
+```
+
+来看几个例子。假设在一个完全健康的群体中出世感染者只有极少的比例：
+
+$$I(0)=10^{-7},\;E(0)=0,\;R(0)=0,\;S(0)=1-E(0)-I(0)-R(0).$$
+让我们来对比一下 $\beta,\alpha,\gamma$ 取不同数值时候 $I(t),E(t)$ 的发展情况。设定 $\beta=4$，我们得到SEIR方程的的解如下：
+
+```{r compare-SEIR}
+t <- seq(from=0, to=100, by=0.02)
+simul1 <- as.data.frame(SEIR(t, 0.2, 4, 0.1, 0,1e-7,0))
+simul2 <- as.data.frame(SEIR(t, 0.2, 4, 0.8, 0,1e-7,0))
+simul3 <- as.data.frame(SEIR(t, 0.5, 4, 0.1, 0,1e-7,0))
+plot( simul1$time, simul1$I, lty=1, col="red", type="l", lwd=2,
+      xlim=c(0,80),ylim=c(0,1),
+      xlab="时间(天)", ylab="累计总人数" )
+lines(simul1$time, simul1$E, lty=1, col="blue", lwd=2)
+lines(simul1$time, simul1$R, lty=1, col="green",lwd=2)
+lines(simul2$time, simul2$I, lty=2, col="red",  lwd=2)
+lines(simul2$time, simul2$E, lty=2, col="blue", lwd=2)
+lines(simul2$time, simul2$R, lty=2, col="green",lwd=2)
+lines(simul3$time, simul3$I, lty=3, col="red",  lwd=2)
+lines(simul3$time, simul3$E, lty=3, col="blue", lwd=2)
+lines(simul3$time, simul3$R, lty=3, col="green",lwd=2)
+legend(50, 1.0, c("I(t), a=0.2, g=0.1","E(t)",
+                  "I(t), a=0.2, g=0.8","E(t)",
+                  "I(t), a=0.5, g=0.1","E(t)"), 
+       col=c("red","blue","red","blue","red","blue"), 
+       lty=c(1,1,2,2,3,3), y.intersp=1.5)
+title("SEIR模型，b=4")
+```
+
+拟合结果将在下一次更新时给出。
+
+---
 
 ## 新冠预测相关资料
 
-我并没有使用严谨的模型来预测新增感染人数，原因是可以拿到的数据太少。如果数据充足，那么下面的链接里提供了很多模型可以用来预测新冠感染人数。
+**目前我可以拿到的数据非常少，只有不超过一百个正整数。所以，以上的预测，并没有参考价值。真正具有参考价值的，一定、必须、只能是上海卫建委的权威发布。**
+
+如果数据充足，那么下面的链接里提供了很多模型可以用来预测新冠感染人数。
 
 [美国疾控中心·COVID19预测模型描述](https://github.com/cdcepi/COVID-19-Forecasts/blob/master/COVID-19_Forecast_Model_Descriptions.md)
+
+---
+
+## TODO
+
+Write a self-starter for the SEIR model fitting ! References on self-starters:
+
+- https://stat.ethz.ch/R-manual/R-devel/library/stats/html/selfStart.html
+
+- https://www.r-bloggers.com/2020/02/a-collection-of-self-starters-for-nonlinear-regression-in-r/
+
+- https://data-flair.training/blogs/r-nonlinear-regression/
+
+- https://www.r-bloggers.com/add-your-blog/
 
