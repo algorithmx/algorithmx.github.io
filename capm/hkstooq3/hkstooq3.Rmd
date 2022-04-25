@@ -1,0 +1,570 @@
+---
+title: "02599.HK,你的BETA大...太大了啊!"
+author: Yunlong(@algorithmx)
+output:
+  html_document
+date: '2022-04-25'
+---
+
+## [回主页](https://algorithmx.github.io/)
+
+## [下载 R markdown 源代码](https://algorithmx.github.io/capm/hkstooq3/hkstooq3.Rmd)
+
+
+```{r setup, wangings=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+
+# plot
+library(ggplot2)
+
+library(comprehenr)
+library(foreach)
+library(doParallel)
+#setup parallel backend to use many processors
+cores=detectCores()
+cl <- makeCluster(cores[1]-1) #not to overload your computer
+registerDoParallel(cl)
+
+# statistics, time series
+library(tidyr)
+library(dplyr)
+library(lubridate)
+library(Quandl)
+library(fBasics)
+library(timeSeries)
+library(TSdist)
+
+# other
+library(goft)
+library(readxl)
+library(stringr)
+library(fitdistrplus)
+
+# for k-means
+library(ClusterR)
+library(cluster)
+library(fpc)
+set.seed(123)
+
+# log return
+difflog <- function(x){return(diff(log(x)))}
+```
+
+
+这篇笔记主要讨论港交所列出的当前可交易股票，是一系列探讨资产定价模型CAPM文章的第三篇。虽然题目哗众取宠，但这是一篇严肃的笔记，部分内容曾作为相关课程作业。[上一篇笔记](https://algorithmx.github.io/capm/hkstooq2/)介绍了资产定价模型CAPM在港股股价历史数据上的拟合检验；[再早一篇笔记](https://algorithmx.github.io/capm/hkstooq1/)展示了港股股价历史数据的基本情况。我们发现了CAPM拟合结果的一些异常情况。这篇笔记试图理解这些异常，并进行反思。
+
+---
+
+# 加载数据
+
+这篇笔记使用[stooq.com](https://stooq.com/db/h/)数据。如果你想运行程序，需要先从[这个链接](https://stooq.com/db/h/)下载所有港交所数据，并解压到这个笔记本所在的目录。之后我们将用路径`'./hk/hkex_stocks'`来访问股票数据文件。（我把子文件夹名字空格改成了下划线）
+
+如果你不想从头开始，那么也可以使用我在[上一篇笔记](https://algorithmx.github.io/capm/hkstooq2/)中处理好的月度数据：
+
++ [全部股票中选择ID](https://algorithmx.github.io/capm/selected_id.Rdata)
+
++ [月度数据：平均收盘价格](https://algorithmx.github.io/capm/all_stocks_close.avg.csv)
+
++ [月度数据：收盘价格方差](https://algorithmx.github.io/capm/all_stocks_close.var.csv)
+
++ [月度数据：总交易量](https://algorithmx.github.io/capm/all_stocks_close.volume.csv)
+
++ [月度数据：恒生指数](https://algorithmx.github.io/capm/HSI_monthly.csv)
+
++ [月度数据：HKD interest settlement rate](https://algorithmx.github.io/capm/ISR_monthly.csv)
+
+以及回归结果：
+
++ [CAPM回归结果](https://algorithmx.github.io/capm/CAPM_fit_results_on_selected_HK_stocks.csv)
+
+
+```{r}
+# load previous analysis
+all_stocks_close.avg <- read.csv("all_stocks_close.avg.csv")
+all_stocks_close.var <- read.csv("all_stocks_close.var.csv")
+all_stocks_volume    <- read.csv("all_stocks_volume.csv")
+HSI_monthly          <- read.csv("HSI_monthly.csv")
+ISR_monthly          <- read.csv("ISR_monthly.csv")
+CAPM_fit_results     <- read.csv("CAPM_fit_results_on_selected_HK_stocks.csv")
+load("selected_id.Rdata")
+```
+
+---
+
+# $\beta$ 较大的股票
+
+## 找出天赋异禀的股票
+
+[上一篇笔记](https://algorithmx.github.io/capm/hkstooq2/)指出，对于支持CAPM的股票，$\beta$系数的拟合结果有如下分布：
+
+```{r, out.width="85%", fig.asp = .4, fig.align = 'center'}
+fit_results_acc <- CAPM_fit_results[CAPM_fit_results$pval.x<0.005 & CAPM_fit_results$pval.t>0.05,]
+p<- ggplot(fit_results_acc, aes(x=X)) + 
+    geom_histogram(color="blue", fill="blue", binwidth=0.01) +
+    labs(x="beta") + ggtitle("beta values from successful linear regression") + 
+    theme(axis.title.x = element_text(size=12),
+          axis.title.y = element_text(size=12))
+p
+```
+
+下面这些股票具有超过统计$5\sigma$的$\beta$值：
+
+```{r}
+fit_results_anom_beta <- fit_results_acc[fit_results_acc$X > 5*sd(fit_results_acc$X), ]
+fit_results_anom_beta
+```
+
+我们看到，**这些天赋异禀的股票，都是上市不到两年的新股，而且线性回归的$R^2$值都不高于0.8。** 
+
+如果我们要求 $R^2>0.8$，则 $\beta$ 分布就非常接近 $1$ 了：
+
+```{r, out.width="85%", fig.asp = .4, fig.align = 'center'}
+fit_results_acc1 <- CAPM_fit_results[CAPM_fit_results$pval.x<0.005 & (CAPM_fit_results$pval.t>0.05 & CAPM_fit_results$r.squared>0.8),]
+p<- ggplot(fit_results_acc1, aes(x=X)) + 
+    geom_histogram(color="blue", fill="blue", binwidth=0.01) +
+    labs(x="beta") + ggtitle("beta values from successful linear regression") + 
+    theme(axis.title.x = element_text(size=12),
+          axis.title.y = element_text(size=12))
+p
+```
+
+在选定的股票中，总共有 `r sum(as.Date(CAPM_fit_results$first.data.month)>as.Date("2020-05-31"))` 支新股在近18月中上市。看看他们的 $\beta$，发现超过2.5的并不多：
+
+```{r, warnings=FALSE, message=FALSE, out.width="80%", fig.asp = .4, fig.align = 'center'}
+fit_results_listed_after_2020 <- fit_results_acc[as.Date(fit_results_acc$first.data.month)>as.Date("2020-05-31"),]
+p<- ggplot(fit_results_listed_after_2020, aes(x=X)) + 
+    geom_histogram(color="purple", fill="purple", binwidth=0.1) +
+    labs(x="beta") + ggtitle("beta values from succ. lin. regr. (listed after 2020-05-31)") + 
+    theme(axis.title.x = element_text(size=12),
+          axis.title.y = element_text(size=12))
+p
+```
+
+
+我们迫不及待要看看 $\beta$ 超过2.5的，都长什么样子：
+
+```{r, out.width="80%", fig.asp = .3, fig.align = 'center'}
+col10 <- c("black","red","blue","pink","lightblue",
+           "green","darkgreen","orange","brown","violet")
+dates <- as.Date(names(all_stocks_close.avg)[2:192],format="X%Y.%m.%d")
+for (i in 1:nrow(fit_results_anom_beta)){
+  X0 <- all_stocks_close.avg[all_stocks_close.avg$symbols==fit_results_anom_beta$symbol[[i]],2:192]
+  sb <- all_stocks_close.avg[all_stocks_close.avg$symbols==fit_results_anom_beta$symbol[[i]],193]
+  st <- na.omit(data.frame(month=dates,close=to_vec(for (pr in X0) pr)))
+  p <- ggplot() + 
+       geom_line(data=st,aes(x=month,y=close),color=col10[[i]]) +
+       labs(x="Date", y="Price (HKD)") + 
+       ggtitle(paste0(sb,", beta=",as.character(round(fit_results_anom_beta$X[[i]],digits=3))))
+  print(p)
+}
+```
+
+看到02599.HK的样子我其实蛮失望的。$\beta$ 大有什么用呢？最后还不是跌得一塌糊涂。。。
+
+---
+
+## 从线性拟合开始说起
+
+检查 02599.HK 的 $R_i - R_f \sim R_M - R_f$ 关系，不难发现它是明显偏离线性的： 
+
+```{r}
+# linear regression
+P.02599.HK <- all_stocks_close.avg[which(all_stocks_close.avg$symbols=="02599.HK"),]
+price.02599.HK <- as.numeric(P.02599.HK[(last(which(is.na(P.02599.HK)))+1):(length(P.02599.HK)-1)])
+R_i <- difflog(price.02599.HK)
+R_f <- ISR_monthly$close[(192-length(R_i)):191]
+R_M <- difflog(HSI_monthly$close.avg)[(191-length(R_i)):190]
+df.02599.HK <- data.frame(A = R_i - R_f, X = R_M - R_f)
+fit.02599.HK <- lm(A~X, data=df.02599.HK)
+summary(fit.02599.HK)
+```
+
+```{r plot-A-X, out.width="60%", fig.asp = .7, fig.align = 'center', wangings=FALSE, message=FALSE}
+# scatter plot
+p <-  ggplot() + 
+      geom_point(data=df.02599.HK,aes(x=X,y=A)) +
+      geom_line(data=df.02599.HK,aes(x=X,y=A))
+p
+```
+
+可以想到，上述线性回归结果，如果去掉$X$最高值或者最低值再进行线性回归，结果变化会很大。
+
+00873.HK 的 $\beta$ 也很大。我们快来看一看：
+
+```{r}
+# linear regression
+P.00873.HK <- all_stocks_close.avg[which(all_stocks_close.avg$symbols=="00873.HK"),]
+price.00873.HK <- as.numeric(P.00873.HK[(last(which(is.na(P.00873.HK)))+1):(length(P.00873.HK)-1)])
+R_i <- difflog(price.00873.HK)
+R_f <- ISR_monthly$close[(192-length(R_i)):191]
+R_M <- difflog(HSI_monthly$close.avg)[(191-length(R_i)):190]
+df.00873.HK <- data.frame(A = R_i - R_f, X = R_M - R_f)
+fit.00873.HK <- lm(A~X, data=df.00873.HK)
+summary(fit.00873.HK)
+```
+
+
+```{r plot-A-X-00873.HK, out.width="60%", fig.asp = .7, fig.align = 'center', wangings=FALSE, message=FALSE}
+# scatter plot
+p <-  ggplot() + 
+      geom_point(data=df.00873.HK,aes(x=X,y=A)) +
+      geom_line(data=df.00873.HK,aes(x=X,y=A))
+p
+```
+
+
+00873.HK 的 $R_i - R_f \sim R_M - R_f$ 关系，偏离线性的方式，和 02599.HK 有所不同。
+
+上面这两个例子说明，以 CAPM 模型为参照，港股的月均股价历史可以按照  $R_i - R_f \sim R_M - R_f$ 线性回归的结果来分类，比如 $\beta$ 比较大，或者 $R^2$ 比较小，或者回归结果不显著满足 CAPM。下一节我们将使用 K-means 方法对线性回归结果进行类聚分析。
+
+---
+
+## 扩充 CAPM
+
+对于 CAPM 的偏离，有人认为是由于 “隐藏因子” 没有被发掘。记隐藏因子为 $H$，我们可以这样修正 CAPM：
+
+$$R_i - R_f = \beta_i (R_M - R_f) + (\gamma_i H + \alpha_i),$$
+
+如果我们能够找到合适的 $H$，通过同一套验证标准检验所有港股月均股价历史数据，提高新模型的接受率，那么我们似乎就找到了战胜市场的 “财富密码”。
+
+---
+
+## 使用 K-means 对 CAPM 线性回归结果进行分类
+
+前面通过对大 $\beta$ 的股票股价数据检查后发现，它们虽然通过了线性拟合显著性检验
+
++ beta value regression p-value < 0.005
+
++ Shapiro test on CAPM model residual p-value > 0.05
+
+但是仍然有一些股价数据明显偏离线性模型。这提示我们扩大检查范围。
+于是我想到使用 K-means 方法，依据CAPM的线性拟合结果，对股票进行分类。
+这是一种“无监督”的学习，分类结果可以帮助我们从股价的表现上找到天赋异禀的股票(以及快乐之门的钥匙和财富之门的密码等等)。
+我们也可以通过查看 $\beta$ 超级大的 02599.HK 在哪一类里，来提出具有哪些特点的股票可能会有大 $\beta$。
+
+
+我挑选了下面的拟合结果指标进行类聚分析：
+
++ $\beta$ (or `X`)
+
++ $\overline{e_i}$ (or `et.avg`)
+
++ ${\rm std}(e_i)$ (or `et.sd`)
+
++ p-value of regression result $\beta$ (or `pval.x`)
+
++ p-value of Shapiro test on CAPM model residual $e_t$ (or `pval.t`)
+
++ $R^2$ of the linear regression
+
+注意，类聚分析的类别数，并不是随意指定的。类数太多，分类就变得没有意义；类数太少，又不能有效利用数据中的相似性。一个比较公平的办法是，测量 variance reduction:
+
+\begin{align}
+V & =\sum_{i\in{\cal S}}\sum_{j=1}^{P}\left(x_{i}^{(j)}-\overline{x}^{(j)}\right)^{2}\\
+V' & =\sum_{k=1}^{K}\sum_{i\in{\cal S}_{k}}\sum_{j=1}^{P}\left(x_{i}^{(j)}-\overline{x}_{k}^{(j)}\right)^{2}\\
+R & =\frac{V-V'}{V}
+\end{align}
+
+```{r, out.width="60%", fig.asp = .8, fig.align = 'center'}
+features <- CAPM_fit_results[,3:8]
+kmeans.re <- vector(mode="list",length=10L)
+for (k in 2:11){
+  kmeans.re[[k-1]] <- kmeans(features, centers=k, nstart=20*k, iter.max=1000L)
+}
+rv <- as.numeric(to_list(for (k in 2:11) (kmeans.re[[k-1]]$tot.withinss/kmeans.re[[k-1]]$totss)))
+plot(2:11,rv)
+```
+
+从图上看，选 5 个 cluster 比较合适。
+
+```{r}
+y_kmeans <- kmeans.re[[4]]$cluster
+cbind(kmeans.re[[4]]$centers,kmeans.re[[4]]$size)
+```
+
+从上面的 5 个类的中心来看，这 5 类特点如下：
+
+1. $\beta < 0$, linear regression rejected
+
+2. $\beta \sim 1$, linear regression not significant
+
+3. $\beta$ large, $\alpha > 0$, linear regression rejected
+
+4. $\beta \sim 1$, linear regression accepted, $R^2>0.95$ 
+
+5. linear regression rejected, significant $\alpha<0$
+
+---
+
+我们将几个类的股票代码列举如下：
+
+```{r}
+kclust <- kmeans.re[[4]]$cluster
+kid <- unique(kclust)
+for (i in kid){
+  msk <- (kclust == i)
+  if (sum(msk) < 100){
+    print("------------")
+    print(i)
+    print(CAPM_fit_results[,2][kclust == i])
+  }
+}
+```
+
+**提示：股票 02599.HK 在上面这第 2 类里哟！**
+
+---
+
+下面几张图，展示了 k-means 的分类结果。由于没有更多信息，我们暂时无法理解为什么会有这样的分类。留作后续。
+
+```{r, out.width="60%", fig.asp = 1, fig.align = 'center'}
+clusplot(features[, c("X", "et.avg")],
+         y_kmeans,
+         lines = 0,
+         shade = TRUE,
+         color = TRUE,
+         labels = 2,
+         plotchar = FALSE,
+         span = TRUE,
+         main = paste("CAPM linear regression"),
+         xlab = 'beta',
+         ylab = 'alpha')
+```
+
+
+```{r, out.width="60%", fig.asp = 1, fig.align = 'center'}
+clusplot(features[, c("et.avg", "et.sd")],
+         y_kmeans,
+         lines = 0,
+         shade = TRUE,
+         color = TRUE,
+         labels = 2,
+         plotchar = FALSE,
+         span = TRUE,
+         main = paste("CAPM linear regression"),
+         xlab = 'alpha mean',
+         ylab = 'alpha std')
+```
+
+
+```{r, out.width="60%", fig.asp = 1, fig.align = 'center'}
+clusplot(features[, c("X", "pval.x")],
+         y_kmeans,
+         lines = 0,
+         shade = TRUE,
+         color = TRUE,
+         labels = 2,
+         plotchar = FALSE,
+         span = TRUE,
+         main = paste("CAPM linear regression"),
+         xlab = 'beta',
+         ylab = 'p-value of beta')
+```
+
+
+```{r, out.width="60%", fig.asp = 1, fig.align = 'center'}
+clusplot(features[, c("X", "pval.t")],
+         y_kmeans,
+         lines = 0,
+         shade = TRUE,
+         color = TRUE,
+         labels = 2,
+         plotchar = FALSE,
+         span = TRUE,
+         main = paste("CAPM linear regression"),
+         xlab = 'beta',
+         ylab = 'p-value of residuals')
+```
+
+
+```{r, out.width="60%", fig.asp = 1, fig.align = 'center'}
+clusplot(features[, c("pval.x", "pval.t")],
+         y_kmeans,
+         lines = 0,
+         shade = TRUE,
+         color = TRUE,
+         labels = 2,
+         plotchar = FALSE,
+         span = TRUE,
+         main = paste("CAPM linear regression"),
+         xlab = 'p-value of beta',
+         ylab = 'p-value of residuals')
+```
+
+
+```{r, out.width="60%", fig.asp = 1, fig.align = 'center'}
+clusplot(features[, c("X", "r.squared")],
+         y_kmeans,
+         lines = 0,
+         shade = TRUE,
+         color = TRUE,
+         labels = 2,
+         plotchar = FALSE,
+         span = TRUE,
+         main = paste("CAPM linear regression"),
+         xlab = 'beta',
+         ylab = 'R2')
+```
+
+---
+
+## 使用 dbscan, 依据 time series distance 对港股股票分类
+
+我们也可以用 dbscan 直接对港股股票分类，并采用 [R 程序包 `TSdist`](https://journal.r-project.org/archive/2016/RJ-2016-058/RJ-2016-058.pdf) 计算两支股票月均股价数据的距离。这里我使用了[Threshold Queries Distance](https://www.dbs.ifi.lmu.de/Publikationen/Papers/paper-edbt06_final.pdf)，`TSdist::TquestDistance(x,y,tau=2.5)`。代码如下：
+
+```{r, eval=FALSE, wangings=FALSE, message=FALSE}
+as.time.series <- function(stock_avg){
+  sb <- as.character(stock_avg[length(stock_avg)])
+  aa <- stock_avg[2:length(stock_avg)-1]
+  na.omit(data.frame(
+    month = as.Date(names(aa),format="X%Y.%m.%d"),
+    price = as.numeric(aa)
+  ))
+}
+
+# convert to time series 
+Nstocks <- nrow(all_stocks_close.avg)
+TS <- vector(mode = "list", length = Nstocks)
+for (i in 1:Nstocks){
+  TS[[i]] <- as.time.series(all_stocks_close.avg[i,])
+}
+```
+
+
+```{r,eval=FALSE, wangings=FALSE, message=FALSE}
+# compute all distances (TAKES LOOONG TIME)
+Nstocks <- nrow(all_stocks_close.avg)
+TSdistance_a <- matrix(data=NA, nrow=Nstocks, ncol=Nstocks)
+for (i in 1:Nstocks){
+  TSdistance_a[[i,i]] <- 0.0
+  if (sum(!is.na(TS[[i]]$price))>=3){
+    print(i)
+    for (j in 1:i){
+      if ((j<i) & (sum(!is.na(TS[[j]]$price))>=3)){
+        prci <- TS[[i]]$price
+        prcj <- TS[[j]]$price
+        minL <- min(length(prci),length(prcj))
+        TSdistance_a[[i,j]] <- TquestDistance(
+            prci[(length(prci)-minL+1):length(prci)], 
+            prcj[(length(prcj)-minL+1):length(prcj)],
+            tau=2.5)
+      }
+    }
+  }
+}
+for (i in 1:Nstocks){
+  for (j in 1:Nstocks){
+    if (j>i){ TSdistance_a[[i,j]] <- TSdistance_a[[j,i]] }
+  }
+}
+save(TSdistance_a, file="TSdistance_a.Rdata")
+```
+
+计算耗时很久。这里直接加载结果。你可以从[这里,TSdistance_a.Rdata](https://algorithmx.github.io/capm/TSdistance_a.Rdata)下载结果。
+
+```{r}
+load("TSdistance_a.Rdata")
+Nstocks <- nrow(all_stocks_close.avg)
+TSdistance1 <- matrix(data=1e20, nrow=Nstocks, ncol=Nstocks)
+for (i in 1:Nstocks){
+  for (j in 1:Nstocks){
+    if ((!is.infinite(TSdistance_a[i,j]))&(!is.na(TSdistance_a[i,j]))){
+      TSdistance1[i,j] <- TSdistance_a[i,j]
+    }
+  }
+}
+```
+
+使用DBSCAN算法，我们需要合理确定eps参数，因为这个参数决定了距离多近的时候，算法认为两个sample是neighbor。我们扫描 `eps` 参数，取结果稳定的那一组。
+
+```{r}
+TSdistance2 <- TSdistance1[selected_id,selected_id]
+dbscan.re <- vector(mode="list", length=100)
+for (i in 1:100){
+  EPS <- 0.0002*i
+  dbscan.re[[i]] <- dbscan(TSdistance2, method="dist", eps=EPS, MinPts=2)
+}
+```
+
+
+```{r, out.width="60%", fig.asp = 1, fig.align = 'center'}
+Nclst <- to_list(for (k in 1:100) length(unique(dbscan.re[[k]]$cluster)))
+plot(0.0002*(1:100), Nclst,
+     xlab = "eps parameter", ylab="number of clusters")
+```
+
+---
+
+下面我们列出 DBSCAN 分类结果中比较小的几类包含的股票：
+
+```{r}
+TSdistance2 <- TSdistance1[selected_id,selected_id]
+dbscan.re <- dbscan(TSdistance2, method="dist", eps=0.0001, MinPts=2)
+```
+
+```{r}
+for (i in unique(dbscan.re$cluster)){
+  msk <- (dbscan.re$cluster == i)
+  if (sum(msk) < 300){
+    print("------------")
+    print(i)
+    print(CAPM_fit_results[,2][dbscan.re$cluster == i])
+  }
+}
+```
+
+**提示：股票 02599.HK 在上面这第 10 类里哟！**
+
+---
+
+下图展示 dbscan 的分类结果。
+
+```{r, out.width="60%", fig.asp = 1, fig.align = 'center'}
+y_kmeans <- dbscan.re$cluster
+clusplot(features[, c("X", "et.avg")],
+         y_kmeans,
+         lines = 0,
+         shade = TRUE,
+         color = TRUE,
+         labels = 2,
+         plotchar = FALSE,
+         span = TRUE,
+         main = paste("CAPM linear regression"),
+         xlab = 'beta',
+         ylab = 'alpha')
+```
+
+我们看到，DBSCAN 分类结果并不好。与 K-means 结果相比较，我们可以制表列出 DBSCAN 的分类结果的每一类分散在 K-means 的结果类别中的占比：
+
+```{r}
+kmeans.clst <- kmeans.re[[4]]$cluster
+kmeans.id   <- sort(unique(kmeans.clst))
+dbscan.clst <- dbscan.re$cluster
+dbscan.id   <- sort(unique(dbscan.clst))
+pct <- matrix(nrow=length(dbscan.id), ncol=length(kmeans.id))
+for (i in 1:length(dbscan.id)){
+  d <- dbscan.id[[i]]
+  for (j in 1:length(kmeans.id)){
+    pct[[i,j]] <- (sum(kmeans.clst==kmeans.id[[j]] & dbscan.clst==d)/sum(dbscan.clst==d))
+  }
+}
+heatmap(pct, xlab="K-means cluster id", ylab="DBSCAN cluster id")
+```
+
+可以看到，DBSCAN 的结果与 K-means 的结果不相容，特别是，绝大多数 DBSCAN 分类都落在 K-means 的 id=1 的一类中。但此时并不能得出结论，说时间序列相似度分类无意义。因为我们只尝试了一种距离。
+
+# 总结
+
+通过对大 $\beta$ 股票 02599.HK 的单独分析，我们看到：
+
++ CAPM 即使在某支股票上线性拟合结果显著，也并不能说它符合 CAPM 所描述的线性规律
+
++ CAPM 给出的线性关系，可以作为股票股价历史数据表现的一个参照，根据线性拟合的结果指标，可以将股票分类
+
++ 股票股价行为还可以依照时间序列距离(或相似度)直接进行分类
+
++ 两种分类方法是两个极端，一个用了极简模型，另一个不用任何模型
+
+
+
+

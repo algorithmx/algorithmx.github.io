@@ -8,6 +8,8 @@
 - [港.股.迷.惑.行.为.大.赏](https://algorithmx.github.io/capm/hkstooq1/)
 
 - [资产定价模型(CAPM)港股实证研究](https://algorithmx.github.io/capm/hkstooq2/)
+- 
+- [02599.HK,你的BETA大…太大了啊!](https://algorithmx.github.io/capm/hkstooq3/)
 
 - [上海市新冠感染者日新增数据(隔日更新)](https://algorithmx.github.io/shcovid19/)
 
