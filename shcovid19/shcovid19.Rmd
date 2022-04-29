@@ -2,7 +2,7 @@
 title: "上海市新冠感染者日新增数据(隔日更新)"
 output: html_document
 author: Yunlong(@algorithmx)
-date: '2022-04-25'
+date: '2022-04-29'
 ---
 
 ### [回主页](https://algorithmx.github.io/)
@@ -377,10 +377,10 @@ SIR_pred  <- as.data.frame(
 # plot
 plot(  SIR_pred$time+i0-1, (SIR_pred$I+SIR_pred$R), 
        lty=1, col="red", type="l", lwd=2,
-       xlim=c(0,60),ylim=c(0,0.022),
+       xlim=c(0,60),ylim=c(0,0.025),
        xlab="时间(天)", ylab="累计人数占总人口比例" )
 points(df$t, df$A, col="black")
-legend(40, 0.016, 
+legend(40, 0.017, 
        c("I(t)+R(t), 拟合","data"), 
        col=c("red","black"), 
        lty=c(1,0), pch=c(1,1), y.intersp=1.5)
@@ -417,10 +417,10 @@ msk   <- seq(from=1,to=70*50,by=50)
 dates <- SIR_pred$time[msk]+i0-1
 dates <- dates[2:length(dates)]
 plot(  dates, population*diff(SIR_pred$R[msk]), 
-       col="darkgreen", type="l", lwd=2, xlim=c(0,60), ylim=c(0,32000),
+       col="darkgreen", type="l", lwd=2, xlim=c(0,60), ylim=c(0,34000),
        xlab="时间(天)", ylab="日释放人数" )
 points(df$t, df$released, col="black")
-legend(0, 30000, 
+legend(0, 32000, 
        c("R(t), 拟合","data"), 
        col=c("darkgreen","black"), 
        lty=c(1,0), pch=c(1,1), y.intersp=1.5)
@@ -445,13 +445,13 @@ f <- function(t, beta, rho, R0){
   IR <- SIR_1(t, beta, rho, A0-R0, R0)
   return(IR[,2L]+IR[,3L])
 }
-fit_SIR_result_n <- vector(mode="list",length=16L)
-for (days in 15L:0L){
+fit_SIR_result_n <- vector(mode="list",length=19L)
+for (days in 18L:0L){
   df_n <- df[1:(nrow(df)-days),]
-  fit_SIR_result_n[[16-days]] <- nls(
+  fit_SIR_result_n[[19-days]] <- nls(
       A ~ f(t, beta, rho, R0),
       data=df_n,
-      start = list(beta=10.0, rho=0.8, R0=(0.001+(16-days)*0.006)*A0),
+      start = list(beta=10.0, rho=0.8, R0=(0.001+(19-days)*0.006)*A0),
       lower = c(0.1,  0.01, 0.0),
       upper = c(30.0, 1.0,   A0),
       algorithm = "port",
@@ -464,24 +464,24 @@ for (days in 15L:0L){
 
 ```{r}
 beta_fit <- as.numeric(to_list(
-                for (d in 16L:1L) 
+                for (d in 19L:1L) 
                     coef(fit_SIR_result_n[[d]])["beta"]))
-plot(df$date[(nrow(df)-15):nrow(df)], beta_fit, 
+plot(df$date[(nrow(df)-18):nrow(df)], beta_fit, 
      col="blue", xlab="日期", ylab="beta")
-lines(df$date[(nrow(df)-15):nrow(df)], beta_fit, col="blue")
-axis.Date(1, at=seq(df$date[(nrow(df)-14)],df$date[nrow(df)],by=2))
+lines(df$date[(nrow(df)-18):nrow(df)], beta_fit, col="blue")
+axis.Date(1, at=seq(df$date[(nrow(df)-18)],df$date[nrow(df)],by=2))
 title("SIR模型拟合beta值")
 ```
 
 
 ```{r}
 rho_fit <- as.numeric(to_list(
-                for (d in 16L:1L) 
+                for (d in 19L:1L) 
                     coef(fit_SIR_result_n[[d]])["rho"]))
-plot(df$date[(nrow(df)-15):nrow(df)], 1/rho_fit, 
+plot(df$date[(nrow(df)-18):nrow(df)], 1/rho_fit, 
      col="red", xlab="日期", ylab="R0")
-lines(df$date[(nrow(df)-15):nrow(df)], 1/rho_fit, col="red")
-axis.Date(1, at=seq(df$date[(nrow(df)-14)],df$date[nrow(df)],by=2))
+lines(df$date[(nrow(df)-18):nrow(df)], 1/rho_fit, col="red")
+axis.Date(1, at=seq(df$date[(nrow(df)-18)],df$date[nrow(df)],by=1))
 title("SIR模型拟合推算R0值")
 ```
 
