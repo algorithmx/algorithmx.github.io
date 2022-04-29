@@ -1,0 +1,519 @@
+---
+title: "CAPM扩展:加一个因子"
+author: Yunlong(@algorithmx)
+output: html_document
+date: '2022-04-29'
+---
+
+### [回主页](https://algorithmx.github.io/)
+
+### [下载 R markdown 源代码](https://algorithmx.github.io/capm/hkstooq4/hkstooq4.Rmd)
+
+
+```{r setup, wangings=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+# plot
+library(ggplot2)
+library(comprehenr)
+# statistics, time series
+library(tidyr)
+library(dplyr)
+library(lubridate)
+library(Quandl)
+library(fBasics)
+library(timeSeries)
+library(fitdistrplus)
+# other
+library(stringr)
+# log return
+difflog <- function(x){return(diff(log(x)))}
+```
+
+---
+
+# 引言
+
+这篇笔记主要讨论港交所列出的当前可交易股票，是一系列探讨资产定价模型CAPM文章的第四篇。这是一篇严肃的笔记，部分内容曾作为相关课程作业。这一系列[第二篇笔记](https://algorithmx.github.io/capm/hkstooq2/)介绍了资产定价模型CAPM在港股股价历史数据上的拟合检验，[第三篇笔记](https://algorithmx.github.io/capm/hkstooq3/)展示了一些拟合的异常情况；[第一篇笔记](https://algorithmx.github.io/capm/hkstooq1/)展示了港股股价历史数据的基本情况。
+
+这篇笔记讨论 CAPM 的最简单的扩展：
+
+$$R_i - R_f = \beta_i (R_M - R_f) + (\gamma_i H + \alpha_i) + e_i,$$
+其中 $H$ 我依次尝试**港币对美元的汇率变动**，**人民币对美元的汇率变动**。结果并不显著。
+
+---
+
+# 加载数据
+
+见[第三篇笔记](https://algorithmx.github.io/capm/hkstooq3/)开头的叙述。
+
+```{r}
+# load previous analysis
+all_stocks_close.avg <- read.csv("all_stocks_close.avg.csv")
+all_stocks_close.var <- read.csv("all_stocks_close.var.csv")
+all_stocks_volume    <- read.csv("all_stocks_volume.csv")
+HSI_monthly          <- read.csv("HSI_monthly.csv")
+ISR_monthly          <- read.csv("ISR_monthly.csv")
+load("selected_id.Rdata")
+# USD/HKD
+df0 <- read.csv("HKD.csv")
+HKD_log_return <- data.frame(
+      month = as.Date(df0$Date[2:nrow(df0)],format="%Y-%m-%d"),
+      close = difflog(df0$Adj.Close)
+)
+# USD/CNY
+df0 <- read.csv("CNY.csv")
+CNY_log_return <- data.frame(
+      month = as.Date(df0$Date[2:nrow(df0)],format="%Y-%m-%d"),
+      close = difflog(df0$Adj.Close)
+)
+as.time.series <- function(stock_avg){
+  sb <- as.character(stock_avg[length(stock_avg)])
+  aa <- stock_avg[2:length(stock_avg)-1]
+  na.omit(data.frame(
+    month = as.Date(names(aa),format="X%Y.%m.%d"),
+    price = as.numeric(aa)
+  ))
+}
+```
+
+USD/HKD月度数据来自[Yahoo Finance](https://query1.finance.yahoo.com/v7/finance/download/HKD=X?period1=995241600&period2=1650931200&interval=1mo&events=history&includeAdjustedClose=true).  可以从[此处](https://algorithmx.github.io/capm/HKD.csv)下载。
+USD/CNY月度数据来自[Yahoo Finance](https://query1.finance.yahoo.com/v7/finance/download/USDCNY=X?period1=1130803200&period2=1648771200&interval=1mo&events=history&includeAdjustedClose=true).  可以从[此处](https://algorithmx.github.io/capm/CNY.csv)下载。
+
+```{r, out.width="80%", fig.asp = 0.4, fig.align = 'center'}
+plot(HKD_log_return$month, HKD_log_return$close,
+     xlab="month", ylab="monthly log return")
+title("USD/HKD monthly return")
+```
+
+```{r, out.width="80%", fig.asp = 0.4, fig.align = 'center'}
+plot(CNY_log_return$month, CNY_log_return$close,
+     xlab="month", ylab="monthly log return")
+title("USD/CNY monthly return")
+```
+
+---
+
+# 香港的经济地位，联系汇率制度和套利机会
+
+香港联系汇率制度始于1981年开始的金融危机，于1983年开始实施，并于1998年开始提供弱方兑换保证、于2005年提供提供强方兑换保证，最终规则趋于稳定。根据蒙代尔和克鲁格曼的理论，固定汇率制度将使得资本自由流动和货币政策的独立性不可得兼。由此必然导致一系列后果。对于香港而言，资本自由流动显然十分必要，那么独立的货币政策就不太可能。特别是，政府无法有效遏制输入性通胀。
+
+![Fig.1: The Eternal Triangle](http://web.mit.edu/krugman/www/triangle.gif)
+
+由于资本充分流动，市场上不应存在“美元-港币-股票”的三角套利机会。所以我推测股票的价格和港币汇率有可能有联系。下面的计算，检查港币汇率 log return $H$ 和已经使用的数据，特别是恒生指数 log return $R_M$，以及 interest settlement rate $R_f$ 的关联。
+
+```{r}
+R_f <- ISR_monthly$close[2:191]
+R_M <- difflog(HSI_monthly$close.avg)
+H <- HKD_log_return$close[2:191]
+c(cor(R_M,R_f),cor(H,R_M),cor(H,R_f))
+```
+
+我发现，$H$ 与 $R_M$, $R_f$ 的关联，与 $\rm{cor}(R_M, R_f)$ 相比，并不算大。这说明 $H$ 相对于 $R_f$ 和 $R_M$ 独立。我认为可将 $H$ 加入 CAPM 进行拟合检验。
+
+另一方面，许多内地公司在香港上市，这使得香港股市成为投资中国的渠道。同样由于资本自由流动，特别是港股上市公司与内地实体的资金联系，我认为港股市场也不存在“美元-人民币-香港股票”的三角套利机会。将人民币汇率 log return 作为 $H$ 加入 CAPM得到的扩展模型，也有可能对港股股价历史数据具有更多的解释力。人民币汇率 log return 作为 $H$，与 $R_M$, $R_f$ 的关联计算如下：
+
+```{r}
+R_f <- ISR_monthly$close[2:191]
+R_M <- difflog(HSI_monthly$close.avg)
+H1 <- CNY_log_return$close[2:191]
+c(cor(R_M,R_f),cor(H1,R_M),cor(H1,R_f))
+```
+
+我认为它们相对独立。
+
+---
+
+# 拟合检验：$H$ = log return of monthly HKD/USD exchange rate
+
+## 例子
+
+我们使用 00005.HK 作为例子，对扩展后的 CAPM 进行回归分析。
+
+```{r}
+TS.00005.HK <- as.time.series(all_stocks_close.avg[all_stocks_close.avg$symbols=="00005.HK",])
+R_i <- difflog(TS.00005.HK$price)
+A <- R_i - R_f
+X <- R_M - R_f
+data.00005.HK <- data.frame(A=A, X=X,H=H)
+fit.X.00005.HK <- lm(A ~ X)
+res.X.00005.HK <- residuals(fit.X.00005.HK)
+fit.X.H.00005.HK <- lm(X ~ H)
+res.X.H.00005.HK <- residuals(fit.X.H.00005.HK)
+fit.X.H1.00005.HK <- lm(X ~ H1)
+res.X.H1.00005.HK <- residuals(fit.X.H1.00005.HK)
+```
+
+Marginal plot for $X = R_M - R_f$, $A = R_i - R_f$ and $H$:
+
+```{r, fig.align = 'center'}
+plot(data.00005.HK)
+```
+
+这都什么玩意儿... 再检查一下 added-variable plot, 也就是 $(R_i - R_f)\sim (R_M - R_f)$ 的余项 $e_t$ 与 $(R_M - R_f)\sim H$ 的余项 $e'_t$ 的关系：
+
+```{r, fig.align = 'center'}
+e_t <-  res.X.00005.HK
+ep_t <- res.X.H.00005.HK
+plot(e_t, ep_t)
+title(paste("corr = ",cor(ep_t, e_t)))
+```
+
+这说明 $H$ 在模型中的系数 (也就是$\gamma$) 并不显著。
+
+```{r}
+fit.H.00005.HK <- lm(A ~ H)
+summary(fit.H.00005.HK)
+```
+
+上面拟合结果表明，$H$ 的解释能力非常微弱。这挺让我失望的。比较扩充前后的 CAPM 在 00005.HK 这支股票上的检验结果：
+
+```{r}
+fit.XH.00005.HK <- lm(A ~ X+H)
+summary(fit.XH.00005.HK)
+```
+
+```{r}
+summary(fit.X.00005.HK)
+```
+
+我们发现，加入 $H$ 之后，模型检验的显著性并无改善。
+
+再来看余项，发现它也不是正态分布：
+
+```{r}
+e_t <- A - coef(fit.XH.00005.HK)["H"]*H - coef(fit.XH.00005.HK)["X"]*X
+shapiro.test(e_t)
+```
+
+这说明 $H$ 因子扩充的 CAPM 模型，被 00005.HK 拒绝。但是因子绝不可能轻易就找到的，不然市场也太蠢了，不是吗？
+
+---
+
+## 对所有股票检验扩充后的 CAPM
+
+我们将前一节的方法用到所有港股上，对扩充后的 CAPM 进行检验，并统计结果，于之前 CAPM 模型检验结果比照。
+首先我们来做一个函数，把上一节所有流程都放进去。
+
+```{r, wangings=FALSE, message=FALSE}
+# 日期限定
+start_date <- as.Date("2006-02-01")
+end_date   <- as.Date("2021-12-31")
+# 对一支股票的历史价格数据，拟合CAPM
+fit_extended_CAPM <- function(asset_monthly){
+  msk_R_i <- end_date>=asset_monthly$month & start_date<=asset_monthly$month
+  msk_R_f <- ((min(asset_monthly$month)<=ISR_monthly$month & start_date<=ISR_monthly$month) 
+              & end_date>=ISR_monthly$month)
+  msk_R_M <- ((min(asset_monthly$month)<=HSI_monthly$month & start_date<=HSI_monthly$month) 
+              & end_date>=HSI_monthly$month)
+  R_f <- ISR_monthly[msk_R_f, "close"]
+  R_f <- R_f[2:length(R_f)]
+  R_M <- difflog( HSI_monthly[msk_R_M, "close.avg"] )
+  R_i <- difflog( asset_monthly[msk_R_i,"price"] )
+  if (length(R_i)==0){
+    return(NULL)
+  }
+  A <- R_i - R_f
+  X <- R_M - R_f
+  H <- HKD_log_return$close[(nrow(HKD_log_return)-length(X)+1):nrow(HKD_log_return)]
+  fit <- lm(A ~ X+H)
+  return(fit)
+}
+```
+
+还有几个方便后面使用的函数：
+
+```{r, wangings=FALSE, message=FALSE}
+# 调用方便
+fit_extended_CAPM_symbol <- function(sb){
+  TS.sb <- as.time.series(all_stocks_close.avg[all_stocks_close.avg$symbols==sb,])
+  return(fit_extended_CAPM(TS.sb))
+}
+# 计算余项 e_t
+calc_res <- function(ft){
+  r <- ft$model$A - ft$coefficients["X"] * ft$model$X - ft$coefficients["H"] * ft$model$H
+  return(r)
+}
+```
+
+然后把所有选定的股票都做一遍扩展 CAPM 模型的拟合：
+
+```{r fit-2, eval=FALSE, wangings=FALSE, message=FALSE}
+all_symbols <- all_stocks_close.avg$symbols
+fit_selected <- vector(mode="list", length=length(all_symbols))
+for (i in selected_id){
+  fit_selected[[i]] <- fit_extended_CAPM_symbol(all_symbols[[i]])
+}
+```
+
+最后统计结果：
+
+```{r, eval=FALSE, wangings=FALSE, message=FALSE}
+Xcoeff <- c() # regression result: coeff on X, or, beta
+Intcpt <- c() # regression result: intercept, or alpha
+vIntcpt <- c() # variation of intercept
+SMB <- c() # symbol_selected
+R2  <- c() # R^2 of lm
+PVX <- c() # Pr(>|t|) for beta
+PVH <- c() # Pr(>|t|) for gamma
+PVR <- c() # p-value for shapiro.test of residuals
+MON1<- c() # first month in the history
+
+for (i in selected_id){
+  sb <- all_symbols[[i]]
+  TS.sb <- as.time.series(all_stocks_close.avg[all_stocks_close.avg$symbols==sb,])
+  ft <- fit_selected[[i]]
+  s <- summary(ft)
+  r <- calc_res(ft)
+  if (length(r)>3){
+    t <- shapiro.test(r)
+    fd <- fitdistr(r,"normal")
+    Intcpt <- c(Intcpt,  as.numeric(fd$estimate["mean"]))
+    vIntcpt<- c(vIntcpt, as.numeric(fd$estimate["sd"]))
+    PVR <- c(PVR, as.numeric(t$p.value))
+  }
+  else{
+    Intcpt  <- c(Intcpt,  0.0)
+    vIntcpt <- c(vIntcpt, 0.0)
+    PVR     <- c(PVR,     0.0)
+  }
+  SMB    <- c(SMB,  sb)
+  Xcoeff <- c(Xcoeff,  as.numeric(ft$coefficients["X"]))
+  Hcoeff <- c(Xcoeff,  as.numeric(ft$coefficients["H"]))
+  R2     <- c(R2,   s$r.squared)
+  PVX    <- c(PVX,  as.numeric(s$coefficients["X","Pr(>|t|)"]))
+  PVH    <- c(PVH,  as.numeric(s$coefficients["H","Pr(>|t|)"]))
+  MON1   <- c(MON1, as.Date(first(TS.sb$month)))
+}
+fit_results <- data.frame(
+    symbol=SMB, 
+    X=Xcoeff, 
+    et.avg=Intcpt, 
+    et.sd=vIntcpt, 
+    pval.x=PVX, 
+    pval.h=PVH, 
+    pval.t=PVR,
+    r.squared=R2,
+    first.data.month=as.Date(MON1))
+```
+
+将结果保存下来：
+
+```{r, eval=FALSE, wangings=FALSE, message=FALSE}
+write.csv(fit_results,file="CAPM_extended1_fit_results_on_selected_HK_stocks.csv")
+```
+
+
+```{r}
+fit_results <- read.csv("CAPM_extended1_fit_results_on_selected_HK_stocks.csv")
+id <- which(fit_results$pval.h < 0.01 & (fit_results$pval.t > 0.05 & fit_results$pval.x < 0.005))
+fit_results$symbol[id]
+```
+
+
+---
+
+# 拟合检验：$H$ = log return of monthly **CNY/USD** exchange rate
+
+## 例子
+
+我们仍然使用 00005.HK 作为例子，对扩展后的 CAPM 进行回归分析。
+
+Marginal plot:
+
+```{r, fig.align = 'center'}
+data.00005.HK <- data.frame(A=A, X=X,H=H1)
+plot(data.00005.HK)
+```
+
+这又是什么玩意儿... 再看 added-variable plot:
+
+```{r, out.width="50%", fig.asp = .8, fig.align = 'center'}
+e_t <-  res.X.00005.HK
+ep_t <- res.X.H1.00005.HK
+plot(e_t, ep_t)
+title(paste("corr = ",cor(ep_t, e_t)))
+```
+
+依然不见显著趋势。再做 $(R_i - R_f)\sim H$ 拟合，
+
+```{r}
+fit.H1.00005.HK <- lm(A ~ H1)
+summary(fit.H1.00005.HK)
+```
+
+我们看到，$H$ 的解释能力非常微弱。这挺让我失望的。比较扩充前后的 CAPM 在 00005.HK 这支股票上的检验结果：
+
+```{r}
+fit.XH1.00005.HK <- lm(A ~ X + H1)
+summary(fit.XH1.00005.HK)
+```
+
+```{r}
+summary(fit.X.00005.HK)
+```
+
+我们发现，加入 $H$ 之后，模型检验的显著性并无改善。
+
+再来看余项，发现它仍然不是正态分布：
+
+```{r}
+e_t <- A - coef(fit.XH1.00005.HK)["H1"]*H1 - coef(fit.XH1.00005.HK)["X"]*X
+shapiro.test(e_t)
+```
+
+这说明 $H$ 因子扩充的 CAPM 模型，再次被 00005.HK 拒绝。
+
+---
+
+## 对所有股票检验扩充后的 CAPM
+
+我们将前一节的方法用到所有港股上，对扩充后的 CAPM 进行检验，并统计结果，于之前 CAPM 模型检验结果比照。
+首先我们来做一个函数，把上一节所有流程都放进去。
+
+```{r, wangings=FALSE, message=FALSE}
+# 日期限定
+start_date <- as.Date("2006-02-01")
+end_date   <- as.Date("2021-12-31")
+# 对一支股票的历史价格数据，拟合CAPM
+fit_extended_CAPM1 <- function(asset_monthly){
+  msk_R_i <- end_date>=asset_monthly$month & start_date<=asset_monthly$month
+  msk_R_f <- ((min(asset_monthly$month)<=ISR_monthly$month & start_date<=ISR_monthly$month) 
+              & end_date>=ISR_monthly$month)
+  msk_R_M <- ((min(asset_monthly$month)<=HSI_monthly$month & start_date<=HSI_monthly$month) 
+              & end_date>=HSI_monthly$month)
+  R_f <- ISR_monthly[msk_R_f, "close"]
+  R_f <- R_f[2:length(R_f)]
+  R_M <- difflog( HSI_monthly[msk_R_M, "close.avg"] )
+  R_i <- difflog( asset_monthly[msk_R_i,"price"] )
+  if (length(R_i)==0){
+    return(NULL)
+  }
+  A <- R_i - R_f
+  X <- R_M - R_f
+  H <- CNY_log_return$close[(nrow(CNY_log_return)-length(X)+1):nrow(CNY_log_return)]
+  fit <- lm(A ~ X + H)
+  return(fit)
+}
+```
+
+还有几个方便后面使用的函数：
+
+```{r, wangings=FALSE, message=FALSE}
+# 调用方便
+fit_extended_CAPM1_symbol <- function(sb){
+  TS.sb <- as.time.series(all_stocks_close.avg[all_stocks_close.avg$symbols==sb,])
+  return(fit_extended_CAPM1(TS.sb))
+}
+# 计算余项 e_t
+calc_res <- function(ft){
+  r <- ft$model$A - ft$coefficients["X"] * ft$model$X - ft$coefficients["H"] * ft$model$H
+  return(r)
+}
+```
+
+然后把所有选定的股票都做一遍扩展 CAPM 模型的拟合：
+
+```{r fit-1, eval=FALSE, wangings=FALSE, message=FALSE}
+all_symbols <- all_stocks_close.avg$symbols
+fit_selected <- vector(mode="list", length=length(all_symbols))
+for (i in selected_id){
+  fit_selected[[i]] <- fit_extended_CAPM1_symbol(all_symbols[[i]])
+}
+```
+
+最后统计结果：
+
+```{r, eval=FALSE, wangings=FALSE, message=FALSE}
+Xcoeff <- c() # regression result: coeff on X, or, beta
+Intcpt <- c() # regression result: intercept, or alpha
+vIntcpt <- c() # variation of intercept
+SMB <- c() # symbol_selected
+R2  <- c() # R^2 of lm
+PVX <- c() # Pr(>|t|) for beta
+PVH <- c() # Pr(>|t|) for gamma
+PVR <- c() # p-value for shapiro.test of residuals
+MON1<- c() # first month in the history
+
+for (i in selected_id){
+  sb <- all_symbols[[i]]
+  TS.sb <- as.time.series(all_stocks_close.avg[all_stocks_close.avg$symbols==sb,])
+  ft <- fit_selected[[i]]
+  s <- summary(ft)
+  r <- calc_res(ft)
+  if (length(r)>3){
+    t <- shapiro.test(r)
+    fd <- fitdistr(r,"normal")
+    Intcpt <- c(Intcpt,  as.numeric(fd$estimate["mean"]))
+    vIntcpt<- c(vIntcpt, as.numeric(fd$estimate["sd"]))
+    PVR <- c(PVR, as.numeric(t$p.value))
+  }
+  else{
+    Intcpt  <- c(Intcpt,  0.0)
+    vIntcpt <- c(vIntcpt, 0.0)
+    PVR     <- c(PVR,     0.0)
+  }
+  SMB    <- c(SMB,  sb)
+  Xcoeff <- c(Xcoeff,  as.numeric(ft$coefficients["X"]))
+  Hcoeff <- c(Xcoeff,  as.numeric(ft$coefficients["H"]))
+  R2     <- c(R2,   s$r.squared)
+  PVX    <- c(PVX,  as.numeric(s$coefficients["X","Pr(>|t|)"]))
+  PVH    <- c(PVH,  as.numeric(s$coefficients["H","Pr(>|t|)"]))
+  MON1   <- c(MON1, as.Date(first(TS.sb$month)))
+}
+fit_results <- data.frame(
+    symbol=SMB, 
+    X=Xcoeff, 
+    et.avg=Intcpt, 
+    et.sd=vIntcpt, 
+    pval.x=PVX, 
+    pval.h=PVH, 
+    pval.t=PVR,
+    r.squared=R2,
+    first.data.month=as.Date(MON1))
+```
+
+将结果保存下来：
+
+```{r, eval=FALSE, wangings=FALSE, message=FALSE}
+write.csv(fit_results,file="CAPM_extended2_fit_results_on_selected_HK_stocks.csv")
+```
+
+看一看有多少股票满足扩展后的 CAPM:
+
+```{r}
+fit_results2 <- read.csv("CAPM_extended2_fit_results_on_selected_HK_stocks.csv")
+id <- which(fit_results2$pval.h < 0.005 & (fit_results2$pval.t > 0.05 & fit_results2$pval.x < 0.005))
+fit_results2$symbol[id]
+```
+导入之前的结果，发现两个集合无交集。
+
+```{r}
+fit_results1 <- read.csv("CAPM_extended1_fit_results_on_selected_HK_stocks.csv")
+id <- which(fit_results1$pval.h < 0.005 & (fit_results1$pval.t > 0.05 & fit_results1$pval.x < 0.005))
+fit_results1$symbol[id]
+```
+
+---
+
+# 只有部分股票价格历史数据支持 (extended) CAPM 说明什么？
+
+问题可以反过来问：如果全部股票价格历史数据都支持 CAPM 说明什么？具体来讲就是，对于每一支股票 $i$, 我们都可以通过 CAPM 公式来预测股票价格 $R_i^*$，
+ 
+$$R_i^* = \beta_i (R_M - R_f) + R_f,$$
+
+我们只需要对 $R_M$ 进行准确的时间序列预测，剩下的就是靠力大出奇迹，因为统计检验告诉我们，余项 $e_i$ 是正态分布。由于我们使用 log return of Hang Sheng Index 作为 $R_M$，所以，全部股票价格历史数据都支持 CAPM，说明市场上就只有制作发布 Hang Sheng Index 的机构最聪明，其他人都是随机游走。
+
+这显然很荒谬。
+
+于是，CAPM 仅仅得到部分支持，说明市场上有一些投资者比制作发布 Hang Sheng Index 的机构“更聪明”。进一步，找到因子 $H$ 使得 extended CAPM 接受率提高，则说明这个扩展更加接近市场通过交易达成的共识。什么时候可以确认一个因子可以“打败市场”、带来显著超额收益呢？从统计上说，这样的因子 $H$ 需要使 extended CAPM 在一定时间范围内，对于全部可交易股票的一个稳定子集，拟合检验结果显著。
+更重要的是，这种显著性需要具有某种“排他性”，即任何改动或者继续加入新的因子的努力都会明显降低显著性。
+
+前面几篇笔记得到的关于 $\beta_i$ 的拟合值的分布，给我们另一个视角。既然 $\beta_i$ 分布在均值 $1$ 附近的一个狭窄范围内，那么我们可以用 **单一的 $\beta$** 值来描写 $(R_i - R_f)\sim (R_M - R_f)$ 的关系，而将每支股票对这种关系的偏离，用其它方式表达出来呢？用公式表达这个想法就是：
+
+$$\boldsymbol{R} - R_f = \beta (R_M - R_f)\mathbf{1}+\mathbf{e},$$
+
+or rather 
+
+$$\boldsymbol{R}=\beta R_M\mathbf{1}+\mathbf{e},$$
+
+where $\mathbf{1}=(1,1,1,...,1)^T$, $\beta R_M$ is a number (not a vector) and $\mathbf{e} = (e_1,e_2,...,e_N)'$ is the deviation of each stock price from "market wisdom". Up to this stage, there is no economical reason to assume any concrete distribution of $\mathbf{e}$. There has to be one, and it will be the topic of next blog post in the CAPM series. 
