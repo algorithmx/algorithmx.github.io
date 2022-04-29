@@ -677,7 +677,7 @@ fit_results &lt;- data.frame(
     pval.t=PVR,
     r.squared=R2,
     first.data.month=as.Date(MON1))</code></pre>
-<p>将结果保存下来：</p>
+<p>将结果保存下来：(可以从<a href="https://algorithmx.github.io/capm/CAPM_extended1_fit_results_on_selected_HK_stocks.csv">此处</a>下载)</p>
 <pre class="r"><code>write.csv(fit_results,file=&quot;CAPM_extended1_fit_results_on_selected_HK_stocks.csv&quot;)</code></pre>
 <pre class="r"><code>fit_results &lt;- read.csv(&quot;CAPM_extended1_fit_results_on_selected_HK_stocks.csv&quot;)
 id &lt;- which(fit_results$pval.h &lt; 0.01 &amp; (fit_results$pval.t &gt; 0.05 &amp; fit_results$pval.x &lt; 0.005))
@@ -873,7 +873,7 @@ fit_results &lt;- data.frame(
     pval.t=PVR,
     r.squared=R2,
     first.data.month=as.Date(MON1))</code></pre>
-<p>将结果保存下来：</p>
+<p>将结果保存下来：(可以从<a href="https://algorithmx.github.io/capm/CAPM_extended2_fit_results_on_selected_HK_stocks.csv">此处</a>下载)</p>
 <pre class="r"><code>write.csv(fit_results,file=&quot;CAPM_extended2_fit_results_on_selected_HK_stocks.csv&quot;)</code></pre>
 <p>看一看有多少股票满足扩展后的 CAPM:</p>
 <pre class="r"><code>fit_results2 &lt;- read.csv(&quot;CAPM_extended2_fit_results_on_selected_HK_stocks.csv&quot;)

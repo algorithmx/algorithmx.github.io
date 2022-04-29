@@ -296,7 +296,7 @@ fit_results <- data.frame(
     first.data.month=as.Date(MON1))
 ```
 
-将结果保存下来：
+将结果保存下来：(可以从[此处](https://algorithmx.github.io/capm/CAPM_extended1_fit_results_on_selected_HK_stocks.csv)下载)
 
 ```{r, eval=FALSE, wangings=FALSE, message=FALSE}
 write.csv(fit_results,file="CAPM_extended1_fit_results_on_selected_HK_stocks.csv")
@@ -472,7 +472,7 @@ fit_results <- data.frame(
     first.data.month=as.Date(MON1))
 ```
 
-将结果保存下来：
+将结果保存下来：(可以从[此处](https://algorithmx.github.io/capm/CAPM_extended2_fit_results_on_selected_HK_stocks.csv)下载)
 
 ```{r, eval=FALSE, wangings=FALSE, message=FALSE}
 write.csv(fit_results,file="CAPM_extended2_fit_results_on_selected_HK_stocks.csv")
