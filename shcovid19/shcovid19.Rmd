@@ -2,7 +2,7 @@
 title: "上海市新冠感染者日新增数据(隔日更新)"
 output: html_document
 author: Yunlong(@algorithmx)
-date: '2022-04-29'
+date: '2022-05-02'
 ---
 
 ### [回主页](https://algorithmx.github.io/)
@@ -35,7 +35,7 @@ tail(df)
 
 ## 数据呈现
 
-```{r, out.width="85%", fig.asp = .6, fig.align = 'center'}
+```{r, fig.asp = .6, fig.align = 'center'}
 plot(df$date,df$new.asympt.cases, col="black",
      xlab="日期", ylab="单日新增人数")
 points(df$date,df$new.cases, col="red")
@@ -44,7 +44,7 @@ legend(df$date[1], 22000, c("无症状","确诊"), col=c("black","red"),
 title("上海发布公布的新冠感染日新增情况")
 ```
 
-```{r, out.width="85%", fig.asp = .6, fig.align = 'center'}
+```{r, fig.asp = .6, fig.align = 'center'}
 plot(df$date, df$new.cases/(df$new.asympt.cases+df$new.cases), col="black",
      xlab="日期", ylab="单日新增确诊人数占比")
 title("上海发布公布的新冠感染日新增情况")
@@ -55,15 +55,15 @@ title("上海发布公布的新冠感染日新增情况")
 由于缺乏恢复患者数量信息，我们**只能**对累计感染人数(记为$T_n$)进行分析。之前我们展示的是日新增数字，是marginal data，而$T_n$根据定义是 cumulative data，形状如下：
 
 
-```{r, out.width="85%", fig.asp = .6, fig.align = 'center'}
+```{r, fig.asp = .6, fig.align = 'center'}
 T1n <- cumsum(df$new.cases)
 T2n <- cumsum(df$new.asympt.cases)
 Tn <- T1n + T2n
-plot(df$date,T2n, col="blue",
+plot(df$date,T2n, col="blue",  ylim=c(0,6e5),
      xlab="日期", ylab="累计感染人数")
 points(df$date, T1n, col="red")
 points(df$date, Tn, col="black")
-legend(df$date[1], 300000, c("总计","无症状","确诊"), col=c("black","blue","red"), 
+legend(df$date[1], 4e5, c("总计","无症状","确诊"), col=c("black","blue","red"), 
        pch=c(1,1), y.intersp=1.5)
 title("上海发布公布的新冠感染情况，日累计")
 ```
@@ -93,31 +93,31 @@ summary(fit_logistic)
 
 虽然模型是猜的，但结果还算显著。如果把数据比作大腿的话，那么余项就是腿毛。统计分析专家可能特别喜欢看腿毛。Voilà :
 
-```{r, out.width="85%", fig.asp = .6, fig.align = 'center'}
+```{r, fig.asp = .6, fig.align = 'center'}
 hist(residuals(fit_logistic),breaks=10)
 ```
 
 
-```{r, out.width="85%", fig.asp = .6, fig.align = 'center'}
+```{r, fig.asp = .6, fig.align = 'center'}
 t1 <- seq(from=0,to=60,by=1)
-plot(In ~ t, data=infection, col="black", xlim=c(0,60), ylim=c(0,0.022),
+plot(In ~ t, data=infection, col="black", xlim=c(0,60), ylim=c(0,0.025),
      xlab="自3月17日起(天)", ylab="累计感染总人数")
 lines(t1, as.numeric(predict(fit_logistic, newdata=data.frame(t=t1))), col="red", lwd=2)
-legend(0, 0.018, c("[上海发布公众号]数据","Logistic模型,拟合+预测"), col=c("black","red"), 
+legend(0, 0.018, c("数据","拟合"), col=c("black","red"), 
        pch=c(1,1), lty=c(0,1), y.intersp=1.5)
 title("基于[上海发布公众号]的新冠感染情况的预测，日累计")
 ```
 
 
 
-```{r, out.width="85%", fig.asp = .6, fig.align = 'center'}
+```{r, fig.asp = .6, fig.align = 'center'}
 t1 <- seq(from=0,to=60,by=1)
 d <- diff(c(0,as.numeric(predict(fit_logistic, newdata=data.frame(t=t1)))))
 newdate <- seq.Date(from=df$date[1],to=as.Date(df$date[1]+60),by="day")
 plot(df$date, df$new.total.cases, col="black", xlim=c(newdate[1],newdate[61]),
      xlab="日期", ylab="单日新增人数")
 lines(newdate, population * d, col="red", lwd=2)
-legend(newdate[41], 28000, c("[上海发布公众号]数据","Logistic模型,拟合+预测"), col=c("black","red"), 
+legend(newdate[41], 28000, c("数据","拟合"), col=c("black","red"), 
        pch=c(1,1), lty=c(0,1), y.intersp=1.5)
 title("基于[上海发布公众号]的新冠感染情况的预测，日新增")
 ```
@@ -190,11 +190,11 @@ lines(simul2$time, 10*simul2$I, lty=2, col="red",  lwd=2)
 lines(simul2$time, simul2$R, lty=2, col="green",lwd=2)
 lines(simul3$time, 10*simul3$I, lty=3, col="red",  lwd=2)
 lines(simul3$time, simul3$R, lty=3, col="green",lwd=2)
-legend(55, 0.13, c("10 I(t), b=8, g=7.4","R(t)",
+legend(55, 0.15, c("10 I(t), b=8, g=7.4","R(t)",
                   "10 I(t), b=8, g=7.2","R(t)",
                   "10 I(t), b=4, g=3.7","R(t)"), 
        col=c("red","green","red","green","red","green"), 
-       lty=c(1,1,2,2,3,3), y.intersp=1.5)
+       lty=c(1,1,2,2,3,3), y.intersp=1.5, cex = 0.7)
 title("SIR模型")
 ```
 
@@ -361,7 +361,7 @@ summary(fit_SIR_result)
 
 上面SIR模型的拟合结果可以总结到这张图中：
 
-```{r visualize-fit-result, out.width="85%", fig.asp = .6, fig.align = 'center'}
+```{r visualize-fit-result, fig.asp = .6, fig.align = 'center'}
 # result
 i0 <- 1
 An <- (1 / population) * cumsum(df$new.cases + df$new.asympt.cases)
@@ -389,7 +389,7 @@ title("SIR模型预测日累计感染人数")
 
 也可以展示模型预测的日新增感染人数：
 
-```{r visualize-fit-result-2, out.width="85%", fig.asp = .6, fig.align = 'center'}
+```{r visualize-fit-result-2, fig.asp = .6, fig.align = 'center'}
 # plot
 i0    <- 1 
 msk   <- seq(from=1,to=70*50,by=50)
@@ -410,17 +410,17 @@ SIR 模型的预测与人口增长 Logistic 模型的相近：清零预计大约
 
 最近[上海发布公众号]开始公布每日从方舱释放的人数。可以认为 SIR 模型中 的日新增恢复者比例 $R(n\Delta t+\Delta t) - R(n\Delta t)$ 代表了第 $n$ 日的释放人数，从而有下面的预测：
 
-```{r visualize-fit-result-3, out.width="85%", fig.asp = .6, fig.align = 'center'}
+```{r visualize-fit-result-3, fig.asp = .6, fig.align = 'center'}
 # plot
 i0    <- 1 
 msk   <- seq(from=1,to=70*50,by=50)
 dates <- SIR_pred$time[msk]+i0-1
 dates <- dates[2:length(dates)]
 plot(  dates, population*diff(SIR_pred$R[msk]), 
-       col="darkgreen", type="l", lwd=2, xlim=c(0,60), ylim=c(0,34000),
+       col="darkgreen", type="l", lwd=2, xlim=c(0,60), ylim=c(0,36000),
        xlab="时间(天)", ylab="日释放人数" )
 points(df$t, df$released, col="black")
-legend(0, 32000, 
+legend(6, 32000, 
        c("R(t), 拟合","data"), 
        col=c("darkgreen","black"), 
        lty=c(1,0), pch=c(1,1), y.intersp=1.5)
@@ -437,7 +437,7 @@ The basic reproduction rate $R_0$ for an SIR model is defined as the inverse of 
 $$R_0 \equiv \frac{\beta}{\gamma} = \frac{1}{\rho}$$
 
 I am interested in the evolution of model estimation $\beta$ and $R_0=1/\rho$ as the daily infection data is supplied. 
-So I repeat the above non-linear regression on truncated data, up to a date `days` earlier than the last date 2022-04-23 of the data. 
+So I repeat the above non-linear regression on truncated data, up to a date `days` earlier than the last date `r (df$date[[nrow(df)]])` of the data. 
 
 ```{r fit-SIR-n}
 A0 <- df$A[1]
@@ -445,13 +445,14 @@ f <- function(t, beta, rho, R0){
   IR <- SIR_1(t, beta, rho, A0-R0, R0)
   return(IR[,2L]+IR[,3L])
 }
-fit_SIR_result_n <- vector(mode="list",length=19L)
-for (days in 18L:0L){
+LL <- 21L
+fit_SIR_result_n <- vector(mode="list",length=LL)
+for (days in (LL-1L):0L){
   df_n <- df[1:(nrow(df)-days),]
-  fit_SIR_result_n[[19-days]] <- nls(
+  fit_SIR_result_n[[LL-days]] <- nls(
       A ~ f(t, beta, rho, R0),
       data=df_n,
-      start = list(beta=10.0, rho=0.8, R0=(0.001+(19-days)*0.006)*A0),
+      start = list(beta=10.0, rho=0.8, R0=(0.001+(LL-days)*0.006)*A0),
       lower = c(0.1,  0.01, 0.0),
       upper = c(30.0, 1.0,   A0),
       algorithm = "port",
@@ -464,28 +465,26 @@ for (days in 18L:0L){
 
 ```{r}
 beta_fit <- as.numeric(to_list(
-                for (d in 19L:1L) 
+                for (d in LL:1L) 
                     coef(fit_SIR_result_n[[d]])["beta"]))
-plot(df$date[(nrow(df)-18):nrow(df)], beta_fit, 
+plot(df$date[(nrow(df)-(LL-1L)):nrow(df)], beta_fit, 
      col="blue", xlab="日期", ylab="beta")
-lines(df$date[(nrow(df)-18):nrow(df)], beta_fit, col="blue")
-axis.Date(1, at=seq(df$date[(nrow(df)-18)],df$date[nrow(df)],by=2))
+lines(df$date[(nrow(df)-(LL-1L)):nrow(df)], beta_fit, col="blue")
+axis.Date(1, at=seq(df$date[(nrow(df)-(LL-1L))],df$date[nrow(df)],by=2))
 title("SIR模型拟合beta值")
 ```
 
 
 ```{r}
 rho_fit <- as.numeric(to_list(
-                for (d in 19L:1L) 
+                for (d in LL:1L) 
                     coef(fit_SIR_result_n[[d]])["rho"]))
-plot(df$date[(nrow(df)-18):nrow(df)], 1/rho_fit, 
+plot(df$date[(nrow(df)-(LL-1L)):nrow(df)], 1/rho_fit, 
      col="red", xlab="日期", ylab="R0")
-lines(df$date[(nrow(df)-18):nrow(df)], 1/rho_fit, col="red")
-axis.Date(1, at=seq(df$date[(nrow(df)-18)],df$date[nrow(df)],by=1))
+lines(df$date[(nrow(df)-(LL-1L)):nrow(df)], 1/rho_fit, col="red")
+axis.Date(1, at=seq(df$date[(nrow(df)-(LL-1L))],df$date[nrow(df)],by=1))
 title("SIR模型拟合推算R0值")
 ```
-
-**问题：** 如何理解从4月20号开始，$\beta$ SIR 模型 $\beta$ 值明显下降，但 $R_0$ 迅速上升？
 
 ## TODO
 
