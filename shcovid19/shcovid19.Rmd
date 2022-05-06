@@ -2,7 +2,7 @@
 title: "上海市新冠感染者日新增数据(隔日更新)"
 output: html_document
 author: Yunlong(@algorithmx)
-date: '2022-05-02'
+date: '2022-05-06'
 ---
 
 ### [回主页](https://algorithmx.github.io/)
@@ -59,7 +59,7 @@ title("上海发布公布的新冠感染日新增情况")
 T1n <- cumsum(df$new.cases)
 T2n <- cumsum(df$new.asympt.cases)
 Tn <- T1n + T2n
-plot(df$date,T2n, col="blue",  ylim=c(0,6e5),
+plot(df$date,T2n, col="blue",  ylim=c(0,6.2e5),
      xlab="日期", ylab="累计感染人数")
 points(df$date, T1n, col="red")
 points(df$date, Tn, col="black")
@@ -121,8 +121,6 @@ legend(newdate[41], 28000, c("数据","拟合"), col=c("black","red"),
        pch=c(1,1), lty=c(0,1), y.intersp=1.5)
 title("基于[上海发布公众号]的新冠感染情况的预测，日新增")
 ```
-
-**哈哈，模型预测，到五月中旬差不多就清零啦！**
 
 由于我们使用了人口增长Logistic模型，引进容量参数 $K$ (对应`Asym`)，它估计为 `r as.numeric(coef(fit_logistic)["Asym"])`，也就是说，到解封的时候，每千名上海居民会有大约 `r round(1000*as.numeric(coef(fit_logistic)["Asym"]),digits=1)` 人曾感染过新冠。我们也可以看到，模型预测，日新增感染数的拐点已经过了～
 
@@ -445,7 +443,7 @@ f <- function(t, beta, rho, R0){
   IR <- SIR_1(t, beta, rho, A0-R0, R0)
   return(IR[,2L]+IR[,3L])
 }
-LL <- 21L
+LL <- 25L
 fit_SIR_result_n <- vector(mode="list",length=LL)
 for (days in (LL-1L):0L){
   df_n <- df[1:(nrow(df)-days),]
