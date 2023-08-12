@@ -1,0 +1,127 @@
+/* I have used GitHub autopilot to assist the creatation of this file. */
+
+/* This line imports the Tangerine and Langar fonts from Google Fonts. 
+   You can learn more about Google Fonts here: https://developers.google.com/fonts/docs/getting_started */
+@import url('https://fonts.googleapis.com/css?family=Tangerine|Langar|Sofia');
+
+/* Default Styles */
+* {
+    box-sizing: border-box;
+    /* margin 0.5% affects the column width calculations below. */
+    margin: 0.5%;
+}
+
+
+h1 {
+    text-align: center;
+    font-family: Langar;
+}
+
+
+h3 {
+    text-align: right;
+    font-family: Langar;
+}
+
+.section-title {
+    display: inline-block;
+    padding: 2px;
+    border: 1px solid #426956;
+    margin:0px;
+}
+
+.yellow-background {
+    background-color: lightyellow;
+}
+
+.blue-background {
+    background-color: lightblue;
+}
+
+.purple-background {
+    background-color: mediumslateblue;
+}
+
+.red-background {
+    background-color: lightcoral;
+}
+
+p {
+    color: black;
+    padding: 3px;
+}
+
+/* Simple Responsive Framework.
+   Adapted from 
+   https://github.com/jhu-ep-coursera/fullstack-course4/blob/master/examples/Lecture24/responsive-after.html  
+*/
+.row {
+    width: 100%;
+    text-align: justify;
+}
+
+/********** Large devices only **********/
+@media (min-width: 992px) {
+
+    .col-lg-1,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-10,.col-lg-11,.col-lg-12 {
+        float: left;
+        background-color: #cceedd;
+        border: 1px solid #426956;
+    }
+
+    .col-lg-4 {
+        width: 32.33%; /* This is the width of 3 columns */
+    }
+
+    .col-lg-6 {
+        width: 49%; /* This is the width of 2 columns */
+    }
+
+    .col-lg-12 {
+        width: 99%; /* This is the width of 1 column */
+    }
+}
+
+/********** Medium devices only **********/
+@media (min-width: 768px) and (max-width: 991px) {
+
+    .col-md-1,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-10,.col-md-11,.col-md-12 {
+        float: left;
+        background-color: #cceedd;
+        border: 1px solid #426956;
+    }
+
+    .col-md-4 {
+        width: 32.33%; /* This is the width of 3 columns */
+    }
+
+    .col-md-6 {
+        width: 49%; /* This is the width of 2 columns */
+    }
+
+    .col-md-12 {
+        width: 99%; /* This is the width of 1 column */
+    }
+}
+
+/********** Small devices only **********/
+@media (max-width: 767px) {
+
+    .col-sm-1,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-10,.col-sm-11,.col-sm-12 {
+        float: left;
+        background-color: #cceedd;
+        border: 1px solid #426956;
+    }
+
+    .col-sm-4 {
+        width: 32.33%; /* This is the width of 3 columns */
+    }
+
+    .col-sm-6 {
+        width: 49%; /* This is the width of 2 columns */
+    }
+
+    .col-sm-12 {
+        width: 99%; /* This is the width of 1 column */
+    }
+}
