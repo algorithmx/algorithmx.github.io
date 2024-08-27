@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Magnetic System Dynamics</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script>
+        // Constants and parameters
+        const CONSTANTS = {
+            spacing: 7,
+            gridSizeX: 60,
+            gridSizeY: 40,
+            dt: 0.001,
+            alpha: 0.0,
+            gamma: 100.0,
+            J0: 1.0,
+            J1: 0.2,
+            Hextz: 0.1,
+            theta: 0.05 * Math.PI
+        };
+        const L = CONSTANTS.gridSizeX * CONSTANTS.spacing;
+
+        // Three.js setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(25, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Position the camera
+        camera.position.set(0, -1 * L, 2 * L);
+        camera.lookAt(0, 0.8, -1);
+
+        const H0 = new THREE.Vector3(0, 0, CONSTANTS.Hextz); // External magnetic field aligned to z-axis
+
+        // Magnetization grid and arrow meshes
+        const magnetizations = [];
+        const newMagnetizations = [];
+        const arrowMeshes = [];
+        const deviation = 0.2 * Math.PI;
+        const V010 = new THREE.Vector3(0, 1, 0);
+
+        function initializeMagnetizations(theta, deviation) {
+            for (let i = 0; i < CONSTANTS.gridSizeX; i++) {
+                const Mi = [];
+                for (let j = 0; j < CONSTANTS.gridSizeY; j++) {
+                    let phi = Math.random() * 2 * Math.PI;
+                    let theta_r = theta + Math.random() * deviation;
+                    const M = new THREE.Vector3(
+                        Math.sin(theta_r) * Math.cos(phi),
+                        Math.sin(theta_r) * Math.sin(phi),
+                        Math.cos(theta_r));
+                    Mi.push(M.clone().normalize());
+                };
+                magnetizations[i] = Mi;
+            }
+        }
+
+        function colormap(z) {
+            return [0.5 - z * 0.499, 0, 0.5 + z * 0.499]
+        }
+
+        // Create arrow meshes
+        function createArrowMeshes() {
+            magnetizations.forEach((Mi, i) => {
+                Mi.forEach((M, j) => {
+                    console.log("M", M, "j", j);
+                    const arrowMesh = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.2, 0.2, 1.2*CONSTANTS.spacing, 8, 4), 
+                        new THREE.MeshBasicMaterial({ color: 'white' }));
+                    arrowMesh.position.set(i * CONSTANTS.spacing - 0.527*L, j * CONSTANTS.spacing, 0);
+                    arrowMesh.quaternion.setFromUnitVectors(V010, M);
+                    arrowMesh.material.color.setRGB(...colormap(M.z));
+                    scene.add(arrowMesh);
+                    arrowMeshes.push(arrowMesh);
+                });
+            });
+            console.log("createArrowMeshes ", arrowMeshes.length);
+        }
+
+        function a_term(m, heff, gamma, alpha, result) {
+            result.crossVectors(heff, m).multiplyScalar(-alpha).add(heff).multiplyScalar(gamma);
+            return ;
+        }
+
+        function rotate_m(m, a, dt, result) {
+            const an = a.length();
+            const a_norm = a.normalize();
+            const c = Math.cos(an * dt);
+            const s = Math.sin(an * dt);
+            result.crossVectors(a_norm, m).multiplyScalar(s)
+                        .add(m.clone().multiplyScalar(c))
+                        .add(a_norm.clone().multiplyScalar(a_norm.dot(m) * (1 - c)));
+            return ; 
+        }
+
+        function h_eff(J0, J1, mag, i, j, Hext, result) {
+            result.copy(Hext).multiplyScalar(-1);
+            if (J0 > 0) {
+                const neighbors = [
+                    mag[i - 1]?.[j], mag[i + 1]?.[j],
+                    mag[i][j - 1], mag[i][j + 1]
+                ].filter(n => n);
+                if (neighbors.length > 0) {
+                    result.add(neighbors.reduce((sum, n) => sum.add(n), new THREE.Vector3())
+                                .multiplyScalar(J0 / neighbors.length));
+                }
+            }
+            if (J1 > 0) {
+                const neighbors1 = [
+                    mag[i - 1]?.[j - 1], mag[i + 1]?.[j - 1],
+                    mag[i - 1]?.[j + 1], mag[i + 1]?.[j + 1]
+                ].filter(n => n);
+                if (neighbors1.length > 0) {
+                    result.add(neighbors1.reduce((sum, n) => sum.add(n), new THREE.Vector3())
+                    .multiplyScalar(J1 / neighbors1.length));
+                }
+            }
+            return ;
+        }
+
+        function updateMagnetization(J0, J1, gamma, alpha, DT, Hext) {
+            let H_eff  = new THREE.Vector3();
+            let a_of_m = new THREE.Vector3();
+            let newM   = new THREE.Vector3();
+            for (let i = 0; i < CONSTANTS.gridSizeX; i++) {
+                newMagnetizations[i] = magnetizations[i].map((M, j) => {
+                    h_eff(J0, J1, magnetizations, i, j, Hext, H_eff);
+                    a_term(M.clone(), H_eff, gamma, alpha, a_of_m);
+                    rotate_m(M.clone(), a_of_m, DT, newM);
+                    return newM.clone();
+                });
+            }
+            newMagnetizations.forEach((Mi, i) => {
+                Mi.forEach((M, j) => {
+                    magnetizations[i][j].copy(M);
+                });
+            });
+        }
+
+        function updateArrowMeshes() {
+            let newDir = new THREE.Vector3(0, 0, 1);
+            newMagnetizations.forEach((Mi, i) => {
+                Mi.forEach((M, j) => {
+                    newDir.copy(M);
+                    const arrowMesh = arrowMeshes[i * CONSTANTS.gridSizeY + j];
+                    arrowMesh.quaternion.setFromUnitVectors(V010, newDir);
+                    arrowMesh.material.color.setRGB(...colormap(newDir.z));
+                });
+            });
+        }
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+            updateMagnetization(CONSTANTS.J0, CONSTANTS.J1, CONSTANTS.gamma, CONSTANTS.alpha, CONSTANTS.dt, H0);
+            updateArrowMeshes();
+            renderer.render(scene, camera);
+        }
+
+        function init() {
+            initializeMagnetizations(CONSTANTS.theta, 0.5*CONSTANTS.theta);
+            createArrowMeshes();
+        }
+
+        init();
+        animate();
+
+    </script>
+</body>
+</html>

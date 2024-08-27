@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <title>Yunlong's Site</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+            font-family: "Noto Serif", serif;
+            font-style: normal;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 8px 0;
+        }
+        .content {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+        .box {
+            border: 1px solid white;
+            padding: 8px;
+            margin: 8px 0;
+            cursor: pointer;
+            text-align: justify;
+            transition: background-color 0.3s;
+        }
+        .box:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+
+            <a style="text-decoration: none; color: inherit;">
+                <div class="box">
+                    <a style="text-decoration: none; color: white;">
+                        <div class="box">
+                            <h2>About Me</h2>
+                            <p>I am a happy programmer, AI enthusiastic, with a PhD in condensed matter physics, 
+                                currently located in Shanghai. I was working in the semiconductor industry as a
+                                researcher and developer for about a year. I have been studying and working in 
+                                many places around the world and I am actively seeking for job opportunities in 
+                                North America, Europe and Australia. </p>
+                        </div>
+                    </a>
+                    <a href="mailto:yunlong.lian@proton.me" style="text-decoration: none; color: lightgreen;">
+                        <div class="box">
+                            <h2>Contact</h2>
+                            <p>Email: yunlong.lian@proton.me</p>
+                        </div>
+                    </a>
+                </div>
+            </a>
+
+            <a style="text-decoration: none; color: inherit;">
+                <div class="box">
+                    <h1>Fun Projects</h1>
+                    <p>Below is a list of topics or projects I have been involved or I am interested. 
+                        Given my frequent engagement in simulation projects, I have cultivated a 
+                        'visual debugging' methodology. where I highly prioritize the visualization 
+                        of intermediate results in the development process. By juxtaposing visualization 
+                        with my physical intuition, I am usually able to quickly identify many kind of 
+                        mistakes. 
+                    </p>
+                    <p>To help me get over the bitter time after a sudden layoff, I build visualization 
+                        pages to explain the essence of the listed topic. Please click on the title to
+                        access the visualization page.
+                    </p>
+                
+                    <a href="ion.html" style="text-decoration: none; color: cyan;">
+                        <div class="box">
+                            <h2>Molecular dynamics simulation of ion implantation.</h2>
+                            <p>The ion.</p>
+                            <p>Click for details.</p>
+                        </div>
+                    </a>
+
+                    <a href="skyrmion.html" style="text-decoration: none; color: violet;">
+                        <div class="box">
+                            <h2>Simulation of the LLG equation on 2d ferromagnet with skyrmions embeded.</h2>
+                            <p>The skyrmion.</p>
+                            <p>Click for details.</p>
+                        </div>
+                    </a>
+
+                    <a href="kmc.html" style="text-decoration: none; color: yellow;">
+                        <div class="box">
+                            <h2>Kinetic Monte-Carlo simulation of particle diffusion on 2d honeycomb lattice.</h2>
+                            <p>The lattice.</p>
+                            <p>Click for details.</p>
+                        </div>
+                    </a>
+
+                    <a href="wire.html" style="text-decoration: none; color: lightgreen;">
+                        <div class="box">
+                            <h2>Simulated annealing optimization of configuration of wires with collision avoidance.</h2>
+                            <p>The wire.</p>
+                            <p>Click for details.</p>
+                        </div>
+                    </a>
+
+                    <a style="text-decoration: none; color: lightgrey;">
+                        <div class="box">
+                            <h2>More topics are coming soon ...</h2>
+                        </div>
+                    </a>
+
+                </div>
+            </a>
+
+        </div>
+    </div>
+</body>
+</html>
