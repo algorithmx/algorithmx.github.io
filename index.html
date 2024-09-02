@@ -80,38 +80,80 @@
                     </p>
                     <p>To help me get over the bitter time after a sudden layoff, I build visualization 
                         pages to explain the essence of the listed topic. Please click on the title to
-                        access the visualization page.
+                        access the visualization page. 
                     </p>
-                
+                    <p>You need a desktop display to view the visualization.</p>
                     <a href="ion.html" style="text-decoration: none; color: cyan;">
                         <div class="box">
                             <h2>Molecular dynamics simulation of ion implantation.</h2>
-                            <p>The ion.</p>
-                            <p>Click for details.</p>
+                            <p>The ion implantation is a frequently used process in semiconductor device fabrication.
+                                Dopants are implanted into the desired regions of a semiconductor wafer to alter the 
+                                electrical properties. The process is usually simulated by tracing the trajectory of
+                                the ion inside the crystalline or amorphous material. Along the trajectory, the energy
+                                exchange between the ion and the material is recorded for analysis of damage on the 
+                                material. The ion stops when it loses all its energy.
+                            </p>
+                            <p>The fastest simulation uses the Binary Collision Approximation, where an ion hops from 
+                                consecutive collision events. In this approximation, the trajectory is approximated by
+                                zigzag lines. Various details must be considered in a consistant manner to produce 
+                                realistic simulation results.
+                            </p>
+                            <p>On the other hand, the molecular dynamics simulation is accurate and simple to implement.
+                                Click for an animation of 10,000 ions implanted into a simple cubic crystal. In the simulation 
+                                I disregard the recoil of the atoms in the crystal.
+                            </p>
                         </div>
                     </a>
 
                     <a href="skyrmion.html" style="text-decoration: none; color: violet;">
                         <div class="box">
                             <h2>Simulation of the LLG equation on 2d ferromagnet with skyrmions embeded.</h2>
-                            <p>The skyrmion.</p>
-                            <p>Click for details.</p>
+                            <p>I am working on skyrmions over my entire PhD. Here is an animation for a pair of 
+                                skkrmions in a ferromagnet, which is modelled by a lattice of magnetization vectors
+                                and Landau-Lifshitz-Gilbert equation with nearest and next-nearest neighbor coupling. 
+                            </p>
+                            <p>One crucial point in writing the discrete LLG equation is to make sure the magnetization 
+                                vectors are normalized at each time step. This is common in all dynamical simulations of
+                                system with constraints. For magnetization, the constraint is that its amplitude is constant. 
+                                The naive way of "update and project" will not work. The correct way is to work in a local, 
+                                intrinsic coordinate system.  
+                            </p>
+                            <p>Click if you want to watch how a pair of skyrmions evolve in a ferromagnet. (incomplete)</p>
                         </div>
                     </a>
 
                     <a href="kmc.html" style="text-decoration: none; color: yellow;">
                         <div class="box">
                             <h2>Kinetic Monte-Carlo simulation of particle diffusion on 2d honeycomb lattice.</h2>
-                            <p>The lattice.</p>
-                            <p>Click for details.</p>
+                            <p>Kinetic Monte-Carlo is a simulation strategy to simulate the dynamics of a system of 
+                                reactants. Compared to the common method of time discretization, time evolution in KMC
+                                is based on events. 
+                            </p>
+                            <p>The diffusion dynamics can be modelled as a system of reactants. The diffusion process is modelled 
+                                as a series of events, each of which is a particle diffusion from one site to another. We adapt 
+                                a Eulerian perspective of the system into which the particles diffuse, so that the states are the 
+                                site occupations in each unit cell and the reaction rules are determined by the motion of the diffusants.   
+                            </p>
+                            <p>Click for a 2D illustration of diffusion process with unrealistic diffusant hopping rules.</p>
                         </div>
                     </a>
 
                     <a href="wire.html" style="text-decoration: none; color: lightgreen;">
                         <div class="box">
                             <h2>Simulated annealing optimization of configuration of wires with collision avoidance.</h2>
-                            <p>The wire.</p>
-                            <p>Click for details.</p>
+                            <p>This project is to solve a problem of assembly L-shaped wires on a board. The wires are attached 
+                                vertically on the board at approximately equidistant contact points. Once attached, a wire can rotate
+                                along the x-axis. There are constraints on the smallest distance between any pair of wires. 
+                                The goal is to find an overall configuration that satisfies the constraints and minimizes the total 
+                                spreading angle of the wires.
+                            </p>
+                            <p>I got this problem from my friend who is working in a factory. His employee usually spend an hour to manipulate
+                                a hundred wires to get a good configuration. With my simulation and visualization, he systematically improved
+                                the wire attaching workflow. 
+                            </p>
+                            <p>Click for an animation of the simulated annealing algorithm on this problem. It is a standalone webpage. 
+                                Hope the javascript code inspires you and help you to build your own simulation.
+                            </p>
                         </div>
                     </a>
 
