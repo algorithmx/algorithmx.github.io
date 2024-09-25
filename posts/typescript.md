@@ -8,6 +8,12 @@ Typescript is a superset of Javascript and is used to develop large-scale web ap
 Workflow is important in the era of programming copilot. 
 It determines on a high level the sequence of incremental developments in a project, hence providing a meaningful context to the copilot at any time during the development progress. Copilot is essentially copy-paste from other's solutions. When programming with a copilot, there is a tendency of rushing too quickly to the apparent solution without preparation. Reflecting on my own experience, I have to make my hands dirty only when the copilot fails to resolve difficult bugs due to complicated context. These bugs are often introduced in a hurry. 
 
+## Typical workflow 
+
+```mermaid
+graph LR;
+    A["npm init"]-->B;
+```
 
 # Type
 
