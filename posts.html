@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     <title>Blog Posts</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
@@ -22,13 +26,13 @@
             const blogList = await response.json();
 
             const content = document.getElementById('content');
-            content.innerHTML = '<h1>Blog Posts</h1>';
+            content.innerHTML = '<h2>Blog Posts</h2>';
             const ul = document.createElement('ul');
             ul.style.listStyleType = 'none'; 
             blogList.forEach(post => {
                 const li = document.createElement('li');
                 li.className = 'box';
-                li.innerHTML = `<p style="color: ${post.color ? post.color : "lightgreen"}">${post.title}</p><p style="color: white">${post.summary}</p>`;
+                li.innerHTML = `<h3 style="color: ${post.color ? post.color : "lightgreen"}">${post.title}</h3><p style="color: white">${post.summary}</p>`;
                 li.addEventListener('click', () => renderPost(post.file)); // Make the entire box clickable
                 ul.appendChild(li);
             });
