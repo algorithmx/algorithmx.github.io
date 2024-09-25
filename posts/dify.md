@@ -2,7 +2,7 @@ Using DIFY
 ===
 
 # Deploy
-The simplest way of deploying DIFY on a local machine is to use Docker Compose. [Here is how](https://docs.dify.ai/getting-started/install-self-hosted/docker-compose). And [here is my docker-compose.yml file](xxx) to integrate local deployment of Ollama.
+The simplest way of deploying DIFY on a local machine is to use Docker Compose. [Here is how](https://docs.dify.ai/getting-started/install-self-hosted/docker-compose). And [here is my docker-compose.yml file](docker-compose.yaml) to integrate local deployment of Ollama.
 
 # Version
 The latest version is 0.8.3. I deployed my local DIFY using Docker Compose, so the easiest way to upgrade is to modify the version numbers in the image item in the `services/api`, `services/worker`, and `services/web` sections.
