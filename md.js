@@ -17,9 +17,9 @@ function main(url_md) {
         }
         const markdownText = yield response.text();
         const renderer = new marked.Renderer();
+        renderer.codeDefault = renderer.code;
         let currentLevel = 0;
         renderer.heading = (text) => {
-            console.log(text);
             let level = Number(text.depth);
             let isTitle = text.raw.includes("===") && !text.raw.includes("#");
             let closingTags = '';
@@ -33,16 +33,25 @@ function main(url_md) {
                 <div class="box">`;
         };
         renderer.text = (inp) => {
-            // console.log("render.text:");
-            // console.log(inp);
             const text = inp.raw;
             return text.replace(/\$\$(.*?)\$\$/g, (_, tex) => {
                 return katex.renderToString(tex, { displayMode: true });
             }).replace(/\$(.*?)\$/g, (_, tex) => {
                 return katex.renderToString(tex, { displayMode: false });
-            }).replace(/\[(.*?)\]\((.*?)\)/g, (_, tt, url) => {
-                return `<a href="${url}" style="color: lightgreen">${tt}</a>`;
             });
+        };
+        renderer.code = (inp) => {
+            if (inp) {
+                if (inp.lang === 'mermaid') {
+                    return `<pre class="mermaid">${inp.text}</pre>`;
+                }
+                else {
+                    return renderer.codeDefault(inp);
+                }
+            }
+            else {
+                return '';
+            }
         };
         const html = marked.parse(markdownText, { renderer: renderer });
         // Close any remaining open tags

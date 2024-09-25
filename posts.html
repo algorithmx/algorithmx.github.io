@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Posts</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-    <title>Blog Posts</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
     <script src="md.js"></script>
-    <!-- <script>
-        document.addEventListener('DOMContentLoaded', () => main('test.md'));
-    </script> -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             displayBlogList();
@@ -28,12 +26,17 @@
             const content = document.getElementById('content');
             content.innerHTML = '<h2>Blog Posts</h2>';
             const ul = document.createElement('ul');
-            ul.style.listStyleType = 'none'; 
+            ul.style.listStyleType = 'none';
             blogList.forEach(post => {
                 const li = document.createElement('li');
                 li.className = 'box';
                 li.innerHTML = `<h3 style="color: ${post.color ? post.color : "lightgreen"}">${post.title}</h3><p style="color: white">${post.summary}</p>`;
-                li.addEventListener('click', () => renderPost(post.file)); // Make the entire box clickable
+                li.addEventListener('click', async () => {
+                    await renderPost(post.file);
+                    mermaid.run({
+                        querySelector: '.mermaid'
+                    });
+                });
                 ul.appendChild(li);
             });
             content.appendChild(ul);
