@@ -1,3 +1,4 @@
-tsconfig.json
-*.ts
-*.tsx
+node_modules
+aaa
+package*
+test*
