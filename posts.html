@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Posts</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+    <script src="md.js"></script>
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', () => main('test.md'));
+    </script> -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            displayBlogList();
+        });
+
+        async function displayBlogList() {
+            const btn = document.getElementById('go-back-button');
+            btn.innerHTML = '';
+            const response = await fetch('blogList.json'); // Fetch the list from a JSON file
+            const blogList = await response.json();
+
+            const content = document.getElementById('content');
+            content.innerHTML = '<h1>Blog Posts</h1>';
+            const ul = document.createElement('ul');
+            ul.style.listStyleType = 'none'; 
+            blogList.forEach(post => {
+                const li = document.createElement('li');
+                li.className = 'box';
+                li.innerHTML = `<p style="color: ${post.color ? post.color : "lightgreen"}">${post.title}</p><p style="color: white">${post.summary}</p>`;
+                li.addEventListener('click', () => renderPost(post.file)); // Make the entire box clickable
+                ul.appendChild(li);
+            });
+            content.appendChild(ul);
+        }
+
+        async function renderPost(filename) {
+            const btn = document.getElementById('go-back-button');
+            btn.innerHTML = '<button onclick="displayBlogList()">Back to List</button>';
+            await main(filename);
+        }
+    </script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+            font-family: "Noto Serif", serif;
+            font-style: normal;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 8px 0;
+            padding-left: 0;
+        }
+        ul {
+            padding-inline-start: 0px;
+        }
+        .box {
+            border: 1px solid white;
+            padding: 8px;
+            margin: 8px 0;
+            cursor: pointer;
+            text-align: justify;
+            transition: background-color 0.3s;
+        }
+        .box:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .markdown-header {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            margin: 0 auto;
+        }
+        .markdown-header button {
+            font-size: large;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid white;
+            color: rgb(208, 255, 143);
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .markdown-header button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .markdown-body {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            margin: 0 auto;
+        }
+        .markdown-body details {
+            margin-bottom: 10px;
+        }
+        .markdown-body details summary {
+            cursor: pointer;
+            list-style: none;
+        }
+        .markdown-body details[open] summary {
+            font-weight: bold;
+        }
+        .markdown-body p {
+            margin: 10px 0;
+        }
+        .markdown-body a {
+            color: lightgreen;
+        }
+    </style>
+</head>
+<body>
+    <div id="go-back-button" class="markdown-header"></div>
+    <div id="content" class="markdown-body">
+    </div>
+</body>
+</html>
