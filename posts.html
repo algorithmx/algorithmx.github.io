@@ -16,37 +16,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             displayBlogList();
         });
-
-        async function displayBlogList() {
-            const btn = document.getElementById('go-back-button');
-            btn.innerHTML = '';
-            const response = await fetch('blogList.json'); // Fetch the list from a JSON file
-            const blogList = await response.json();
-
-            const content = document.getElementById('content');
-            content.innerHTML = '<h2>Blog Posts</h2>';
-            const ul = document.createElement('ul');
-            ul.style.listStyleType = 'none';
-            blogList.forEach(post => {
-                const li = document.createElement('li');
-                li.className = 'box';
-                li.innerHTML = `<h3 style="color: ${post.color ? post.color : "lightgreen"}">${post.title}</h3><p style="color: white">${post.summary}</p>`;
-                li.addEventListener('click', async () => {
-                    await renderPost(post.file);
-                    mermaid.run({
-                        querySelector: '.mermaid'
-                    });
-                });
-                ul.appendChild(li);
-            });
-            content.appendChild(ul);
-        }
-
-        async function renderPost(filename) {
-            const btn = document.getElementById('go-back-button');
-            btn.innerHTML = '<button onclick="displayBlogList()">Back to List</button>';
-            await main(filename);
-        }
     </script>
     <style>
         body, html {

@@ -1,5 +1,6 @@
 [
     { "title": "Using Dify", "file": "posts/dify.md", "summary": "" },
     { "title": "Learning Typescript", "file": "posts/typescript.md", "summary": "" },
+    { "title": "Collection of Javascript Tools", "file": "posts/collection_javascript.md", "summary": "" },
     { "title": "TEST", "file": "posts/test.md", "summary": "TODO: rendering mermaid code block." }
 ]
