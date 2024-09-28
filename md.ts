@@ -1,31 +1,50 @@
 // a good blog https://segmentfault.com/a/1190000019761439
 
+/*
+ * Below is a malpractice of Typescript I deliberately write for practice. 
+ * The goal is to experiment on a minimal effort to work with the tsc Typescript 
+ * compiler but not installing any libraries using npm. Being able to work this way,
+ * I am capable of delivering safe code on top of the shit mountain Javascript codebase, 
+ * at the same time without irritating the owner of the mountain by the alien Typescript. 
+ * Life would be easy for both of us. Peace & Love !
+ */
+
 declare const mermaid: any;
 
 declare const katex: {
     renderToString(tex: string, options: { displayMode: boolean }): string;
 };
 
-// Define the renderer type
 type Renderer = {
     heading: (text: any) => string;
     text: (text: any) => string;
+    link: (text: any) => string;
     code: (cc: any) => string;
     codeDefault: (cc: any) => string;
 };
 
-// Define the marked module
 declare namespace marked {
     function parse(markdown: string, options?: { renderer: Renderer }): string;
     class Renderer implements Renderer {
         heading(text: any): string;
         text(text: any): string;
+        link(ln: any): string;
         code(cc: any): string;
         codeDefault(cc: any): string;
     }
 }
 
-async function main(url_md: string) {
+/* 
+ * Lesson learned: the type declaration in Typescript is essentially a type-check helper
+ * for the tsc compiler. Writing the type declaration is a kind of building safe-guard 
+ * for the subsequent developments. It also provides the necessary context to the linter
+ * and the copilot to help on the code editing. 
+ * 
+ * The project management and the type-declaration are indeed two separate aspects for 
+ * Typescript development. 
+ */
+
+async function markdownLoadRender(url_md: string) {
     const response = await fetch(url_md);
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -49,11 +68,20 @@ async function main(url_md: string) {
     };
     renderer.text = (inp: any): string => {
         const text: string = inp.raw;
-        return text.replace(/\$\$(.*?)\$\$/g, (_, tex) => {
+        const replacedText = text.replace(/\$\$(.*?)\$\$/g, (_, tex) => {
             return katex.renderToString(tex, { displayMode: true });
         }).replace(/\$(.*?)\$/g, (_, tex) => {
             return katex.renderToString(tex, { displayMode: false });
         });
+        if (replacedText === text) {
+            // Call the default renderer if no replacements were made
+            return marked.Renderer.prototype.text.call(renderer, inp);
+        }
+        return replacedText;
+    };
+    renderer.link = (ln: any) => {
+        console.log(ln);
+        return `<a href="${ln.href}" target="_blank" rel="noopener noreferrer">${ln.text}</a>`; 
     };
     renderer.code = (inp: any): string => {
         if (inp) {
@@ -73,4 +101,42 @@ async function main(url_md: string) {
     if (contentElement) {
         contentElement.innerHTML = html + finalClosingTags;
     }
+}
+
+async function displayBlogList() {
+    const btn = document.getElementById('go-back-button');
+    if (btn) {
+        btn.innerHTML = '';
+        const response = await fetch('blogList.json');
+        const blogList = await response.json();
+        const content = document.getElementById('content');
+        if (content) {
+            content.innerHTML = '<h2>Blog Posts</h2>';
+            const ul = document.createElement('ul');
+            ul.style.listStyleType = 'none';
+            blogList.forEach(
+                (post : {title:string, file:string, summary:string, color?:string}) => {
+                    const li = document.createElement('li');
+                    li.className = 'box';
+                    li.innerHTML = `<h3 style="color: ${post.color || "lightgreen"}">${post.title}</h3><p style="color: white">${post.summary}</p>`;
+                    li.addEventListener('click', async () => {
+                        await renderPost(post.file);
+                        mermaid.run({
+                            querySelector: '.mermaid'
+                        });
+                    });
+                    ul.appendChild(li);
+                }
+            );
+            content.appendChild(ul);
+        }
+    }
+}
+
+async function renderPost(filename: string) {
+    const btn = document.getElementById('go-back-button');
+    if (btn) {
+        btn.innerHTML = '<button onclick="displayBlogList()">Back to List</button>';
+    }
+    await markdownLoadRender(filename);
 }
