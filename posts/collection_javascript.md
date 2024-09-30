@@ -13,7 +13,16 @@ This is a work in progress to collect useful Javascript tools that I am currentl
 
 # Web Application
 
-+ [RxDB](https://rxdb.info/): The local Database for JavaScript Applications
++ [jupyterlite](https://jupyterlite.readthedocs.io/en/stable/): JupyterLite is a JupyterLab distribution that runs entirely in the browser built from the ground-up using JupyterLab components and extensions.
+
++ [sql.js](https://github.com/sql-js/sql.js): SQLite compiled to JavaScript. [DEMO](https://sql.js.org/examples/GUI/)
+
++ Tutorials for IndexedDB: 
+    - [Using IndexedDB](https://medium.com/@kamresh485/indexeddb-tutorial-for-beginners-a-comprehensive-guide-with-coding-examples-74df2914d4d5)
+    - [HTML IndexedDB API](https://www.w3schools.com/html/html5_indexeddb.asp)
+    - [on javascript.info](https://javascript.info/indexeddb)
+
++ [RxDB](https://rxdb.info/): The local Database for JavaScript Applications.
 
 
 # Visualization and UI
