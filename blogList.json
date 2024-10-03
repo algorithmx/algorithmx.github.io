@@ -1,18 +1,47 @@
 [
-    { "title": "Using Dify", "file": "posts/dify.md", "summary": "" },
-    { "title": "Learning Typescript", "file": "posts/typescript.md", "summary": "" },
-    { "title": "Writing Typescript", "file": "posts/writing_typescript.md", "summary": "" },
-    { "title": "Collection of Javascript Tools", "file": "posts/collection_javascript.md", "summary": "" },
-    { "title": "", "file": "", "summary": "" },
-    { 
-        "title": "Best Practices for Developing with TypeScript in 2024 (by Mark Worachote from amity.co)", 
-        "file": "https://r.jina.ai/https://www.amity.co/tutorials/best-practices-for-developing-with-typescript", 
-        "summary": "Markdownfied web page from <a href=\"https://www.amity.co/tutorials/best-practices-for-developing-with-typescript\">this link</a>" 
+    {
+        "title": "My Articles",
+        "posts": [
+            { "title": "Using Dify", "file": "posts/dify.md", "summary": "" },
+            { "title": "Learning Typescript", "file": "posts/typescript.md", "summary": "" },
+            { "title": "Writing Typescript", "file": "posts/writing_typescript.md", "summary": "" },
+            { "title": "Collection of Javascript Tools", "file": "posts/collection_javascript.md", "summary": "" }
+        ]
     },
-    { 
-        "title": "Best Practices for TypeScript: Elevate Your Code Quality (by Shivam Singh from dev.to)", 
-        "file": "https://r.jina.ai/https://dev.to/shivams1007/best-practices-for-typescript-elevate-your-code-quality-16j8", 
-        "summary": "Markdownfied web page from <a href=\"https://dev.to/shivams1007/best-practices-for-typescript-elevate-your-code-quality-16j8\">this link</a>" 
+    {
+        "title": "Javascript / Typescript Collection",
+        "posts":[
+            { 
+                "title": "Best Practices for Developing with TypeScript in 2024 (by Mark Worachote from amity.co)", 
+                "file": "https://r.jina.ai/https://www.amity.co/tutorials/best-practices-for-developing-with-typescript", 
+                "summary": "Markdownfied web page from <a href=\"https://www.amity.co/tutorials/best-practices-for-developing-with-typescript\">this link</a>" 
+            },
+            { 
+                "title": "Best Practices for TypeScript: Elevate Your Code Quality (by Shivam Singh from dev.to)", 
+                "file": "https://r.jina.ai/https://dev.to/shivams1007/best-practices-for-typescript-elevate-your-code-quality-16j8", 
+                "summary": "Markdownfied web page from <a href=\"https://dev.to/shivams1007/best-practices-for-typescript-elevate-your-code-quality-16j8\">this link</a>" 
+            },
+            { 
+                "title": "Vue vs React: Everything You Need To Know (by Lucero del Alba from sitepoint.com)", 
+                "file": "https://r.jina.ai/https://www.sitepoint.com/vue-vs-react/", 
+                "summary": "Markdownfied web page from <a href=\"https://www.sitepoint.com/vue-vs-react/\">this link</a>" 
+            },
+            { 
+                "title": "Vue vs. React: How to Choose for 2024 (by Nefe Emadamerho-Atori from prismic.io)", 
+                "file": "https://r.jina.ai/https://prismic.io/blog/vue-vs-react", 
+                "summary": "Markdownfied web page from <a href=\"https://prismic.io/blog/vue-vs-react\">this link</a>" 
+            },
+            { 
+                "title": "Vue vs React: Comparing frontend options in 2024 (by Mathew Pregasen from retool.com)", 
+                "file": "https://r.jina.ai/https://retool.com/blog/react-versus-vue-comparison", 
+                "summary": "Markdownfied web page from <a href=\"https://retool.com/blog/react-versus-vue-comparison\">this link</a>" 
+            }
+        ]
     },
-    { "title": "TEST", "file": "posts/test.md", "summary": "TODO: rendering mermaid code block." }
+    {
+        "title": "Unclassfied",
+        "posts": [
+            { "title": "TEST", "file": "posts/test.md", "summary": "TODO: rendering mermaid code block." }
+        ]
+    }
 ]
