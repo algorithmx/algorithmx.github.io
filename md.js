@@ -9,13 +9,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Lesson learned: the type declaration in Typescript is essentially a type-check helper
+ * for the tsc compiler. Writing the type declaration is a kind of building safe-guard
+ * for the subsequent developments. It also provides the necessary context to the linter
+ * and the copilot to help on the code editing.
+ *
+ * The project management and the type-declaration are indeed two separate aspects for
+ * Typescript development.
+ */
+function filterMarkdownLines(markdownText) {
+    const lines = markdownText.split('\n');
+    let secondAppearanceIndex = -1;
+    let appearanceCount = 0;
+    // Find the index of the line just above the second appearance of "==="
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].trim().startsWith("===")) {
+            appearanceCount++;
+            if (appearanceCount === 2) {
+                secondAppearanceIndex = i - 1;
+                break;
+            }
+        }
+    }
+    // If the second appearance of "===" is found, filter the lines
+    if (secondAppearanceIndex !== -1) {
+        return lines.slice(secondAppearanceIndex).join('\n');
+    }
+    return markdownText;
+}
 function markdownLoadRender(url_md) {
     return __awaiter(this, void 0, void 0, function* () {
         const response = yield fetch(url_md);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const markdownText = yield response.text();
+        let markdownText = yield response.text();
+        markdownText = filterMarkdownLines(markdownText);
+        // Filter images with links starting with "https://"
+        markdownText = markdownText.replace(/!\[.*?\]\((https:\/\/.*?)\)/g, (_, url) => {
+            return ``;
+        });
+        markdownText = markdownText.replace(/\[#.*?\]\((https:\/\/.*?)\)/g, (_, url) => {
+            return ``;
+        });
+        markdownText = markdownText.replace(/\[]\((https:\/\/.*?)\)/g, (_, url) => {
+            return ``;
+        });
+        markdownText = markdownText.replace(/(\d)\\(\.)/g, '## $1$2');
+        // markdownText = markdownText.replace(/-------(-)+/g, '---');
         const renderer = new marked.Renderer();
         renderer.codeDefault = renderer.code;
         let currentLevel = 0;

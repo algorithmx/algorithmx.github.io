@@ -44,12 +44,49 @@ declare namespace marked {
  * Typescript development. 
  */
 
+function filterMarkdownLines(markdownText: string): string {
+    const lines = markdownText.split('\n');
+    let secondAppearanceIndex = -1;
+    let appearanceCount = 0;
+
+    // Find the index of the line just above the second appearance of "==="
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].trim().startsWith("===")) {
+            appearanceCount++;
+            if (appearanceCount === 2) {
+                secondAppearanceIndex = i - 1;
+                break;
+            }
+        }
+    }
+
+    // If the second appearance of "===" is found, filter the lines
+    if (secondAppearanceIndex !== -1) {
+        return lines.slice(secondAppearanceIndex).join('\n');
+    }
+
+    return markdownText;
+}
+
 async function markdownLoadRender(url_md: string) {
     const response = await fetch(url_md);
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const markdownText = await response.text();
+    let markdownText = await response.text();
+    markdownText = filterMarkdownLines(markdownText);
+    // Filter images with links starting with "https://"
+    markdownText = markdownText.replace(/!\[.*?\]\((https:\/\/.*?)\)/g, (_, url) => {
+        return ``;
+    });
+    markdownText = markdownText.replace(/\[#.*?\]\((https:\/\/.*?)\)/g, (_, url) => {
+        return ``;
+    });
+    markdownText = markdownText.replace(/\[]\((https:\/\/.*?)\)/g, (_, url) => {
+        return ``;
+    });
+    markdownText = markdownText.replace(/(\d)\\(\.)/g, '## $1$2');
+    // markdownText = markdownText.replace(/-------(-)+/g, '---');
     const renderer = new marked.Renderer();
     renderer.codeDefault = renderer.code;
     let currentLevel = 0;
