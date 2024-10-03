@@ -149,6 +149,13 @@ function renderPost(filename) {
         if (btn) {
             btn.innerHTML = '<button onclick="displayBlogList()">Back to List</button>';
         }
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+            overlay.style.display = 'flex'; // Show the overlay
+        }
         yield markdownLoadRender(filename);
+        if (overlay) {
+            overlay.style.display = 'none'; // Show the overlay
+        }
     });
 }

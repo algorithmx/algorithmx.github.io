@@ -3,7 +3,7 @@
     { "title": "Learning Typescript", "file": "posts/typescript.md", "summary": "" },
     { "title": "Writing Typescript", "file": "posts/writing_typescript.md", "summary": "" },
     { "title": "Collection of Javascript Tools", "file": "posts/collection_javascript.md", "summary": "" },
-    { "title": "TEST", "file": "posts/test.md", "summary": "TODO: rendering mermaid code block." },
+    { "title": "", "file": "", "summary": "" },
     { 
         "title": "Best Practices for Developing with TypeScript in 2024 (by Mark Worachote from amity.co)", 
         "file": "https://r.jina.ai/https://www.amity.co/tutorials/best-practices-for-developing-with-typescript", 
@@ -13,5 +13,6 @@
         "title": "Best Practices for TypeScript: Elevate Your Code Quality (by Shivam Singh from dev.to)", 
         "file": "https://r.jina.ai/https://dev.to/shivams1007/best-practices-for-typescript-elevate-your-code-quality-16j8", 
         "summary": "Markdownfied web page from <a href=\"https://dev.to/shivams1007/best-practices-for-typescript-elevate-your-code-quality-16j8\">this link</a>" 
-    }
+    },
+    { "title": "TEST", "file": "posts/test.md", "summary": "TODO: rendering mermaid code block." }
 ]

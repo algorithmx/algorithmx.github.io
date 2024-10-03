@@ -87,6 +87,7 @@ async function markdownLoadRender(url_md: string) {
     });
     markdownText = markdownText.replace(/(\d)\\(\.)/g, '## $1$2');
     // markdownText = markdownText.replace(/-------(-)+/g, '---');
+
     const renderer = new marked.Renderer();
     renderer.codeDefault = renderer.code;
     let currentLevel = 0;
@@ -175,5 +176,15 @@ async function renderPost(filename: string) {
     if (btn) {
         btn.innerHTML = '<button onclick="displayBlogList()">Back to List</button>';
     }
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.style.display = 'flex'; // Show the overlay
+    }
+
     await markdownLoadRender(filename);
+    
+    if (overlay) {
+        overlay.style.display = 'none'; // Show the overlay
+    }
+
 }
