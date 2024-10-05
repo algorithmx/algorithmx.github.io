@@ -44,12 +44,50 @@ declare namespace marked {
  * Typescript development. 
  */
 
+function filterMarkdownLines(markdownText: string): string {
+    const lines = markdownText.split('\n');
+    let secondAppearanceIndex = -1;
+    let appearanceCount = 0;
+
+    // Find the index of the line just above the second appearance of "==="
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].trim().startsWith("===")) {
+            appearanceCount++;
+            if (appearanceCount === 2) {
+                secondAppearanceIndex = i - 1;
+                break;
+            }
+        }
+    }
+
+    // If the second appearance of "===" is found, filter the lines
+    if (secondAppearanceIndex !== -1) {
+        return lines.slice(secondAppearanceIndex).join('\n');
+    }
+
+    return markdownText;
+}
+
 async function markdownLoadRender(url_md: string) {
     const response = await fetch(url_md);
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const markdownText = await response.text();
+    let markdownText = await response.text();
+    markdownText = filterMarkdownLines(markdownText);
+    // Filter images with links starting with "https://"
+    markdownText = markdownText.replace(/!\[.*?\]\((https:\/\/.*?)\)/g, (_, url) => {
+        return ``;
+    });
+    markdownText = markdownText.replace(/\[#.*?\]\((https:\/\/.*?)\)/g, (_, url) => {
+        return ``;
+    });
+    markdownText = markdownText.replace(/\[]\((https:\/\/.*?)\)/g, (_, url) => {
+        return ``;
+    });
+    markdownText = markdownText.replace(/(\d)\\(\.)/g, '## $1$2');
+    // markdownText = markdownText.replace(/-------(-)+/g, '---');
+
     const renderer = new marked.Renderer();
     renderer.codeDefault = renderer.code;
     let currentLevel = 0;
@@ -114,20 +152,46 @@ async function displayBlogList() {
             content.innerHTML = '<h2>Blog Posts</h2>';
             const ul = document.createElement('ul');
             ul.style.listStyleType = 'none';
-            blogList.forEach(
-                (post : {title:string, file:string, summary:string, color?:string}) => {
+
+            blogList.forEach((section: { title: string, posts: { title: string, file: string, summary: string, color?: string }[] }, index: number) => {
+                const sectionContainer = document.createElement('div');
+                sectionContainer.className = 'section-container';
+
+                const sectionTitle = document.createElement('h3');
+                sectionTitle.textContent = section.title;
+                sectionTitle.className = 'section-title';
+                sectionTitle.addEventListener('click', () => {
+                    sectionContainer.classList.toggle('expanded');
+                    const postsContainer = sectionContainer.querySelector('.posts-container') as HTMLElement; // Cast to HTMLElement
+                    if (postsContainer) {
+                        postsContainer.style.display = sectionContainer.classList.contains('expanded') ? 'block' : 'none';
+                    }
+                });
+                sectionContainer.appendChild(sectionTitle);
+
+                const postsContainer = document.createElement('div');
+                postsContainer.className = 'posts-container';
+                if (index !== 0) {
+                    postsContainer.style.display = 'none'; // Collapse all sections except the first one
+                }
+
+                section.posts.forEach((post: { title: string, file: string, summary: string, color?: string }) => {
                     const li = document.createElement('li');
                     li.className = 'box';
-                    li.innerHTML = `<h3 style="color: ${post.color || "lightgreen"}">${post.title}</h3><p style="color: white">${post.summary}</p>`;
+                    li.innerHTML = `<h4 class="post-title" style="color: ${post.color || "lightgreen"}">${post.title}</h4><p style="color: white">${post.summary}</p>`;
                     li.addEventListener('click', async () => {
                         await renderPost(post.file);
                         mermaid.run({
                             querySelector: '.mermaid'
                         });
                     });
-                    ul.appendChild(li);
-                }
-            );
+                    postsContainer.appendChild(li);
+                });
+
+                sectionContainer.appendChild(postsContainer);
+                ul.appendChild(sectionContainer);
+            });
+
             content.appendChild(ul);
         }
     }
@@ -138,5 +202,15 @@ async function renderPost(filename: string) {
     if (btn) {
         btn.innerHTML = '<button onclick="displayBlogList()">Back to List</button>';
     }
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.style.display = 'flex'; // Show the overlay
+    }
+
     await markdownLoadRender(filename);
+    
+    if (overlay) {
+        overlay.style.display = 'none'; // Show the overlay
+    }
+
 }
