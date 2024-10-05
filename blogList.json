@@ -2,6 +2,7 @@
     {
         "title": "My Articles",
         "posts": [
+            { "title": "Books Collection", "file": "posts/books.md", "summary": "" },
             { "title": "Using Dify", "file": "posts/dify.md", "summary": "" },
             { "title": "Learning Typescript", "file": "posts/typescript.md", "summary": "" },
             { "title": "Writing Typescript", "file": "posts/writing_typescript.md", "summary": "" },
