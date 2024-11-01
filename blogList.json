@@ -6,8 +6,6 @@
             { "title": "Using Dify", "file": "posts/dify.md", "summary": "" },
             { "title": "Learning Typescript", "file": "posts/typescript.md", "summary": "" },
             { "title": "Writing Typescript", "file": "posts/writing_typescript.md", "summary": "" },
-            { "title": "Modules in JavaScript and TypeScript", "file": "posts/js_module.md", 
-              "summary": "Modules have been causing headahe for a while since I started learning Typescript. I want to record the solution of module-related problems and solutions in this article for my own reference." },
             { "title": "Collection of Javascript Tools", "file": "posts/collection_javascript.md", 
               "summary": "" },
             { "title": "Collection of Learning Resources for SQL", "file": "posts/collection_SQL.md", 
@@ -70,8 +68,10 @@
         ]
     },
     {
-        "title": "Unclassfied",
+        "title": "Unclassfied / Unfinished",
         "posts": [
+            { "title": "Modules in JavaScript and TypeScript", "file": "posts/js_module.md", 
+              "summary": "Modules have been causing headahe for a while since I started learning Typescript. I want to record the solution of module-related problems and solutions in this article for my own reference." },
             { "title": "TEST", "file": "posts/test.md", "summary": "TODO: rendering mermaid code block." }
         ]
     }
