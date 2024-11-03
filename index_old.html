@@ -1,68 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Yunlong's Site</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yunlong's Homepage</title>
-    <link rel="stylesheet" href="styles.css"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header>
-    <div class="content">
-        <h1>Yunlong's Homepage</h1>
-    </div>
-</header>
-<nav>
-    <div class="box">
-        <div class="tab">
-            <button class="tablinks" onclick="openTab(event, 'Bio')">Bio</button>
-            <button class="tablinks" onclick="openTab(event, 'Publications')">Publications</button>
-            <button class="tablinks" onclick="openTab(event, 'Projects')">Projects</button>
-            <button class="tablinks" onclick="openTab(event, 'Blogs')">Blogs</button>
-            <button class="tablinks" onclick="openTab(event, 'Contact')">Contact</button>
-        </div>
-    </div>
-</nav>
-
-<main>
-    <div id="Bio" class="tabcontent">
+    <div class="blog-container">
         <div class="content">
-            <a style="text-decoration: none; color: white;">
+            <a style="text-decoration: none; color: inherit;">
                 <div class="box">
-                    <h2>About Me</h2>
-                    <p>I am a happy programmer, AI enthusiastic, with a PhD in condensed matter physics, 
-                        currently located in Shanghai. I was working in the semiconductor industry as a
-                        researcher and developer for about a year. I have been studying and working in 
-                        many places around the world and I am actively seeking for job opportunities in 
-                        North America, Europe and Australia. </p>
+                    <a style="text-decoration: none; color: white;">
+                        <div class="box">
+                            <h2>About Me</h2>
+                            <p>I am a happy programmer, AI enthusiastic, with a PhD in condensed matter physics, 
+                                currently located in Shanghai. I was working in the semiconductor industry as a
+                                researcher and developer for about a year. I have been studying and working in 
+                                many places around the world and I am actively seeking for job opportunities in 
+                                North America, Europe and Australia. </p>
+                        </div>
+                    </a>
+                    <a href="publications.html" style="text-decoration: none; color: rgb(139, 167, 249);">
+                        <div class="box">
+                            <h2>Publications</h2>
+                            <p>Click for details.</p>
+                        </div>
+                    </a>
+                    <a href="posts.html" style="text-decoration: none; color: rgb(185, 139, 249);">
+                        <div class="box">
+                            <h2>Blog Posts</h2>
+                        </div>
+                    </a>
+                    <a href="https://github.com/algorithmx/" style="text-decoration: none; color: rgb(141, 239, 223);">
+                        <div class="box">
+                            <h2>GitHub</h2>
+                            <p>github.com/algorithmx</p>
+                        </div>
+                    </a>
+                    <a href="mailto:yunlong.lian@proton.me" style="text-decoration: none; color: lightgreen;">
+                        <div class="box">
+                            <h2>Contact</h2>
+                            <p>Email: yunlong.lian@proton.me</p>
+                        </div>
+                    </a>
                 </div>
             </a>
-        </div>
-    </div>
 
-    <div id="Blogs" class="tabcontent">
-        <div class="content">
-            <a href="https://github.com/algorithmx/" style="text-decoration: none; color: rgb(141, 239, 223);">
-                <div class="box">
-                    <h2>GitHub</h2>
-                    <p>github.com/algorithmx</p>
-                </div>
-            </a>
-            <a href="mailto:yunlong.lian@proton.me" style="text-decoration: none; color: lightgreen;">
-                <div class="box">
-                    <h2>Contact</h2>
-                    <p>Email: yunlong.lian@proton.me</p>
-                </div>
-            </a>    
-        </div>
-    </div>
-    
-    <div id="Publications" class="tabcontent">
-        <iframe id="content" src="publications.html" style="width: 100%; border: none;"></iframe>
-    </div>
-
-    <div id="Projects" class="tabcontent">
-        <div class="content">
             <a style="text-decoration: none; color: inherit;">
                 <div class="box">
                     <h1>Active Projects</h1>
@@ -223,30 +210,8 @@
 
                 </div>
             </a>
-        </div>
-    </div>
 
-    <div id="Contact" class="tabcontent">
-        <div class="content">
-            <a href="https://github.com/algorithmx/" style="text-decoration: none; color: rgb(141, 239, 223);">
-                <div class="box">
-                    <h2>GitHub</h2>
-                    <p>github.com/algorithmx</p>
-                </div>
-            </a>
-            <a href="mailto:yunlong.lian@proton.me" style="text-decoration: none; color: lightgreen;">
-                <div class="box">
-                    <h2>Contact</h2>
-                    <p>Email: yunlong.lian@proton.me</p>
-                </div>
-            </a>
         </div>
     </div>
-</main>
-<footer>
-    <p>Yunlong Lian</p>
-    <p>
-</footer>
-<script src="script.js"></script>
 </body>
 </html>
