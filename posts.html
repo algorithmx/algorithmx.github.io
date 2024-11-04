@@ -17,112 +17,7 @@
             displayBlogList();
         });
     </script>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            background-color: black;
-            color: white;
-            font-family: "Noto Serif", serif;
-            font-style: normal;
-        }
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 8px 0;
-            padding-left: 0;
-        }
-        ul {
-            padding-inline-start: 0px;
-        }
-        .box {
-            font-size: medium;
-            border: 1px solid white;
-            padding: 8px;
-            margin: 8px 0;
-            cursor: pointer;
-            text-align: justify;
-            transition: background-color 0.3s;
-        }
-        .box code {
-            font-size: medium;
-            background-color: rgba(31, 57, 32, 0.1);
-            padding: none;
-            margin: none;
-        }
-        .box:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .markdown-header {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 8px;
-            max-width: 800px;
-            width: 90%;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-            margin: 0 auto;
-        }
-        .markdown-header button {
-            font-size: large;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid white;
-            color: rgb(208, 255, 143);
-            padding: 8px 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .markdown-header button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .markdown-body {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 8px;
-            max-width: 800px;
-            width: 90%;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-            margin: 0 auto;
-        }
-        .markdown-body details {
-            margin-bottom: 10px;
-        }
-        .markdown-body details summary {
-            cursor: pointer;
-            list-style: none;
-        }
-        .markdown-body details[open] summary {
-            font-weight: bold;
-        }
-        .markdown-body p {
-            margin: 10px 0;
-        }
-        .markdown-body a {
-            color: lightgreen;
-        }
-        .section-title, .post-title {
-            cursor: pointer;
-            background-color: black;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        .section-container {
-            font-size: large;
-            background-color: black;
-            margin-bottom: 20px;
-        }
-        
-        .posts-container {
-            background-color: black;
-            padding: 10px;
-            border: 1px solid white;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .section-container.expanded .posts-container {
-            display: block;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
@@ -131,7 +26,11 @@
         </div>
     </div>
     <div id="go-back-button" class="markdown-header"></div>
-    <div id="content" class="markdown-body">
+    <div id="container">
+        <div id="content"></div>
+        </div>
+        <div id="post-content" class="markdown-body">
+        </div>
     </div>
 </body>
 </html>

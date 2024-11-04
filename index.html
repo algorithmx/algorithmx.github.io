@@ -18,6 +18,7 @@
             <button class="tablinks" onclick="openTab(event, 'Bio')">Bio</button>
             <button class="tablinks" onclick="openTab(event, 'Publications')">Publications</button>
             <button class="tablinks" onclick="openTab(event, 'Projects')">Projects</button>
+            <button class="tablinks" onclick="openTab(event, 'Fun')">Fun</button>
             <button class="tablinks" onclick="openTab(event, 'Blogs')">Blogs</button>
             <button class="tablinks" onclick="openTab(event, 'Contact')">Contact</button>
         </div>
@@ -41,20 +42,7 @@
     </div>
 
     <div id="Blogs" class="tabcontent">
-        <div class="content">
-            <a href="https://github.com/algorithmx/" style="text-decoration: none; color: rgb(141, 239, 223);">
-                <div class="box">
-                    <h2>GitHub</h2>
-                    <p>github.com/algorithmx</p>
-                </div>
-            </a>
-            <a href="mailto:yunlong.lian@proton.me" style="text-decoration: none; color: lightgreen;">
-                <div class="box">
-                    <h2>Contact</h2>
-                    <p>Email: yunlong.lian@proton.me</p>
-                </div>
-            </a>    
-        </div>
+        <iframe id="content" src="posts.html" style="width: 100%; border: none;"></iframe>
     </div>
     
     <div id="Publications" class="tabcontent">
@@ -62,168 +50,11 @@
     </div>
 
     <div id="Projects" class="tabcontent">
-        <div class="content">
-            <a style="text-decoration: none; color: inherit;">
-                <div class="box">
-                    <h1>Active Projects</h1>
-                    <p>Here is a list of projects I am currently working on.</p>
+        <iframe id="content" src="projects.html" style="width: 100%; border: none;"></iframe>
+    </div>
 
-                    <a href="stock-price-viewer.html" 
-                        style="text-decoration: none; color: rgb(70, 146, 252);">
-                        <div class="box">
-                            <h3>Stock price viewer</h3>
-                            <p>A React component for candlestick diagram of stock price data. 
-                                Still in progress. GitHub repository is 
-                                <a href="https://github.com/algorithmx/stock-price-viewer" style="text-decoration: none; color: rgb(0, 225, 255);">available here</a>.
-                            </p>
-                            <p style="text-decoration: none; color: rgb(70, 146, 252);">Click to view the demo.</p>
-                        </div>
-                    </a>
-
-                    <a href="PythonConsole.html" 
-                        style="text-decoration: none; color: rgb(0, 255, 98);">
-                        <div class="box">
-                            <h3>Python console</h3>
-                            <p>A simple Python console running entirely within the browser. 
-                                When loaded, it can run offline. 
-                                Developed in Typescript with React.
-                            </p>
-                            <p>Click to run.</p>
-                        </div>
-                    </a>
-
-                    <a href="https://github.com/algorithmx/SimulationWorkbench" style="text-decoration: none; color: rgb(187, 255, 0);">
-                        <div class="box">
-                            <h3>Simulation workbench</h3>
-                            <p>A typical simulation project can be modelled as a chain of steps, where each step is
-                                a call to a particular simulation tool. Usually the project contains many simulations 
-                                with different parameter configurations. 
-                            </p>
-                            <p>I have been using Sentaurus Workbench (SWB) for TCAD simulations. I found that the workflow managed 
-                                by the SWB is convenient in some sense but cumbersome in many situations. So I want to develop 
-                                my own tool to manage the simulation projects.
-                            </p>
-                            <p>Click for detail.</p>
-                        </div>
-                    </a>
-                    <!-- <a href="ascend.html" style="text-decoration: none; color: rgb(168, 152, 224);">
-                        <div class="box">
-                            <h3>Operator development on Huawei Ascend processor</h3>
-                            <p>There is a programming contest (now S2 closed) for operator development with Huawei Ascend (昇腾) processor.
-                                I found this contest valuable because the related training course and the starter package of contest problems 
-                                exposes enough details of the operator development workflow of Ascend processor.
-                            </p>
-                            <p>In this ongoing work, I record my effort on operator development. My goal is to reveal the general workflow in 
-                                software development with an NPU.</p>
-                        </div>
-                    </a> -->
-
-                </div>
-                <div class="box">
-                    <h1>Fun Projects</h1>
-                    <p>Below is a list of topics or projects I have been involved or I am interested. 
-                        Given my frequent engagement in simulation projects, I have cultivated a 
-                        'visual debugging' methodology. where I highly prioritize the visualization 
-                        of intermediate results in the development process. By juxtaposing visualization 
-                        with my physical intuition, I am usually able to quickly identify many kind of 
-                        mistakes. 
-                    </p>
-                    <p>To help me get over the bitter time after a sudden layoff, I build visualization 
-                        pages to explain the essence of the listed topic. Please click on the title to
-                        access the visualization page. 
-                    </p>
-                    <p>You need a desktop display to view the visualization.</p>
-                    
-                    <a href="bloch.html" style="text-decoration: none; color: rgb(44, 151, 252);">
-                        <div class="box" >
-                            <h3 >Traces on Bloch Sphere.</h3>
-                            <span><p>To visualize the operator defined in</p> <a style="color: rgb(44, 151, 252);" href="https://arxiv.org/pdf/2105.02859">A Grand Unification of Quantum Algorithms [2105.02859]</a> <p style="color: rgb(44, 151, 252);">on a Bloch sphere.</p></span>
-                        </div>
-                    </a>
-
-                    <a href="ion.html" style="text-decoration: none; color: cyan;">
-                        <div class="box">
-                            <h3>Molecular dynamics simulation of ion implantation.</h3>
-                            <p>The ion implantation is a frequently used process in semiconductor device fabrication.
-                                Dopants are implanted into the desired regions of a semiconductor wafer to alter the 
-                                electrical properties. The process is usually simulated by tracing the trajectory of
-                                the ion inside the crystalline or amorphous material. Along the trajectory, the energy
-                                exchange between the ion and the material is recorded for analysis of damage on the 
-                                material. The ion stops when it loses all its energy.
-                            </p>
-                            <p>The fastest simulation uses the Binary Collision Approximation, where an ion hops from 
-                                consecutive collision events. In this approximation, the trajectory is approximated by
-                                zigzag lines. Various details must be considered in a consistant manner to produce 
-                                realistic simulation results.
-                            </p>
-                            <p>On the other hand, the molecular dynamics simulation is accurate and simple to implement.
-                                Click for an animation of 10,000 ions implanted into a simple cubic crystal. In the simulation 
-                                I disregard the recoil of the atoms in the crystal.
-                            </p>
-                        </div>
-                    </a>
-
-                    <a href="skyrmion.html" style="text-decoration: none; color: violet;">
-                        <div class="box">
-                            <h3>Simulation of the LLG equation on 2d ferromagnet with skyrmions embeded.</h3>
-                            <p>I am working on skyrmions over my entire PhD. Here is an animation for a pair of 
-                                skkrmions in a ferromagnet, which is modelled by a lattice of magnetization vectors
-                                and Landau-Lifshitz-Gilbert equation with nearest and next-nearest neighbor coupling. 
-                            </p>
-                            <p>One crucial point in writing the discrete LLG equation is to make sure the magnetization 
-                                vectors are normalized at each time step. This is common in all dynamical simulations of
-                                system with constraints. For magnetization, the constraint is that its amplitude is constant. 
-                                The naive way of "update and project" will not work. The correct way is to work in a local, 
-                                intrinsic coordinate system.  
-                            </p>
-                            <p>Click if you want to watch how a pair of skyrmions evolve in a ferromagnet. (incomplete)</p>
-                        </div>
-                    </a>
-
-                    <a href="kmc.html" style="text-decoration: none; color: yellow;">
-                        <div class="box">
-                            <h3>Kinetic Monte-Carlo simulation of particle diffusion on 2d honeycomb lattice.</h3>
-                            <p>Kinetic Monte-Carlo is a simulation strategy to simulate the dynamics of a system of 
-                                reactants. Compared to the common method of time discretization, time evolution in KMC
-                                is based on events. 
-                            </p>
-                            <p>The diffusion dynamics can be modelled as a system of reactants. The diffusion process is modelled 
-                                as a series of events, each of which is a particle diffusion from one site to another. We adapt 
-                                a Eulerian perspective of the system into which the particles diffuse, so that the states are the 
-                                site occupations in each unit cell and the reaction rules are determined by the motion of the diffusants.   
-                            </p>
-                            <p>Click for a 2D illustration of diffusion process with unrealistic diffusant hopping rules.</p>
-                        </div>
-                    </a>
-
-                    <a href="wire.html" style="text-decoration: none; color: lightgreen;">
-                        <div class="box">
-                            <h3>Simulated annealing optimization of configuration of wires with collision avoidance.</h3>
-                            <p>This project is to solve a problem of assembly L-shaped wires on a board. The wires are attached 
-                                vertically on the board at approximately equidistant contact points. Once attached, a wire can rotate
-                                along the x-axis. There are constraints on the smallest distance between any pair of wires. 
-                                The goal is to find an overall configuration that satisfies the constraints and minimizes the total 
-                                spreading angle of the wires.
-                            </p>
-                            <p>I got this problem from my friend who is working in a factory. His employee usually spend an hour to manipulate
-                                a hundred wires to get a good configuration. With my simulation and visualization, he systematically improved
-                                the wire attaching workflow. 
-                            </p>
-                            <p>Click for an animation of the simulated annealing algorithm on this problem. It is a standalone webpage. 
-                                Hope the javascript code inspires you and help you to build your own simulation.
-                            </p>
-                        </div>
-                    </a>
-
-                    <a style="text-decoration: none; color: lightgrey;">
-                        <div class="box">
-                            <h3>More topics are coming soon ...</h3>
-                        </div>
-                    </a>
-
-                </div>
-            </a>
-        </div>
+    <div id="Fun" class="tabcontent">
+        <iframe id="content" src="fun.html" style="width: 100%; border: none;"></iframe>
     </div>
 
     <div id="Contact" class="tabcontent">

@@ -7,6 +7,10 @@ body, html {
     font-style: normal;
 }
 
+ul {
+    padding-inline-start: 0px;
+}
+
 .blog-container {
     display: flex;
     justify-content: center;
@@ -31,10 +35,16 @@ body, html {
     text-align: justify;
     transition: background-color 0.3s;
 }
+
 .box:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.box code {
+    background-color: rgba(31, 57, 32, 0.1);
+    padding: none;
+    margin: none;
+}
 .tab {
     overflow: hidden;
     background-color: #f1f1f1;
@@ -61,4 +71,83 @@ body, html {
     display: none;
     padding: 20px;
     border: 1px solid #ccc;
+}
+
+.markdown-header {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 8px;
+    max-width: 800px;
+    width: 90%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    margin: 0 auto;
+}
+
+.markdown-header button {
+    font-size: large;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid white;
+    color: rgb(208, 255, 143);
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.markdown-header button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.markdown-body {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 8px;
+    max-width: 800px;
+    width: 90%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    margin: 0 auto;
+}
+
+.markdown-body details {
+    margin-bottom: 10px;
+}
+
+.markdown-body details summary {
+    cursor: pointer;
+    list-style: none;
+}
+
+.markdown-body details[open] summary {
+    font-weight: bold;
+}
+
+.markdown-body p {
+    margin: 10px 0;
+}
+
+.markdown-body a {
+    color: lightgreen;
+}
+
+.section-title, .post-title {
+    cursor: pointer;
+    background-color: black;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.section-container {
+    font-size: large;
+    background-color: black;
+    margin-bottom: 20px;
+}
+
+.posts-container {
+    background-color: black;
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.section-container.expanded .posts-container {
+    display: block;
 }

@@ -135,7 +135,11 @@ async function markdownLoadRender(url_md: string) {
     const html = marked.parse(markdownText, { renderer: renderer });
     // Close any remaining open tags
     const finalClosingTags = '</div></div></details>'.repeat(currentLevel);
-    const contentElement = document.getElementById('content');
+    const contentElement = document.getElementById('post-content');
+    const listElement = document.getElementById('content');
+    if (listElement) {
+        listElement.innerHTML = '';
+    }
     if (contentElement) {
         contentElement.innerHTML = html + finalClosingTags;
     }
@@ -149,50 +153,61 @@ async function displayBlogList() {
         const blogList = await response.json();
         const content = document.getElementById('content');
         if (content) {
-            content.innerHTML = '<h2>Blog Posts</h2>';
-            const ul = document.createElement('ul');
-            ul.style.listStyleType = 'none';
-
+            content.innerHTML = '';
             blogList.forEach((section: { title: string, posts: { title: string, file: string, summary: string, color?: string }[] }, index: number) => {
                 const sectionContainer = document.createElement('div');
-                sectionContainer.className = 'section-container';
+                sectionContainer.className = 'box';
 
-                const sectionTitle = document.createElement('h3');
+                // Create details element for expandable section
+                const details = document.createElement('details');
+                details.open = true; // Initially expanded
+                
+                // Create summary element for the section title
+                const summary = document.createElement('summary');
+                const sectionTitle = document.createElement('h1');
                 sectionTitle.textContent = section.title;
-                sectionTitle.className = 'section-title';
-                sectionTitle.addEventListener('click', () => {
-                    sectionContainer.classList.toggle('expanded');
-                    const postsContainer = sectionContainer.querySelector('.posts-container') as HTMLElement; // Cast to HTMLElement
-                    if (postsContainer) {
-                        postsContainer.style.display = sectionContainer.classList.contains('expanded') ? 'block' : 'none';
-                    }
-                });
-                sectionContainer.appendChild(sectionTitle);
-
+                summary.appendChild(sectionTitle);
+                
+                // Create container for posts
                 const postsContainer = document.createElement('div');
-                postsContainer.className = 'posts-container';
-                if (index !== 0) {
-                    postsContainer.style.display = 'none'; // Collapse all sections except the first one
-                }
-
+                
                 section.posts.forEach((post: { title: string, file: string, summary: string, color?: string }) => {
-                    const li = document.createElement('li');
-                    li.className = 'box';
-                    li.innerHTML = `<h4 class="post-title" style="color: ${post.color || "lightgreen"}">${post.title}</h4><p style="color: white">${post.summary}</p>`;
-                    li.addEventListener('click', async () => {
+                    const postBox = document.createElement('div');
+                    postBox.className = 'box';
+                    postBox.style.color = post.color || 'rgb(70, 146, 252)';
+                    
+                    const postContent = document.createElement('a');
+                    postContent.style.textDecoration = 'none';
+                    postContent.style.color = 'inherit';
+                    postContent.innerHTML = `
+                        <h3>${post.title}</h3>
+                        <p>${post.summary}</p>
+                    `;
+                    
+                    postContent.addEventListener('click', async () => {
                         await renderPost(post.file);
                         mermaid.run({
                             querySelector: '.mermaid'
                         });
                     });
-                    postsContainer.appendChild(li);
+
+                    postBox.appendChild(postContent);
+                    postsContainer.appendChild(postBox);
                 });
 
-                sectionContainer.appendChild(postsContainer);
-                ul.appendChild(sectionContainer);
+                // Assemble the section
+                details.appendChild(summary);
+                details.appendChild(postsContainer);
+                sectionContainer.appendChild(details);
+                content.appendChild(sectionContainer);
             });
-
-            content.appendChild(ul);
+        }
+        const postContent = document.getElementById('post-content');
+        if (postContent) {
+            // remove all children
+            while (postContent.firstChild) {
+                postContent.removeChild(postContent.firstChild);
+            }
         }
     }
 }
