@@ -13,6 +13,16 @@
         ]
     },
     {
+        "title": "Interview Preparation",
+        "posts":[
+            { 
+                "title": "数据库基础教程", 
+                "file": "posts/DB_basics.md", 
+                "summary": "" 
+            }
+        ]
+    },
+    {
         "title": "Javascript / Typescript Collection",
         "posts":[
             { 
