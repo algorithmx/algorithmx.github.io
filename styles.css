@@ -7,8 +7,8 @@ body, html {
     font-style: normal;
 }
 
-ul {
-    padding-inline-start: 0px;
+.box ul {
+    padding-inline-start: 12px;
 }
 
 .blog-container {
@@ -16,20 +16,19 @@ ul {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 8px 0;
+    padding: 5px 0;
 }
 
 .content {
     background-color: rgba(0, 0, 0, 0.7);
-    padding: 8px;
-    max-width: 800px;
-    width: 90%;
+    padding: 4px;
+    margin: 4px 0;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .box {
     border: 1px solid white;
-    padding: 8px;
+    padding: 5px;
     margin: 8px 0;
     cursor: pointer;
     text-align: justify;
@@ -69,7 +68,7 @@ ul {
 
 .tabcontent {
     display: none;
-    padding: 20px;
+    padding: 4px;
     border: 1px solid #ccc;
 }
 
@@ -77,7 +76,6 @@ ul {
     background-color: rgba(0, 0, 0, 0.7);
     padding: 0px;
     margin-bottom: 20px;
-    max-width: 800px;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
@@ -86,7 +84,7 @@ ul {
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid white;
     color: rgb(208, 255, 143);
-    padding: 8px;
+    padding: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
@@ -94,7 +92,6 @@ ul {
 .markdown-body {
     background-color: rgba(0, 0, 0, 0.7);
     padding: 0px;
-    max-width: 800px;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
     margin: 0 auto;
 }

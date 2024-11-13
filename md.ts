@@ -136,7 +136,7 @@ async function markdownLoadRender(url_md: string) {
     // Close any remaining open tags
     const finalClosingTags = '</div></div></details>'.repeat(currentLevel);
     const contentElement = document.getElementById('post-content');
-    const listElement = document.getElementById('content');
+    const listElement = document.getElementById('post-list');
     if (listElement) {
         listElement.innerHTML = '';
     }
@@ -151,7 +151,7 @@ async function displayBlogList() {
         btn.innerHTML = '';
         const response = await fetch('blogList.json');
         const blogList = await response.json();
-        const content = document.getElementById('content');
+        const content = document.getElementById('post-list');
         if (content) {
             content.innerHTML = '';
             blogList.forEach((section: { title: string, posts: { title: string, file: string, summary: string, color?: string }[] }, index: number) => {
@@ -164,7 +164,7 @@ async function displayBlogList() {
                 
                 // Create summary element for the section title
                 const summary = document.createElement('summary');
-                const sectionTitle = document.createElement('h1');
+                const sectionTitle = document.createElement('h3');
                 sectionTitle.textContent = section.title;
                 summary.appendChild(sectionTitle);
                 

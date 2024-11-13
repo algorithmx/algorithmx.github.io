@@ -109,7 +109,7 @@ function markdownLoadRender(url_md) {
         // Close any remaining open tags
         const finalClosingTags = '</div></div></details>'.repeat(currentLevel);
         const contentElement = document.getElementById('post-content');
-        const listElement = document.getElementById('content');
+        const listElement = document.getElementById('post-list');
         if (listElement) {
             listElement.innerHTML = '';
         }
@@ -125,7 +125,7 @@ function displayBlogList() {
             btn.innerHTML = '';
             const response = yield fetch('blogList.json');
             const blogList = yield response.json();
-            const content = document.getElementById('content');
+            const content = document.getElementById('post-list');
             if (content) {
                 content.innerHTML = '';
                 blogList.forEach((section, index) => {
@@ -136,7 +136,7 @@ function displayBlogList() {
                     details.open = true; // Initially expanded
                     // Create summary element for the section title
                     const summary = document.createElement('summary');
-                    const sectionTitle = document.createElement('h1');
+                    const sectionTitle = document.createElement('h3');
                     sectionTitle.textContent = section.title;
                     summary.appendChild(sectionTitle);
                     // Create container for posts
