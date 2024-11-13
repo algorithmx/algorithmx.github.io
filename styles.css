@@ -29,7 +29,7 @@ body, html {
 .box {
     border: 1px solid white;
     padding: 5px;
-    margin: 8px 0;
+    margin: 5px 0;
     cursor: pointer;
     text-align: justify;
     transition: background-color 0.3s;
@@ -46,24 +46,27 @@ body, html {
 }
 .tab {
     overflow: hidden;
-    background-color: #f1f1f1;
+    background-color: black;
 }
 
 .tab button {
     background-color: inherit;
+    color: white;
+    font-family: "Noto Serif", serif;
+    font-style: normal;
     float: left;
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 14px 16px;
+    padding: 4px 4px;
 }
 
 .tab button:hover {
-    background-color: #ddd;
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .tab button.active {
-    background-color: #ccc;
+    background-color: rgba(215, 215, 215, 0.4);
 }
 
 .tabcontent {
