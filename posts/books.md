@@ -19,4 +19,4 @@ Some Chinese students are easily irritated and easily offended in conversations 
 
 # 《中式英语之鉴》
 
-[This book](./posts/Chinglish.epub) is a valuable work from a professional translator. It helped me a lot in improving my written English. 
+[This book](./posts/Chinglish.epub) is a valuable work from a professional translator. It helped me a lot in improving my written English. Shockingly enough, you may find the Chinglish mistakes discussed in the book reflect major aspects of George Orwell's **newspeak**.
