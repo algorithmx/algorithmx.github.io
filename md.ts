@@ -100,7 +100,7 @@ async function markdownLoadRender(url_md: string) {
         }
         currentLevel = level;
         return `${closingTags}<details ${isTitle||level<=1 ? 'open' : ''}>
-            <summary>${text.text}</summary>
+            <summary><p>${text.text}</p></summary>
             <div class="content">
                 <div class="box">`;
     };

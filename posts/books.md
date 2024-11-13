@@ -14,6 +14,9 @@ I am working on a project to translate the entire textbook into both English, Ch
 
 # 《中国人的思维危机》
 
-It is widely accepted that most Chinese students are easily irritated and easily offended. [This book](./posts/中国人的思维危机.pdf) explains why. Try throw it to ChatGPT and see what it will say.
+Some Chinese students are easily irritated and easily offended in conversations about there home country. [This book](./posts/中国人的思维危机.pdf) explains why. I personally use this book as a checklist for reducing logical fallacies. 
 
 
+# 《中式英语之鉴》
+
+[This book](./posts/Chinglish.epub) is a valuable work from a professional translator. It helped me a lot in improving my written English. 
