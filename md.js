@@ -136,7 +136,8 @@ function displayBlogList() {
                     details.open = true; // Initially expanded
                     // Create summary element for the section title
                     const summary = document.createElement('summary');
-                    const sectionTitle = document.createElement('h3');
+                    const sectionTitle = document.createElement('h2');
+                    sectionTitle.className = 'glow';
                     sectionTitle.textContent = section.title;
                     summary.appendChild(sectionTitle);
                     // Create container for posts
