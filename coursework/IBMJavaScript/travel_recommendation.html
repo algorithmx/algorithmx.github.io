@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <title>Travel Recommendation</title>
+    <style>
+        body {
+            font-family: "DM Serif Display", serif;
+            padding: 0;
+            margin: 0;
+            background-image: url('assets/images/background.jpg');
+            background-size: auto auto;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+        }
+        .content {
+            padding: 20px;
+            margin: 10px;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0px 5px 0px 5px;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        nav ul {
+            display: flex;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+        nav ul li {
+            display: flex;
+            font-weight: bold;
+            align-items: center;
+            margin: 0px 10px 0px 10px;
+        }
+        nav ul li:nth-child(5):hover {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        nav ul li:nth-child(3):hover {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        nav ul li:nth-child(4):hover {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        nav ul li:last-child {
+            margin-left: auto;
+            margin-right: 0;
+        }
+        nav li span {
+            font-size: 20px;
+            font-style: italic;
+            font-weight: bold;
+            color: rgb(255, 147, 85);
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        .search-form {
+            border: 0px;
+            border-radius: 15px;
+            background-color: white;
+            padding: 5px;
+        }
+        .search-input {
+            border: 0px;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .search-button {
+            background-color: rgb(147, 51, 182);
+            color: white;
+            border: 0px;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+        .page-content {
+            color: white;
+            display: block;
+            flex-direction: column;
+            align-items: left;
+            margin: 20px 0px 20px 0px;
+        }
+        .page-content > h1 {
+            margin: 0;
+        }
+        .page-content > p {
+            margin: 0;
+        }
+        .page-content > button {
+            font-family: "DM Serif Display", serif;
+            color: white;
+            background-color: rgba(57, 16, 72, 0.589);
+            border: 0px;
+            border-radius: 10px;
+            padding: 5px 20px;
+            margin: 0;
+            font-size: 20px;
+        }
+        .page-content#title {
+            font-size: 30px;
+        }
+        .page-content#main {
+            font-size: 20px;
+        }
+        .contact-form {
+            border: 1px solid white;
+            border-radius: 5px;
+            padding: 10px;
+            display: inline-block;
+            width: fit-content;
+        }
+        .contact-form label {
+            color: white;
+            font-family: "DM Serif Display", serif;
+            font-size: 20px;
+        }
+        .contact-form input, .contact-form textarea {
+            background-color: rgba(16, 0, 82, 0.3);
+            border: 0px;
+            border-radius: 5px;
+            padding: 5px;
+            color: white;
+            font-family: "DM Serif Display", serif;
+            font-size: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .contact-form button {
+            font-family: "DM Serif Display", serif;
+            color: white;
+            background-color: rgba(57, 16, 72, 0.589);
+            border: 0px;
+            border-radius: 10px;
+            padding: 5px 20px;
+            font-size: 20px;
+        }
+        .home-columns {
+            display: flex;
+            justify-content: space-between;
+        }        
+        .home-left-column {
+            width: 50%;
+        }
+        
+        .home-right-column {
+            width: 50%;
+        }
+        .team-cards {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+        .team-card {
+            border: 1px solid rgb(255, 165, 92);
+            border-radius: 5px;
+            padding: 5px;
+            margin: 5px;
+            text-align: center;
+            width: 25%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .team-card:last-child {
+            width: 10%;
+        }
+        .team-card > img {
+            width: 20vw;
+            height: 20vw;
+            object-fit: cover;
+        }
+        @media (max-width: 800px) {
+            .team-cards {
+                flex-direction: column;
+                width: 100%;
+            }
+            .team-card {
+                width: 100%;
+            }
+            .team-card:last-child {
+                width: 100%;
+            }
+            .team-card > img {
+                width: 60vw;
+                height: 60vw;
+                object-fit: cover;
+            }
+
+            .home-columns {
+                display: flex;
+                flex-direction: column;
+            }        
+            .home-left-column {
+                width: 100%;
+            }
+            
+            .home-right-column {
+                width: 100%;
+            }
+        }
+        .team-card > p {
+            border: 1px solid rgb(255, 165, 92);
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .team-card > h2 {
+            height: 30px;
+        }
+        #search-results-container {
+            width: 100%;
+        }
+        #destination-card {
+            border: 1px solid white;
+            border-radius: 15px;
+            width: 100%;
+            text-align: left;
+        }
+        #destination-card img {
+            border-radius: 15px 15px 0px 0px;
+            width: 100%;
+            height: auto;
+        }
+        #destination-card h2 {
+            font-family: "DM Serif Display", serif;
+            color: white;
+            margin: 5px 0px;
+            padding: 5px;
+            font-size: 25px;
+        }
+        #destination-card p {
+            font-family: "DM Serif Display", serif;
+            color: white;
+            margin: 5px 0px;
+            padding: 5px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li>
+                <svg width="40" height="40" viewBox="0 0 24 24">
+                    <path fill="white" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" transform="rotate(45 12 12)"/>
+                </svg>
+            </li>
+            <li><span>TravelBloom</span></li>
+            <li><a onclick="showSection('home')">Home</a></li>
+            <li><a onclick="showSection('about')">About Us</a></li>
+            <li><a onclick="showSection('contact')">Contact Us</a></li>
+            <li>
+                <form action="javascript:void(0)" method="get" class="search-form" id="search-form-nav" style="display: block;">
+                    <input type="text" name="q" placeholder="Enter your destination" class="search-input">
+                    <button type="submit" class="search-button">Search</button>
+                    <button type="reset" class="search-button">Clear</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+    <div class="content">
+
+        <div id="home" style="display: block;">
+
+
+            <div class="home-columns">
+                <div class="home-left-column">
+                    
+                    <div class="page-content" id="title">
+                        <h1>Explore<br>Dream<br>Destination</h1>
+                    </div>
+
+                    <div class="page-content" id="main">
+                        <p>Our mission is to assist you to draw a perfect travel plan.</p>
+                        <p>A few clicks makes you closer to your dream destination.</p>
+                    </div>
+
+                    <div class="page-content" id="book">
+                        <button onclick="showSection('book-now')">Book Now</button>
+                    </div>
+                </div>
+                <div class="home-right-column" id="search-results">
+                    <div id="search-results-container">
+                        <!-- <div id="destination-card">
+                            <img src="assets/images/sydney.jpg" alt="Sydney">
+                            <h2>Sydney</h2>
+                            <p>Sydney is a city in Australia.</p>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="about" style="display: none;">
+
+            <div class="page-content" id="title">
+                <h1>About Us</h1>
+            </div>
+
+            <div class="page-content" id="main">
+                <p>TravelBloom is a travel recommendation website that helps you find the perfect destination for your next trip.</p>
+            </div>
+
+            <div class="page-content" id="title">
+                <h1>Our Team</h1>
+            </div>
+
+            <div class="page-content" id="main">
+                <div class="team-cards">
+                    <div class="team-card">
+                        <img src="assets/images/CEO.jpg" alt="Team Member 1">
+                        <h2>Claude le Blanc</h2>
+                        <p>Founder & CEO</p>
+                    </div>
+                    <div class="team-card">
+                        <img src="assets/images/CXO.jpg" alt="Team Member 2">
+                        <h2>Giovanni Bianchi</h2>
+                        <p>Customer Experience Manager</p>
+                    </div>
+                    <div class="team-card">
+                        <img src="assets/images/CPO.jpg" alt="Team Member 3">
+                        <h2>Mia Rodriguez</h2>
+                        <p>Travel Planner</p>
+                    </div>
+                    <div class="team-card">
+                        <a onclick="showSection('team')">more team members</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content" id="back-home">
+                <button onclick="showSection('home')">Back to Home</button>
+            </div>
+
+        </div>
+
+        <div id="contact" style="display: none;">
+
+            <div class="page-content" id="title">
+                <h1>Contact Us</h1>
+            </div>
+
+            <div class="page-content" id="main">
+                <form action="/submit-contact" method="post" class="contact-form">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required><br><br>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required><br><br>
+                    <label for="message">Message:</label><br>
+                    <textarea id="message" name="message" rows="4" cols="50" required></textarea><br><br>
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+
+            <div class="page-content" id="back-home">
+                <button onclick="showSection('home')">Back to Home</button>
+            </div>
+
+        </div>
+
+        <div id="book-now" style="display: none;">
+
+            <div class="page-content" id="title">
+                <h1>Schedule a meeting</h1>
+            </div>
+
+            <div class="page-content" id="back-home">
+                <button onclick="showSection('home')">Back to Home</button>
+            </div>
+
+        </div>
+
+        <div id="team" style="display: none;">
+
+            <div class="page-content" id="title">
+                <h1>Team Members</h1>
+                <h2> TODO: Add team members here </h2>
+                <!-- TODO: Add team members here -->
+            </div>
+
+            <div class="page-content" id="back-home">
+                <button onclick="showSection('home')">Back to Home</button>
+            </div>
+        </div>
+    </div>
+    <script src="travel_recommendation.js"></script>
+</body>
+</html>
