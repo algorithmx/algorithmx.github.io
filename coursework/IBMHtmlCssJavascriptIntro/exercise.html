@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jimmy Hua Doe - Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: white;
+        }
+
+        nav {
+            background-color: #6b21a8;
+            color: black;
+            padding: 1rem;
+            animation: blink 0.6s infinite;
+        }
+
+        nav:hover {
+            animation-play-state: paused;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            font-size: 1.2rem;
+            color: black;
+            text-decoration: none;
+        }
+
+        .nav-links a:hover {
+            color: hsl(220, 100%, 56%);
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .hero img {
+            width: 30vw;
+            height: auto;
+            border-radius: 20em;
+            animation: blink 1s infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        .hero-content h2 {
+            color: #6b21a8;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-content p {
+            color: #666;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            color: #6b21a8;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .skills-section {
+            background-color: #f9fafb;
+            padding: 3rem 0;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .skill-card img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 1rem;
+        }
+
+        .skill-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .projects-section {
+            padding: 3rem 0;
+        }
+
+        .project-item {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-item h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-item p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .recommendations-section {
+            background-color: #f9fafb;
+            padding: 3rem 0;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .recommendation-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .recommendation-card p {
+            font-style: italic;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .recommendation-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        button {
+            background-color: #6b21a8;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #581c87;
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #6b21a8;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @keyframes blink {
+            0% { background-color: transparent; }
+            10% { background-color: black; }
+            20% { background-color: transparent; }
+            30% { background-color: yellow; }
+            40% { background-color: transparent; }
+            50% { background-color: blue; }
+            60% { background-color: transparent; }
+            70% { background-color: magenta; }
+            80% { background-color: transparent; }
+            90% { background-color: green; }
+            100% { background-color: transparent; }
+        }
+
+        .blinking-background {
+            width: 30vw;
+            height: 20vw;
+            background-color: transparent;
+            animation: blink 0.6s infinite;
+            z-index: 0;
+            position: relative;
+        }
+        .blinking-background img {
+            width: 25vw;
+            height: auto;
+        }
+    </style>
+    <script>
+        function addRecommendation() {
+            // Get the form values
+            const name = document.querySelector('input[placeholder="Name (Optional)"]').value;
+            const message = document.querySelector('textarea[placeholder="Message"]').value;
+        
+            // Create a new recommendation card
+            const card = document.createElement('div');
+            card.className = 'recommendation-card';
+            card.innerHTML = `<p>${message}</p>`;
+        
+            // If name is provided, add it to the card
+            if (name) {
+                const nameElement = document.createElement('p');
+                nameElement.textContent = `- ${name}`;
+                nameElement.style.fontWeight = 'bold';
+                card.appendChild(nameElement);
+            }
+
+            // Append the new card to the recommendations grid
+            document.querySelector('.recommendations-grid').appendChild(card);
+        
+            // Clear the form
+            document.querySelector('input[placeholder="Name (Optional)"]').value = '';
+            document.querySelector('textarea[placeholder="Message"]').value = '';
+
+            // Display a confirmation message using a custom pop-up
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: white;
+                border: 2px solid #6b21a8;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                z-index: 1000;
+            `;
+            popup.innerHTML = `<p>Thank you for submitting a recommendation.</p><p>Message: ${message}</p><p>Name: ${name}</p><button onclick="this.parentElement.remove()">Close</button>`;
+            document.body.appendChild(popup);
+        }
+    </script>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-info">
+                <h1>Jimmy Hua</h1>
+                <div>
+                    <div>📧 jimmy.hua@gmail.com</div>
+                    <div>📞 +123456789</div>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="#about">About Me</a>
+                <a href="#skills">Skills</a>
+                <a href="#projects">Projects</a>
+                <a href="#recommendations">Recommendations</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <div class="blinking-background">
+                <img src="https://img.decrypt.co/insecure/rs:fit:3840:0:0:0/plain/https://cdn.decrypt.co/wp-content/uploads/2024/05/doge-dogecoin-meme-kabosu-gID_7.jpg" alt="Avatar"/>
+            </div>
+
+            <div class="hero-content">
+                <h2>Hi, I'm Jimmy Hua! 👋</h2>
+                <p>
+                    I am a full stack developer with 2 years of <strong>blinking</strong> experience in both application
+                    and presentation layers. I have worked on applications and microservices
+                    deployed on IBM Cloud. I am an avid user of IBM Watson Services and have
+                    worked on Watson Assistant, NLU, Sentiment analyzer to name a few.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <section class="skills-section" id="skills">
+        <div class="container">
+            <h2 class="section-title">Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/HTML5_logo_and_wordmark.svg/120px-HTML5_logo_and_wordmark.svg.png" alt="HTML"/>
+                    <h3>HTML</h3>
+                    <p>2 years experience</p>
+                </div>
+                <div class="skill-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Unofficial_JavaScript_logo_2.svg/120px-Unofficial_JavaScript_logo_2.svg.png" alt="JavaScript"/>
+                    <h3>JavaScript</h3>
+                    <p>1.5 years experience</p>
+                </div>
+                <div class="skill-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/30/Java_programming_language_logo.svg/120px-Java_programming_language_logo.svg.png" alt="Java"/>
+                    <h3>Java</h3>
+                    <p>.5 years experience</p>
+                </div>
+                <div class="skill-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/120px-React-icon.svg.png" alt="React"/>
+                    <h3>React</h3>
+                    <p>1 year experience</p>
+                </div>
+                <div class="skill-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Node.js_logo.svg/120px-Node.js_logo.svg.png" alt="Node.js"/>
+                    <h3>Node.js</h3>
+                    <p>1 year experience</p>
+                </div>
+                <div class="skill-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/CSS3_logo_and_wordmark.svg/120px-CSS3_logo_and_wordmark.svg.png" alt="CSS"/>
+                    <h3>CSS</h3>
+                    <p>2 years experience</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="projects-section" id="projects">
+        <div class="container">
+            <h2 class="section-title">Projects</h2>
+            <div class="project-item">
+                <h3>Chatbot</h3>
+                <p>Developed a secure website integrated with chatbot for an automobile client using HTML, CSS, JavaScript and IBM Watson Assistant</p>
+            </div>
+            <div class="project-item">
+                <h3>Sentiment Analyzer</h3>
+                <p>Developed and deployed a sentiment analyzer for the box reviews section of an eCommerce platform using IBM NLU</p>
+            </div>
+            <div class="project-item">
+                <h3>Fashion Website</h3>
+                <p>Created a styled multi-page website for a new player in the fashion industry and integrated it with a shopping cart, using stripe for payment gateway</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="recommendations-section" id="recommendations">
+        <div class="container">
+            <h2 class="section-title">Recommendations</h2>
+            <div class="recommendations-grid">
+                <div class="recommendation-card">
+                    <p>"Jimmy Hua is a very quick learner and quickly grasps key concepts of Web development. He got a great attitude & He is an excellent team player. He has a curious mind and asks the right question. He takes initiative within a team and has potentials to lead the team."</p>
+                </div>
+                <div class="recommendation-card">
+                    <p>"Working with Jimmy Hua has been an awesome experience. He is highly knowledgeable and always goes the extra step to make sure everything is right. For any future projects that need him expertise I would definitely want to work with him again."</p>
+                </div>
+                <div class="recommendation-card">
+                    <p>"I had worked along with Jimmy Hua during the initial phase of our venture which needed Web development. He is a committed resource who has in depth knowledge about the domain. He will be an asset for any organisation!"</p>
+                </div>
+            </div>
+            
+            <div class="recommendation-form">
+                <h3>Leave a Recommendation</h3>
+                <form>
+                    <div class="form-group">
+                        <input type="text" placeholder="Name (Optional)">
+                    </div>
+                    <div class="form-group">
+                        <textarea placeholder="Message" rows="4"></textarea>
+                    </div>
+                    <button type="button" onclick="addRecommendation()">Submit</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <a href="#" class="scroll-top">↑</a>
+</body>
+</html>
