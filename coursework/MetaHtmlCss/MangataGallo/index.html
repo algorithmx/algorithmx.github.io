@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Dela+Gothic+One&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sawarabi+Gothic&display=swap" rel="stylesheet">
+    <title>Mangata & Gallo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <button id="theme-toggle" aria-label="Toggle theme" class="theme-toggle">Switch Theme</button>
+        <img src="assets/images/logo_black_header.png" alt="Company Logo" class="logo">
+        <nav role="navigation" aria-label="Main navigation">
+            <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span class="hamburger"></span>
+            </button>
+            <ul>
+                <li><a href="#" onclick="showSection('home'); return false;">Home</a></li>
+                <li><a href="#" onclick="showSection('products'); return false;">Products</a></li>
+                <li><a href="#" onclick="showSection('about'); return false;">About</a></li>
+                <li><a href="#" onclick="showSection('contact'); return false;">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="section" role="region" aria-label="Home">
+            <section class="banner" role="region" aria-label="Promotional banner">
+                <div class="banner-container">
+                    <a href="promotion.html" class="promotion-link">
+                        <span class="large-percentage">%</span>
+                    </a>
+                    <div class="banner-text">
+                        <h1>Current Promotion</h1>
+                        <p>Limited time offer!</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="features" role="region" aria-label="Key features">
+                <article class="feature-column">
+                    <img src="assets/images/F1.png" alt="Feature 1">
+                    <h2>Feature 1</h2>
+                    <p>Description of feature 1</p>
+                </article>
+                <article class="feature-column">
+                    <img src="assets/images/F2.png" alt="Feature 2">
+                    <h2>Feature 2</h2>
+                    <p>Description of feature 2</p>
+                </article>
+                <article class="feature-column">
+                    <img src="assets/images/F3.png" alt="Feature 3">
+                    <h2>Feature 3</h2>
+                    <p>Description of feature 3</p>
+                </article>
+            </section>
+        </section>
+        <section id="products" class="section" style="display: none;" role="region" aria-label="Products">
+            <div class="products-content">
+                <p>TODO: Add description of products</p>
+            </div>
+        </section>
+        <section id="about" class="section" style="display: none;" role="region" aria-label="About">
+            <div class="about-content">
+                <h2>About Mangata & Gallo</h2>
+                <p>
+                    <span class="initial">A</span>t Mangata & Gallo, we believe that jewelry is more than just adornment; it's a vessel for memories, a symbol of love, and a celebration of life's most precious moments. Our mission is to craft pieces that resonate with the heart, capturing the essence of engagements, weddings, and anniversaries with unparalleled elegance and craftsmanship.
+                </p>
+                <p>
+                    <span class="initial">O</span>ur story began in the vibrant city of Austin, Texas, where our founder, Mariana, a cherished local designer, embarked on a journey to bring her vision to life. With a deep-rooted passion for diamond cutting and metal smithing, honed through years of dedicated study, Mariana has infused each piece with a touch of her soul, ensuring that every creation is not just seen but felt.
+                </p>
+                <p>
+                    <span class="initial">T</span>hough our physical store is a cozy corner in Austin, our heart reaches out to the world through our online presence. Here, we invite you into our atelier, a space where you can explore, dream, and find the perfect piece that speaks to you. Each visit is an opportunity to connect, to share in the joy of discovery, and to celebrate the milestones that define our lives.
+                </p>
+                <p>
+                    <span class="initial">M</span>ariana's commitment to her craft is unwavering. She has nurtured Mangata & Gallo from a single spark of inspiration to a beacon of tradition and innovation. Recently, she has welcomed skilled artisans into our fold, each adding their unique touch to her designs, and a vibrant young mind to manage our digital presence, ensuring that our story continues to unfold with warmth, creativity, and a personal touch.
+                </p>
+            </div>
+        </section>
+        <section id="contact" class="section" style="display: none;" role="region" aria-label="Contact">
+            <div class="contact-form">
+                <h2>Contact Us</h2>
+                <form id="contact-form" action="submit_contact.php" method="post">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" rows="4" required></textarea>
+                    
+                    <button type="submit" class="submit-button">Send</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-logo">
+            <img src="assets/images/logo_black_footer.png" alt="Company Logo Small" class="logo">
+        </div>
+        <div class="copyright">
+            <p>&copy; 2024 Mangata & Gallo Inc. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+        });
+
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const navList = document.querySelector('nav ul');
+
+        mobileMenuToggle.addEventListener('click', () => {
+            navList.classList.toggle('active');
+            mobileMenuToggle.setAttribute('aria-expanded', navList.classList.contains('active'));
+        });
+    </script>
+</body>
+</html>
