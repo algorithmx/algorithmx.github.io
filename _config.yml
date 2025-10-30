@@ -1,0 +1,33 @@
+name: XXX
+title: XXX - Personal Website
+url: https://yourusername.github.io
+description: Personal website of XXX.
+destination: ./_site
+repository: yourusername/yourusername.github.io
+twitter: your_twitter_handle
+lsi: false
+port: 4000
+markdown: kramdown
+future: true
+kramdown:
+  parse_block_html: true
+  syntax_highlighter: rouge
+permalink: pretty
+#seo
+tagline: XXX | Personal Website | Professional Portfolio | Projects | Blog
+#paginate: 5
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-github-metadata
+
+exclude:
+  - .travis.yml
+  - validate.rb
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - bower_components
+  - update-vendor-deps.sh
+  - vendor/bundle
+  - vendor/bower.json
