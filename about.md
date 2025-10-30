@@ -18,7 +18,3 @@ Welcome to my personal website! I'm XXX, and this is where I share my work and i
 ## Education
 
 [Your educational background goes here]
-
-## Contact
-
-Feel free to reach out via email at yourname@example.com or connect with me on social media through the links in the navigation bar.

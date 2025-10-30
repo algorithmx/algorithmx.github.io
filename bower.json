@@ -1,8 +1,8 @@
 {
-  "name": "yourusername.github.io",
+  "name": "algorithmx.github.io",
   "version": "0.0.0",
-  "homepage": "https://github.com/yourusername/yourusername.github.io",
-  "authors": ["XXX<yourname@example.com>"],
+  "homepage": "https://algorithmx.github.io",
+  "authors": ["Yunlong<yourname@example.com>"],
   "license": "Apache",
   "ignore": ["**/.*", "bower_components"],
   "dependencies": {

@@ -1,6 +1,6 @@
 # About
 
-![Visitors](https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fai4eda.github.io%2F&labelColor=%231863e6&countColor=%23d9e3f0)
+![Visitors](https://api.visitorbadge.io/api/combined?path=https%3A%2F%2Fgithub.com%2Falgorithmx%2Falgorithmx.github.io&countColor=%23263759&style=flat-square)
 
 
 ## Env

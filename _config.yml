@@ -1,10 +1,9 @@
-name: XXX
-title: XXX - Personal Website
-url: https://yourusername.github.io
-description: Personal website of XXX.
+name: Yunlong
+title: Personal Website
+url: https://algorithmx.github.io
+description: Personal website of Yunlong.
 destination: ./_site
-repository: yourusername/yourusername.github.io
-twitter: your_twitter_handle
+repository: algorithmx/algorithmx.github.io
 lsi: false
 port: 4000
 markdown: kramdown
@@ -14,7 +13,7 @@ kramdown:
   syntax_highlighter: rouge
 permalink: pretty
 #seo
-tagline: XXX | Personal Website | Professional Portfolio | Projects | Blog
+tagline: Yunlong | Personal Website | Professional Portfolio | Projects | Blog
 #paginate: 5
 plugins:
   - jekyll-sitemap

@@ -18,3 +18,5 @@ vendor/bundle
 Gemfile.lock
 .vscode
 **.DS_Store
+CLAUDE.md
+PERSONAL_WEBSITE_GUIDE.md
